@@ -139,14 +139,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
+FIREBASE_CONFIG = {
+    'apiKey': str(os.getenv('API_KEY')),
+    'authDomain': str(os.getenv('AUTH_DOMAIN')),
+    'projectId': str(os.getenv('PROJECT_ID')),
+    'storageBucket': str(os.getenv('STOREAGEBUCKET')),
+    'messagingSenderId': str(os.getenv('MESSAGING_SENDER_ID')),
+    'appId': str(os.getenv('APP_ID')),
+    # Add more Firebase configuration properties as needed
+}
+
 
 import firebase_admin
 from firebase_admin import credentials
 
 # Path to your Firebase service account key JSON file
-FIREBASE_SERVICE_ACCOUNT_KEY = BASE_DIR /'dropx-112b0-firebase-adminsdk-wmh1l-f3a164665c.json'
+# FIREBASE_SERVICE_ACCOUNT_KEY = BASE_DIR /'dropx-112b0-firebase-adminsdk-wmh1l-f3a164665c.json'
 
 # Initialize Firebase Admin SDK
-firebase_admin.initialize_app(
-    credentials.Certificate(FIREBASE_SERVICE_ACCOUNT_KEY)
-)
+# firebase_admin.initialize_app(
+#     credentials.Certificate(FIREBASE_SERVICE_ACCOUNT_KEY)
+# )
