@@ -74,7 +74,7 @@ class RestaurantRegisterRequestView(APIView):
     def post(self,request,*args,**kwargs):
         serialized=PendingRestaurantSerializer(data=request.data)
           # check if user exists
-        if Restaurant.objects.filter(Q(phone=request.data['phone'])|Q(email=request.data['email'])).exists():
+        if User.objects.filter(Q(phone=request.data['phone'])|Q(email=request.data['email'])).exists():
             return Response({'error': 'Phone number or email already exists'}, status=status.HTTP_409_CONFLICT)
         
         if OTPRequest.checkRateLimitReached(phone=request.data['phone']):
@@ -123,12 +123,14 @@ class RestaurantCreateAccountAPIView(APIView):
                 restaurantName=pendingRestaurant.restaurantName,
                 commercialRecordImage=pendingRestaurant.commercialRecordImage,
                 restaurantLogo=pendingRestaurant.restaurantLogo,
-                restaurantSubscription=pendingRestaurant.restaurantSubscription
+                restaurantSubscription=pendingRestaurant.restaurantSubscription,
+                fcm_token=request.data['fcm_token']
             )
             newRestaurant.password = make_password(request.data['password'])
             newRestaurant.save()
             pendingRestaurant.delete()
             otp.delete()
+            
 
             return Response({"result": "Restaurant. created successfully"}, status=status.HTTP_201_CREATED)
         return Response({'error': 'The phone is not verified'})

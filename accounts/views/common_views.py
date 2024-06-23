@@ -23,7 +23,7 @@ class PhoneVerifyView(APIView):
                                         isUsed=False,
                                         type=OTPRequest.Types.REGISTER).first()
             if otp:
-                otp.delete()
+                otp.isUsed=True
                 return Response({"result":"OTP is correct"})
             else:
                 return Response({"error":"OTP is not correct!"},status.HTTP_404_NOT_FOUND)
