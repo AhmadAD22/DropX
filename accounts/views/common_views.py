@@ -39,7 +39,7 @@ class ResetPhoneVerifyView(APIView):
                                         isUsed=False,
                                         type=OTPRequest.Types.RESET_PHONE).first()
             if otp:
-                otp.delete()
+                otp.isUsed=True
                 return Response({"result":"OTP is correct,"})
             else:
                 return Response({"error":"OTP is not correct!"},status.HTTP_404_NOT_FOUND)
@@ -54,7 +54,7 @@ class ForgetPasswordAPIView(APIView):
         try:
             user=User.objects.get(phone=phone)
         except User.DoesNotExist:
-            return Response({"error":"the account not found"},status=status.HTTP_404_NOT_FOUND)
+            return Response({"error":"the account not found"},status=status.HTTP_409_CONFLICT)
         if OTPRequest.checkRateLimitReached(phone=phone):
             return Response({'error': 'MANY_OTP_REQUESTS'}, status=status.HTTP_409_CONFLICT)
         otp=OTPRequest.objects.create(phone=phone,type=OTPRequest.Types.FORGET_PASSWORD)
@@ -75,7 +75,7 @@ class ForgetPsswordVerifyPhoneAPIView(APIView):
                                         isUsed=False,
                                         type=OTPRequest.Types.FORGET_PASSWORD).first()
         if otp:
-            otp.delete()
+            otp.isUsed=True
             return Response({"result":"OTP is correct"},status.HTTP_200_OK)
         else:
             return Response({"error":"OTP is not correct!"},status.HTTP_404_NOT_FOUND)

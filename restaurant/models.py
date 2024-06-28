@@ -56,6 +56,8 @@ class Product(models.Model):
                 os.remove(image_path)
         
         super(Product, self).delete(*args, **kwargs)
+    def __str__(self) -> str:
+        return self.name +'/'+self.restaurant.restaurantName
         
 
 class AccessoryProduct(models.Model):
@@ -82,7 +84,16 @@ class RestaurantOpening(models.Model):
     Rest_time_end=models.TimeField(null=True,blank=True,auto_now=False, auto_now_add=False)
     created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)
     updated_on =models.DateTimeField(auto_now=True,blank=True,null=True)
-
+    
+    def is_open(self):
+        """
+        Returns True if the restaurant is open at the current time, False otherwise.
+        """
+        now = datetime.now().time()
+        if self.time_start <= now <= self.time_end:
+            if self.Rest_time_start is None or self.Rest_time_end is None or self.Rest_time_start <= now <= self.Rest_time_end:
+                return True
+        return False
 
 
 class Review(models.Model):

@@ -211,6 +211,8 @@ class Restaurant(User):
     restaurantLogo=models.ImageField(upload_to='proven/')
     commercialRecordImage=models.ImageField(upload_to='proven/')
     restaurantSubscription=models.ForeignKey( RestaurantSubscription,on_delete=models.CASCADE)
+    restaurantStatus=models.BooleanField(default=True)
+    
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -357,3 +359,18 @@ class PendingDriver(models.Model):
         orderSubscription=models.ForeignKey(OrderServiceSubscription,null=True,on_delete=models.SET_NULL)
         otp = models.OneToOneField(OTPRequest,null=True, on_delete=models.CASCADE, related_name='pendingDriver')
         oldPhone= models.CharField(max_length=10,null=True,default=None)
+        
+        
+        
+class Notification(models.Model):
+    title=models.CharField(max_length=70)
+    titleArgs=models.JSONField(default=list)
+    body=models.TextField()
+    bodyArgs=models.JSONField(default=list)
+    sentAt=models.DateTimeField(auto_now_add=True)
+    localized=models.BooleanField(default=True)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    # order=models.ForeignKey('orders.Order',on_delete=models.CASCADE,blank=True, null=True)
+
+    class Meta:
+        ordering=['-sentAt']

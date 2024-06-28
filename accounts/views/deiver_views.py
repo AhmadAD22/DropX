@@ -51,7 +51,7 @@ class DriverAuthToken(ObtainAuthToken):
                 else:
                     return Response({'error': 'Wait for admin acceptance'})
             
-        return Response({'error': 'Invalid credentials'})
+        return Response({'error': 'Invalid credentials'},status=status.HTTP_409_CONFLICT)
     
     
     
@@ -170,6 +170,7 @@ class DriverCreateAccountAPIView(APIView):
                 carBack=pending_driver.carBack,
                 memberSubscription=pending_driver.memberSubscription,
                 orderSubscription=pending_driver.orderSubscription,
+                fcm_token=request.data['fcm_token']
             )
             print(pending_driver.orderSubscription)
             new_driver.password = make_password(request.data['password'])

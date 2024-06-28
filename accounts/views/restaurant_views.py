@@ -65,9 +65,9 @@ class RestaurantAuthToken(ObtainAuthToken):
                         }
                     })
                 else:
-                    return Response({'error': 'Wait for admin acceptance'})
+                    return Response({'error': 'Wait for admin acceptance'},status=status.HTTP_409_CONFLICT)
             
-        return Response({'error': 'Invalid credentials'})
+        return Response({'error': 'Invalid credentials'},status=status.HTTP_409_CONFLICT)
     
 
 class RestaurantRegisterRequestView(APIView):

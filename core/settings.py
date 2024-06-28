@@ -27,7 +27,7 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     #new apps
     'accounts',
     'restaurant',
+    'order',
     #Rest Framework
     'rest_framework',
     'rest_framework.authtoken',
@@ -150,13 +151,13 @@ FIREBASE_CONFIG = {
 }
 
 
-import firebase_admin
-from firebase_admin import credentials
+# import firebase_admin
+# from firebase_admin import credentials
 
-# Path to your Firebase service account key JSON file
-# FIREBASE_SERVICE_ACCOUNT_KEY = BASE_DIR /'dropx-112b0-firebase-adminsdk-wmh1l-f3a164665c.json'
+# # Path to your Firebase service account key JSON file
+# FIREBASE_SERVICE_ACCOUNT_KEY = BASE_DIR /'dropx_auth.json'
 
-# Initialize Firebase Admin SDK
+# # Initialize Firebase Admin SDK
 # firebase_admin.initialize_app(
 #     credentials.Certificate(FIREBASE_SERVICE_ACCOUNT_KEY)
 # )

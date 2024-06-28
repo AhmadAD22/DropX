@@ -140,7 +140,7 @@ class ClientCreateAccountAPIView(APIView):
                 if User.objects.filter(Q(phone=pendingClient.phone)|Q(email=pendingClient.email)).exists():
                     return Response({'error': 'IDENTIFIER_EXISTS'})
                 new_Client=Client.objects.create(fullName=pendingClient.fullName,avatar=pendingClient.avatar,phone=pendingClient.phone,
-                                            email=pendingClient.email)
+                                            email=pendingClient.email,fcm_token=request.data['fcm_token'])
                
                 new_Client.password=make_password(request.data['password'])
                 new_Client.save()
@@ -183,7 +183,7 @@ class ClientAuthToken(ObtainAuthToken):
                     }
                 })
             
-        return Response({'error': 'Invalid credentials'})
+        return Response({'error': 'Invalid credentials'},status=status.HTTP_409_CONFLICT)
     
     
             
