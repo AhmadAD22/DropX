@@ -37,12 +37,11 @@ class OrderSerializer(serializers.ModelSerializer):
             'id','client','payment', 'status', 'orderDate',  'totalAmount','items'
         )        
 
-class OrderListSerializer(serializers.ModelSerializer):
+class DriverOrderListSerializer(serializers.ModelSerializer):
     client=serializers.CharField(source='client.fullName')
-    client_avatar=serializers.CharField(source='client.avatar')
-    
     class Meta:
         model = Order
         fields = (
-            'id','client', 'orderDate','totalAmount','client_avatar'
+            'id','client', 'orderDate','restaurantLat', 'restaurantLng', 'restaurantAddress',
+            'destinationLat', 'destinationLng', 'destinationAddress','totalAmount',
         )        

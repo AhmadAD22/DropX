@@ -9,7 +9,14 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id','image','category', 'name', 'description', 'price', 'offers', 'quantity', 'minimumOrder', 'created_at', 'updated_on', 'price_after_offer')
         read_only_fields = ('id', 'created_at', 'updated_on')
-from rest_framework import serializers
+        
+class ProductListSerializer(serializers.ModelSerializer):
+    price_after_offer = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ('id','image', 'name', 'price', 'offers', 'created_at', 'updated_on', 'price_after_offer')
+        read_only_fields = ('id', 'created_at', 'updated_on')
 
 class AccessoryProductSerializer(serializers.ModelSerializer):
     class Meta:

@@ -96,12 +96,12 @@ class RestaurantOpening(models.Model):
         return False
 
 
-class Review(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE,null=True,blank=True,verbose_name='الزبون')
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,verbose_name='المتجر')
+class ProductReview(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL,null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='review')
     message = models.TextField(verbose_name='رسالة')
-    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], null=True, blank=True, verbose_name='تقييم المنتج')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاريخ الإنشاء',blank=True,null=True)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)
 
     
     def __str__(self):

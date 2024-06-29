@@ -18,8 +18,10 @@ class ProductListByCategoryView(APIView):
             return Response({"error":"Category not found!!"},status=status.HTTP_404_NOT_FOUND)
         restaurant=Restaurant.objects.get(phone=request.user.phone)
         products = Product.objects.filter(restaurant=restaurant,category=category)
-        serializer = CreateListProductSerializer(products, many=True)
+        serializer = ProductListSerializer(products, many=True)
         return Response(serializer.data)
+
+
 
 ################ Product Views###################
 class ProductListCreateView(APIView):
@@ -29,7 +31,7 @@ class ProductListCreateView(APIView):
     def get(self, request):
         restaurant=Restaurant.objects.get(phone=request.user.phone)
         products = Product.objects.filter(restaurant=restaurant)
-        serializer = CreateListProductSerializer(products, many=True)
+        serializer = ProductListSerializer(products, many=True)
         return Response(serializer.data)
 
     def post(self, request):

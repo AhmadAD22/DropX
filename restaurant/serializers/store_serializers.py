@@ -33,6 +33,6 @@ class RestaurantDataSerializer(serializers.ModelSerializer):
 class ReviewsStorSerializer(serializers.ModelSerializer):
     Client=ClientSerializer(read_only=True)
     class Meta:
-        model = Review
-        exclude = ['restaurant']
+        model = ProductReview
+        exclude = ['product']
     

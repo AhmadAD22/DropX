@@ -370,7 +370,7 @@ class Notification(models.Model):
     sentAt=models.DateTimeField(auto_now_add=True)
     localized=models.BooleanField(default=True)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
-    # order=models.ForeignKey('orders.Order',on_delete=models.CASCADE,blank=True, null=True)
+    order=models.ForeignKey('order.Order',on_delete=models.CASCADE,blank=True, null=True)
 
     class Meta:
         ordering=['-sentAt']
