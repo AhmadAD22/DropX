@@ -17,5 +17,7 @@ path('driver/previous-orders', DriverPreviousOrdersListAPIView.as_view(), name='
 path('driver/statistics-orders', DriverStatisticsOrdersListAPIView.as_view(), name='driver-statistics-orders'),
 path('driver/accept-order', DriverAcceptOrder.as_view(), name='driver-accept-order'),
 path('driver/on-way-notify', OnWayNotification.as_view(), name='driver-on-way-notify'),
+path('driver/delivery-confirm', DeliveryConfirm.as_view(), name='driver-'),
+
 path('<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
 ]

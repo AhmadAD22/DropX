@@ -17,7 +17,7 @@ urlpatterns = [
     
     
     
-    path('accessory-products/', AccessoryProductListCreateAPIView.as_view(), name='accessory-product-list-create'),
+    path('accessory-products/<int:product_id>', AccessoryProductListCreateAPIView.as_view(), name='accessory-product-list-create'),
     path('accessory-products/<int:pk>/', AccessoryProductRetrieveUpdateDestroyAPIView.as_view(), name='accessory-product-retrieve-update-destroy'),
     
     

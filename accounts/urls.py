@@ -26,6 +26,7 @@ urlpatterns = [
         path('user/forget-password-request',ForgetPasswordAPIView.as_view()), 
         path('user/forget-pssword-verify-phone',ForgetPsswordVerifyPhoneAPIView.as_view()),
         path('user/update-forgotten-password',UpdateForgottenPasswordAPIView.as_view()),
+        path('user/notification',NotificationsApiview.as_view()),
         #User Update password
         path('user/password-update',UserPasswordUpdateAPIView.as_view()),
         

@@ -170,8 +170,29 @@ class OnWayNotification(APIView):
             target=order.client,
             )
         
-        return Response({'result':'I am on my way to you'},status=status.HTTP_404_NOT_FOUND)
+        return Response({'result':'I am on my way to you'},status=status.HTTP_200_OK)
        
+       
+       
+class DeliveryConfirm(APIView):
+    # permission_classes=[IsAuthenticated]
+    def post(self,request):
+        try:
+            order=Order.objects.get(id=request.data['order_id'])
+        except:
+            return Response({'error':'Order does not found'},status=status.HTTP_404_NOT_FOUND)
+        order.status=Status.COMPLETED
+        restaurant=order.items.first().product.restaurant
         
-    
+        NotificationsHelper.sendOrderUpdate(
+            update=OrdersUpdates.ORDER_COMPLETE,
+            orderId=order,
+            target=restaurant,
+            )
+        NotificationsHelper.sendOrderUpdate(
+            update=OrdersUpdates.ORDER_COMPLETE,
+            orderId=order,
+            target=order.client,
+            )
+        return Response({'result':'The order delivered'},status=status.HTTP_200_OK)
     

@@ -142,7 +142,7 @@ class RestaurantReviewsAPIView(APIView):
         except Restaurant.DoesNotExist:
             return Response({"error": "Restaurant does not exist"}, status=status.HTTP_404_NOT_FOUND)
         
-        reviews = Review.objects.filter(restaurant=restaurant)
+        reviews = RestaurantReview.objects.filter(restaurant=restaurant)
         ratings = [review.rating for review in reviews]
         average_rating = sum(ratings) / len(ratings) if ratings else 0
         rating={

@@ -98,7 +98,7 @@ class RestaurantOpening(models.Model):
 
 class ProductReview(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL,null=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='review')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='productreview')
     message = models.TextField(verbose_name='رسالة')
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)
@@ -108,6 +108,13 @@ class ProductReview(models.Model):
         return f"Message by {self.client.username}"
 
 class CommonQuestion(models.Model):
-    restaurant=models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    restaurant=models.ForeignKey(Restaurant, on_delete=models.CASCADE,related_name='restaurantcommonquestion')
     question=models.CharField(max_length=255)
     answer=models.TextField()
+    
+class RestaurantReview(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL,null=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,related_name='restaurantreview')
+    message = models.TextField(verbose_name='رسالة')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)

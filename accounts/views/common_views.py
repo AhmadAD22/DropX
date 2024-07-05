@@ -126,4 +126,9 @@ class UserPasswordUpdateAPIView(APIView):
         
         
     
-    
+class NotificationsApiview(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        notifications=Notification.objects.filter(user=request.user)
+        notifications_serializer=NotificationsSerializer(notifications,many=True)
+        return Response(notifications_serializer.data,status=status.HTTP_200_OK)

@@ -29,10 +29,13 @@ class RestaurantDataSerializer(serializers.ModelSerializer):
     def get_openings(self, obj):
         # Customize the serialization of 'Common question' field here
         return RestaurantOpeningSerializer(obj.restaurantopening_set.all(), many=True).data
-    
+
 class ReviewsStorSerializer(serializers.ModelSerializer):
-    Client=ClientSerializer(read_only=True)
+    client_id=serializers.CharField(source='client.id',read_only=True)
+    client_avatar=serializers.FileField(source='client.avatar',read_only=True)
+    client_name=serializers.CharField(source='client.fullName',read_only=True)
+    
     class Meta:
-        model = ProductReview
-        exclude = ['product']
+        model = RestaurantReview
+        exclude = ['restaurant']
     

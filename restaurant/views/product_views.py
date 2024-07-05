@@ -69,7 +69,10 @@ class ProductRetrieveUpdateDeleteView(APIView):
         return Response(error_handler(serializer.errors), status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        product = self.get_object(pk)
+        try:
+            product =Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({"error":"product not found!!"},status=status.HTTP_404_NOT_FOUND)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -80,26 +83,40 @@ class ProductRetrieveUpdateDeleteView(APIView):
 ################Accessory Product Views##################################
 
 class AccessoryProductListCreateAPIView(APIView):
-    def get(self, request):
-        accessory_products = AccessoryProduct.objects.all()
+    def get(self, request,product_id):
+        try:
+            product=Product.objects.get(id=product_id)
+        except:
+            return Response({"error":"product not found!!"},status=status.HTTP_404_NOT_FOUND)
+        accessory_products = AccessoryProduct.objects.filter(product=product)
         serializer = AccessoryProductSerializer(accessory_products, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request,product_id):
+        try:
+            product=Product.objects.get(id=product_id)
+        except:
+            return Response({"error":"product not found!!"},status=status.HTTP_404_NOT_FOUND)
         serializer = CreateAccessoryProductSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(product=product)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AccessoryProductRetrieveUpdateDestroyAPIView(APIView):
     def get(self, request, pk):
-        accessory_product = AccessoryProduct.objects.get(pk=pk)
+        try:
+            accessory_product = AccessoryProduct.objects.get(pk=pk)
+        except:
+            return Response({"error":"Accessory product not found!!"},status=status.HTTP_404_NOT_FOUND)
         serializer = AccessoryProductSerializer(accessory_product)
         return Response(serializer.data)
 
     def put(self, request, pk):
-        accessory_product = AccessoryProduct.objects.get(pk=pk)
+        try:
+            accessory_product = AccessoryProduct.objects.get(pk=pk)
+        except:
+            return Response({"error":"Accessory product not found!!"},status=status.HTTP_404_NOT_FOUND)
         serializer = AccessoryProductSerializer(accessory_product, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -107,6 +124,9 @@ class AccessoryProductRetrieveUpdateDestroyAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        accessory_product = AccessoryProduct.objects.get(pk=pk)
+        try:
+            accessory_product = AccessoryProduct.objects.get(pk=pk)
+        except:
+            return Response({"error":"Accessory product not found!!"},status=status.HTTP_404_NOT_FOUND)
         accessory_product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

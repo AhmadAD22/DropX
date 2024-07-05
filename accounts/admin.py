@@ -14,6 +14,8 @@ admin.site.register(Car)
 
 admin.site.register(PendingRestaurant)
 admin.site.register(RestaurantSubscription)
+admin.site.register(Notification)
+
 
 
 

@@ -27,3 +27,7 @@ class UserPasswordUpdateSerializer(serializers.Serializer):
     new_password = serializers.CharField(write_only=True, required=True)
     
     
+class NotificationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Notification
+        fields='__all__'
