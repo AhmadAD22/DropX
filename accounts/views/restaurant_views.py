@@ -123,11 +123,13 @@ class RestaurantCreateAccountAPIView(APIView):
                 restaurantName=pendingRestaurant.restaurantName,
                 commercialRecordImage=pendingRestaurant.commercialRecordImage,
                 restaurantLogo=pendingRestaurant.restaurantLogo,
-                restaurantSubscription=pendingRestaurant.restaurantSubscription,
                 fcm_token=request.data['fcm_token']
             )
             newRestaurant.password = make_password(request.data['password'])
             newRestaurant.save()
+            restaurantSubscription=RestaurantSubscription.objects.create(restaurant=newRestaurant,price=1,duration=pendingRestaurant.restaurantSubscription)
+            restaurantSubscription.end_date=restaurantSubscription.calculate_end_date()
+            restaurantSubscription.save()
             pendingRestaurant.delete()
             otp.delete()
             
@@ -165,5 +167,23 @@ class PendingRestaurantRequestUpdateAPIView(APIView):
                 return Response({"result":"Wait for admin acceptance"}, status=status.HTTP_200_OK)
              else:
                 return Response(error_handler(serialized.errors), status=status.HTTP_400_BAD_REQUEST)
+            
+            
+class ChangeRestaurantStatus(APIView):
+    permission_classes=[IsAuthenticated]
+    def put(self,request):
+        try:
+            restaurant=Restaurant.objects.get(phone=request.user.phone)
+        except Restaurant.DoesNotExist:
+            return Response({"erorr":"The restaurant not found!"},status=status.HTTP_404_NOT_FOUND)
+        
+        if restaurant.restaurantStatus==True:
+            restaurant.restaurantStatus=False
+            restaurant.save()
+            return Response({"status":restaurant.restaurantStatus},status=status.HTTP_200_OK)
+        else:
+            restaurant.restaurantStatus=True
+            restaurant.save()
+            return Response({"status":restaurant.restaurantStatus},status=status.HTTP_200_OK)
 
       

@@ -4,6 +4,8 @@ from restaurant.models import *
 from django.db.models import Sum
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+import decimal
+
 
 class Status(models.TextChoices):
     PENDING = 'PENDING','Pending'
@@ -24,8 +26,6 @@ class CanceledBy(models.TextChoices):
     
 class Payment(models.TextChoices):
     WALLET='WALLET','wallet'
-    CASH_SENDER='CASH_SENDER','Cash by sender'
-    CASH_RECEIVER='CASH_RECEIVER','Cash by receiver'
     E_PAYMENT='E_PAYMENT','e-payment'
 
 class Coupon(models.Model):
@@ -59,37 +59,48 @@ class Order(models.Model):
     tax = models.DecimalField(max_digits=10, decimal_places=2)
     totalAmount = models.DecimalField(max_digits=10, decimal_places=2)
     coupon=models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True,blank=True)
-
+   # transactions=models.ManyToManyField('wallet.Transaction',through='wallet.OrderTransactions')
     def __str__(self) -> str:
         return '#' +str(self.pk)
 
-    # transactions=models.ManyToManyField('wallet.Transaction',through='wallet.OrderTransactions')
     
-    # def get_totalProducts(self):
-    #     """Returns the total number of products ordered."""
-    #     return self.items.aggregate(total_products=Sum('quantity'))['totalProducts'] or 0
+    
+    def total_price(self):
+        """Calculates the total price of the order including items and accessories."""
+        total_price =decimal.Decimal('0.0')
 
-    # def get_total_price(self):
-    #     """Returns the total price of the order."""
-    #     return self.items.aggregate(total_price=Sum(models.F('quantity') * models.F('unitPrice')))['totalPrice'] or 0.0
-    
-    # def tax(self):
-    #     tax = self.tax 
-    #     tax = self.totalAmount * (float(tax) / 100) if self.tax else 0
-    #     return round(tax,2) 
-    
-    # def get_price_with_tax(self):
-    #     tax = self.tax()
-    #     price = self.totalAmount
-    #     return round(tax + price,2)
-    
-    # def get_price_with_tax_with_coupon(self):
+        # Calculate total price for items
+        for item in self.items.all():
+            total_price += item.get_total_price()
 
-    #     tax = self.tax()
-    #     price = self.totalAmount 
-    #     if self.coupon:
-    #         price = price - (price * float(self.coupon.percent/100))
-    #     return round(tax + price,2)
+        # Calculate total price for accessories
+        for item in self.items.all():
+            for accessory in item.accessories.all():
+                total_price += accessory.get_total_price()
+
+        return total_price
+
+    
+    def total_products(self):
+        """Calculates the total number of products ordered."""
+        return self.items.aggregate(total_products=Sum('quantity'))['total_products'] or 0
+    
+    def tax(self):
+        tax = self.total_price() * (decimal.Decimal(15) / 100) if self.tax else decimal.Decimal(0)
+        return round(tax, 2)
+        
+    def price_with_tax(self):
+        tax = self.tax()
+        price = self.total_price()
+        return round(tax + price,2)
+    
+    def price_with_tax_with_coupon(self):
+        tax = self.tax()
+        price = self.total_price()
+        if self.coupon:
+            coupon_percent = decimal.Decimal(self.coupon.percent) / 100
+            price = price - (price * coupon_percent)
+        return round(tax + price, 2)
 
 
 class OrderItem(models.Model):

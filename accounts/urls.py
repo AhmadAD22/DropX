@@ -49,8 +49,9 @@ urlpatterns = [
         path('restaurant/create-account',RestaurantCreateAccountAPIView.as_view(),name='Client-data-post-request'),
         path('restaurant/login', RestaurantAuthToken.as_view()),
         path('restaurant/info-profile', RestaurantProfileAPIView.as_view(), name='restaurant-retrieve'),
-        path('restaurant/request-update-profile', PendingRestaurantRequestUpdateAPIView.as_view(), name='driver-request-update'),
-
+        path('restaurant/request-update-profile', PendingRestaurantRequestUpdateAPIView.as_view(), name='restaurant-request-update'),
+        path('restaurant/change-status', ChangeRestaurantStatus.as_view(), name='restaurant-change-status'),
+        
              
     
 

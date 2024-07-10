@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'accounts',
     'restaurant',
     'order',
+    'client',
     #Rest Framework
     'rest_framework',
     'rest_framework.authtoken',

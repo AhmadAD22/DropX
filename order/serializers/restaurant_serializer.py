@@ -1,32 +1,31 @@
 from rest_framework import serializers
 from ..models import Order, OrderItem, OrderAccessory
+from restaurant.serializers.products_serializers import ProductListSerializer
+from restaurant.models import Product
 
 
 class OrderAccessorySerializer(serializers.ModelSerializer):
+    accessory_product=serializers.CharField(source='accessory_product.name',read_only=True)
     class Meta:
         model = OrderAccessory
         fields = ('accessory_product', 'quantity', 'unitPrice', 'get_total_price')
 
+class ProductOrderSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Product
+        fields = ('id','image','name',)
+        read_only_fields = ('id',)
+        
 class OrderItemSerializer(serializers.ModelSerializer):
     accessories = OrderAccessorySerializer(many=True)
+    product=ProductOrderSerializer()
 
     class Meta:
         model = OrderItem
-        fields = ('product', 'quantity', 'unitPrice', 'discount', 'note','get_total_price', 'accessories')
+        fields = ('product', 'quantity', 'unitPrice',  'note','get_total_price', 'accessories')
 
 
-# class OrderSerializer(serializers.ModelSerializer):
-#     items = OrderItemSerializer(many=True)
-
-#     class Meta:
-#         model = Order
-#         fields = (
-#             'client', 'deiver', 'restaurantLat', 'restaurantLng', 'restaurantAddress',
-#             'destinationLat', 'destinationLng', 'destinationAddress', 'driverLat', 'driverLng',
-#             'payment', 'status', 'orderDate', 'deliveryDate',  'totalAmount', 'coupon', 'items'
-#         )
-   
          
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
@@ -34,7 +33,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
-            'id','client','payment', 'status', 'orderDate',  'totalAmount','items'
+            'id','client','payment', 'status','tax', 'orderDate', 'total_price','total_products','price_with_tax', 'price_with_tax_with_coupon','items'
         )        
 
 class OrderListSerializer(serializers.ModelSerializer):
