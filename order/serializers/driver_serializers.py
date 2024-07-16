@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Order, OrderItem, OrderAccessory
+from ..models import Order, OrderItem, OrderAccessory,Trip
 
 
 class OrderAccessorySerializer(serializers.ModelSerializer):
@@ -45,3 +45,14 @@ class DriverOrderListSerializer(serializers.ModelSerializer):
             'id','client', 'orderDate','restaurantLat', 'restaurantLng', 'restaurantAddress',
             'destinationLat', 'destinationLng', 'destinationAddress','totalAmount',
         )        
+
+
+class DriverTripListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trip
+        fields = (
+            'id', 'tripDate',
+            'sourceLat', 'sourceLng', 'sourceAddress',
+            'destinationLat', 'destinationLng', 'destinationAddress',
+            'distance', 'price', 'price_with_tax','price_with_tax_with_coupon',
+        )

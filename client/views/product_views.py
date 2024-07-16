@@ -2,12 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import FavoriteProduct
-from ..serializers.product_serializers import FavoriteProductSerializer
+from ..serializers.product_serializers import *
 from restaurant.models import Product
 from accounts.models import Client
 from rest_framework.permissions import IsAuthenticated
 from django.db import IntegrityError
-
+from order.models import OrderItem
+from django.db.models import Avg, Count,Sum
 
 class FavoriteProductListAPIView(APIView):
     permission_classes=[IsAuthenticated]
@@ -52,3 +53,52 @@ class FavoriteProductListAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ProductDetailsAPIView(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request,product_id):
+        try:
+            product=Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error":"Product does not found"},status=status.HTTP_404_NOT_FOUND)
+        product_serializer=ProductSerializer(product)
+        return Response(product_serializer.data,status=status.HTTP_200_OK)
+        
+
+
+
+class ProductSearchAPIView(APIView):
+    def get(self, request):
+        query = request.query_params.get('query', '')
+        products = Product.objects.filter(name__icontains=query)
+        serializer = ProductListSerializer(products, many=True)
+        return Response(serializer.data)
+
+class ProductFilterAPIView(APIView):
+    def get(self, request):
+        minimum_price = request.query_params.get('minimum_price')
+        maximum_price = request.query_params.get('maximum_price')
+        rating = request.query_params.get('rating')
+        category_id = request.query_params.get('category_id')
+
+        products = Product.objects.all()
+        if category_id is not None:
+            products = products.filter(category__id=category_id)
+            
+        if minimum_price is not None and maximum_price is not None:
+            products = products.filter(price__gte=minimum_price, price__lte=maximum_price)
+
+        if rating is not None:
+            products = products.annotate(avg_rating=Avg('productreview__rating')).filter(avg_rating__gte=rating)
+
+        
+
+        serializer = ProductListSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class MostOrderedProductsAPIView(APIView):
+    def get(self, request):
+        most_ordered_products = OrderItem.objects.values('product_id', 'product__name').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')[:10]
+        product_ids = [item['product_id'] for item in most_ordered_products]
+        products = Product.objects.filter(id__in=product_ids)
+        serializer = ProductListSerializer(products, many=True)
+        return Response(serializer.data)

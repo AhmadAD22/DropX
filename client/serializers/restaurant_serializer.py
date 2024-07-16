@@ -14,6 +14,18 @@ class RestaurantOpeningSerializer(serializers.ModelSerializer):
         exclude=['restaurant','created_at','updated_on',]
 
 
+class RestaurantListSerializer(serializers.ModelSerializer):
+    reviews_average = serializers.SerializerMethodField(read_only=True)
+    reviews_count = serializers.SerializerMethodField(read_only=True)
+    def get_reviews_count(self, obj):
+        return obj.restaurantreview.aggregate(count=Count('id')).get('count')
+    def get_reviews_average(self, obj):
+        average_rating = obj.restaurantreview.aggregate(avg_rating=Avg('rating')).get('avg_rating')
+        return average_rating if average_rating else 0
+    class Meta:
+        model=Restaurant
+        fields=['id','restaurantName','restaurantLogo','latitude', 'longitude', 
+             'address','reviews_count','reviews_average']
 
 
 class RestuarantDetailsSerializer(serializers.ModelSerializer):
@@ -54,3 +66,8 @@ class RestuarantDetailsSerializer(serializers.ModelSerializer):
              'address','phone','description','openings','categories','products',
              'reviews','reviews_average','reviews_count','commonquestion']
     
+    
+class RestaurantReviewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=RestaurantReview
+        exclude=['client','restaurant']

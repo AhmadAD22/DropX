@@ -1,6 +1,9 @@
 from django.urls import path
 from .views.restaurant_views import *
 from .views.driver_views import *
+from .views.cart_views import *
+from .views.client_views import *
+
 urlpatterns = [
 # Restaurany
 path('restaurant/new-orders', RestaurantNewOrderListAPIView.as_view(), name='order-list'),
@@ -20,4 +23,21 @@ path('driver/on-way-notify', OnWayNotification.as_view(), name='driver-on-way-no
 path('driver/delivery-confirm', DeliveryConfirm.as_view(), name='driver-'),
 
 path('restaurant/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
+
+path('cart/', CartAPIView.as_view(), name='cart-list'),
+path('add-product-to-cart/', AddProductToCartAPIView.as_view(), name='add-to-cart'),
+path('add-accessory-to-cart/', AddAccessoryProductToCartAPIView.as_view(), name='add-accessory-to-cart'),
+
+
+path('tripcars/', TripCarAPIView.as_view(), name='tripcar-detail'),
+path('trip-order/', ClientCreateTripAPIView.as_view(), name='tripcar-detail'),
+
+path('trips-driver/new/', DriverNewTripListAPIView.as_view(), name='driver-new-trips-list'),
+path('trips-driver/current/', DriverCurrentTripsListAPIView.as_view(), name='driver-current-trips-list'),
+path('trips-driver/previous/', DriverPreviousTripsListAPIView.as_view(), name='driver-previous-trips-list'),
+path('trips-driver/statistics/', DriverStatisticsTripsListAPIView.as_view(), name='driver-statistics-trips-list'),
+
+path('trip/<int:trip_id>/', TripDetailAPIView.as_view(), name='trip-detail'),
+
+path('driver/accept-trip', DriverAcceptTrip.as_view(), name='driver-accept-trip'),
 ]

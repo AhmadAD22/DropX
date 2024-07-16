@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'restaurant',
     'order',
     'client',
-    #Rest Framework
+    'driver',
+    #Rest framework
     'rest_framework',
     'rest_framework.authtoken',
 ]

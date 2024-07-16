@@ -196,3 +196,112 @@ class DeliveryConfirm(APIView):
             )
         return Response({'result':'The order delivered'},status=status.HTTP_200_OK)
     
+    
+
+#####Trip
+
+
+class DriverNewTripListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        trips = Trip.objects.filter(driver__isnull=True,status=Status.PENDING)
+        serializer = DriverTripListSerializer(trips, many=True)
+        return Response(serializer.data)
+
+
+class DriverCurrentTripsListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        trips = Trip.objects.filter(
+            Q(driver=request.user) &
+            (Q(status='IN_PROGRESS') | Q(status='PENDING'))
+        )
+        serializer = DriverTripListSerializer(trips, many=True)
+        return Response(serializer.data)
+
+
+class DriverPreviousTripsListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        completed_trips = Trip.objects.filter(driver=request.user, status='COMPLETED')
+        completed_trips_serializer = DriverTripListSerializer(completed_trips, many=True)
+
+        cancelled_trips = Trip.objects.filter(driver=request.user, status='CANCELLED')
+        cancelled_trips_serializer = DriverTripListSerializer(cancelled_trips, many=True)
+
+        rejected_trips = Trip.objects.filter(driver=request.user, status='REJECTED')
+        rejected_trips_serializer = DriverTripListSerializer(rejected_trips, many=True)
+
+        data = {
+            'completed_trips': completed_trips_serializer.data,
+            'cancelled_trips': cancelled_trips_serializer.data,
+            'rejected_trips': rejected_trips_serializer.data
+        }
+        return Response(data)
+
+
+class DriverStatisticsTripsListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        current_date = date.today()
+        current_month = timezone.now().month
+        current_year = timezone.now().year
+
+        today_trips = Trip.objects.filter(
+            driver=request.user,
+            status='COMPLETED',
+            createdAt__date=current_date
+        )
+
+        month_trips = Trip.objects.filter(
+            driver=request.user,
+            status='COMPLETED',
+            createdAt__month=current_month
+        )
+
+        year_trips = Trip.objects.filter(
+            driver=request.user,
+            status='COMPLETED',
+            createdAt__year=current_year
+        )
+
+        today_price_sum = today_trips.aggregate(Sum('price'))['price__sum']
+        month_price_sum = month_trips.aggregate(Sum('price'))['price__sum']
+        year_price_sum = year_trips.aggregate(Sum('price'))['price__sum']
+
+        serializer = DriverTripListSerializer(today_trips, many=True)
+
+        data = {
+            'today_trips': serializer.data,
+            'today_price_sum': today_price_sum,
+            'month_trips': DriverTripListSerializer(month_trips, many=True).data,
+            'month_price_sum': month_price_sum,
+            'year_trips': DriverTripListSerializer(year_trips, many=True).data,
+            'year_price_sum': year_price_sum
+        }
+
+        return Response(data)
+    
+    
+class DriverAcceptTrip(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self,request):
+        try:
+            trip=Trip.objects.get(pk=request.data['trip_id'])
+        except Trip.DoesNotExist:
+            return Response({'error':'Trip does not found'},status=status.HTTP_404_NOT_FOUND)
+        try:
+            driver=Driver.objects.get(pk=request.user.pk)
+        except Driver.DoesNotExist:
+            return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
+        if trip.driver is None:
+            trip.driver=driver
+            trip.save()
+            return Response({'result':'Order accepted'},status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
