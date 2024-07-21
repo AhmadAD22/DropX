@@ -51,8 +51,8 @@ class Order(models.Model):
     destinationLat=models.DecimalField(max_digits=9, decimal_places=6)
     destinationLng=models.DecimalField(max_digits=9, decimal_places=6)
     destinationAddress=models.CharField(max_length=100)
-    driverLat=models.DecimalField(max_digits=9, decimal_places=6,null=True,blank=True)
-    driverLng=models.DecimalField(max_digits=9, decimal_places=6,null=True,blank=True)
+    destinationPhone=models.CharField( max_length=15,null=True)
+    destinationName=models.CharField(max_length=50,null=True)
     payment = models.CharField(max_length=15,blank=True, null=True,choices=Payment.choices)
     status = models.CharField(max_length=20, choices=Status.choices)
     orderDate = models.DateTimeField(auto_now_add=True)
@@ -87,7 +87,8 @@ class Order(models.Model):
         return self.items.aggregate(total_products=Sum('quantity'))['total_products'] or 0
     
     def tax(self):
-        tax = self.total_price() * (decimal.Decimal(15) / 100) if self.tax else decimal.Decimal(0)
+        tax_config=OrderConfig.objects.first().tax
+        tax = self.total_price() * (decimal.Decimal(tax_config) / 100) if tax_config else decimal.Decimal(0)
         return round(tax, 2)
         
     def price_with_tax(self):
@@ -150,7 +151,12 @@ class Cart(models.Model):
         #         total_price += accessory.accessory_total_price()
 
         return total_price
-
+    def tax(self):
+        tax_config= OrderConfig.objects.first().tax 
+        tax = self.total_price() * (decimal.Decimal(tax_config) / 100) if tax_config else decimal.Decimal(0)
+        return round(tax, 2)
+    def total_price_with_tax(self):
+        return self.tax() + self.total_price()
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
@@ -165,6 +171,7 @@ class CartItem(models.Model):
         for accessory in self.accessories.all():
                 total_price += accessory.accessory_total_price()
         return total_price
+    
 
 
 class CartAccessory(models.Model):
@@ -215,8 +222,9 @@ class Trip(models.Model):
 
    
     def tax(self):
+        order_config=OrderConfig.objects.first()
         if self.price is not None:
-            tax = decimal.Decimal(self.price) * (decimal.Decimal(15) / 100)
+            tax = decimal.Decimal(self.price) * (decimal.Decimal(order_config.tax) / 100)
         else:
             tax = decimal.Decimal(0)
         return round(tax, 2)

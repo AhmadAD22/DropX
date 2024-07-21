@@ -22,11 +22,18 @@ path('driver/accept-order', DriverAcceptOrder.as_view(), name='driver-accept-ord
 path('driver/on-way-notify', OnWayNotification.as_view(), name='driver-on-way-notify'),
 path('driver/delivery-confirm', DeliveryConfirm.as_view(), name='driver-'),
 
+#Client
+path('client/current-orders', ClientCurrentOrdersListAPIView.as_view(), name='client-current-order'),
+path('client/previous-orders', ClientPreviousOrdersListAPIView.as_view(), name='client-previous-order'),
+path('client/order/<int:order_id>/', ClientOrderDetailsListAPIView.as_view(), name='client-order-details'),
+path('client/cancel-order/<int:order_id>/', ClientCancelOrderListAPIView.as_view(), name='client-cancel-order'),
+
 path('restaurant/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
 
 path('cart/', CartAPIView.as_view(), name='cart-list'),
 path('add-product-to-cart/', AddProductToCartAPIView.as_view(), name='add-to-cart'),
 path('add-accessory-to-cart/', AddAccessoryProductToCartAPIView.as_view(), name='add-accessory-to-cart'),
+path('checkout/', CheckoutView.as_view(), name='checkout'),
 
 
 path('tripcars/', TripCarAPIView.as_view(), name='tripcar-detail'),
@@ -40,4 +47,6 @@ path('trips-driver/statistics/', DriverStatisticsTripsListAPIView.as_view(), nam
 path('trip/<int:trip_id>/', TripDetailAPIView.as_view(), name='trip-detail'),
 
 path('driver/accept-trip', DriverAcceptTrip.as_view(), name='driver-accept-trip'),
-]
+path('driver/reject-trip', DriverRejectTrip.as_view(), name='driver-reject-trip'),
+path('driver/complate-trip', DriverComlateTrip.as_view(), name='driver-reject-trip'),
+] 

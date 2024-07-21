@@ -1,8 +1,10 @@
 from rest_framework.views import APIView
-from ..models import Trip,TripCar,Status
+from ..models import *
 from ..serializers.client_serializers import *
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+
 from accounts.models import Client
 
 from utils.geographic import calculate_distance
@@ -42,3 +44,47 @@ class TripDetailAPIView(APIView):
             return Response(serializer.data)
         except Trip.DoesNotExist:
             return Response({'message': 'Trip not found'}, status=404)
+        
+        
+class ClientCurrentOrdersListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        orders = Order.objects.filter(
+            Q(client=request.user) &
+            (Q(status='IN_PROGRESS') | Q(status='PENDING')) 
+                  )
+        serializer = OrderListSerializer(orders, many=True)
+        return Response(serializer.data)
+    
+class ClientPreviousOrdersListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        orders = Order.objects.filter(
+            Q(client=request.user) &
+            (Q(status=Status.COMPLETED) | Q(status=Status.CANCELLED)| Q(status=Status.REJECTED)) 
+                  )
+        serializer = OrderListSerializer(orders, many=True)
+        return Response(serializer.data)
+    
+class ClientOrderDetailsListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request,order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'erorr':'The order does not found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = ClientOrderSerializer(order)
+        return Response(serializer.data)
+    
+class ClientCancelOrderListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request,order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'erorr':'The order does not found!'},status=status.HTTP_404_NOT_FOUND)
+        order.status=Status.CANCELLED
+        order.save()
+        serializer = ClientOrderSerializer(order)
+        return Response(serializer.data)
+        

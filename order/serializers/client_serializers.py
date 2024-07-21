@@ -1,8 +1,50 @@
 from rest_framework import serializers
-from ..models import Trip,TripCar
+from ..models import *
 
 
+class OrderAccessorySerializer(serializers.ModelSerializer):
+    accessory_product=serializers.CharField(source='accessory_product.name',read_only=True)
+    class Meta:
+        model = OrderAccessory
+        fields = ('accessory_product', 'quantity', 'unitPrice', 'get_total_price')
 
+class ProductOrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ('id','image','name',)
+        read_only_fields = ('id',)
+        
+class OrderItemSerializer(serializers.ModelSerializer):
+    accessories = OrderAccessorySerializer(many=True)
+    product=ProductOrderSerializer()
+
+    class Meta:
+        model = OrderItem
+        fields = ('product', 'quantity', 'unitPrice',  'note','get_total_price', 'accessories')
+
+
+         
+class ClientOrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+    
+    class Meta:
+        model = Order
+        fields = (
+            'id','destinationName','destinationPhone','destinationAddress','destinationLng','destinationLat','deliveryDate', 'status','tax', 'orderDate', 'total_price','total_products','price_with_tax', 'price_with_tax_with_coupon','items'
+        )    
+
+
+class OrderListSerializer(serializers.ModelSerializer):
+    restaurant_name=serializers.SerializerMethodField(read_only=True)
+    def get_restaurant_name(self,obj):
+        item=OrderItem.objects.filter(order=obj).first()
+        if item:
+            return item.product.restaurant.restaurantName
+        return None
+    class Meta:
+        model=Order
+        fields=['id','destinationLng','destinationLat','destinationAddress','restaurant_name','deliveryDate','totalAmount','status']
 class TripCarSerializer(serializers.ModelSerializer):
     trip_time = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()

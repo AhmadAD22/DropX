@@ -92,6 +92,9 @@ class ClientPhoneResetVerifyView(APIView):
     
     
 class RegisterView(APIView):
+    authentication_classes = []  # Disable authentication
+    permission_classes = []  # Disable permission checks
+
     def post(self,request,*args,**kwargs):
         serialized=PendingClientSerializer(data=request.data)
           # check if user exists
@@ -155,6 +158,9 @@ class ClientCreateAccountAPIView(APIView):
 
 
 class ClientAuthToken(ObtainAuthToken):
+    authentication_classes = []  # Disable authentication
+    permission_classes = []  # Disable permission checks
+
     serializer_class = PhoneAuthTokenSerializer
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})

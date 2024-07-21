@@ -10,6 +10,9 @@ admin.site.register(CartItem)
 admin.site.register(CartAccessory)
 admin.site.register(TripCar)
 admin.site.register(Trip)
+admin.site.register(OrderConfig)
+
+
 
 
 

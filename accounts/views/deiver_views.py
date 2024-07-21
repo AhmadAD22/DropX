@@ -19,7 +19,9 @@ from django.contrib.auth.hashers import make_password
 
 
 class DriverAuthToken(ObtainAuthToken):
-    permission_classes=[IsAuthenticated]
+    authentication_classes = []  # Disable authentication
+    permission_classes = []  # Disable permission checks
+
     serializer_class = PhoneAuthTokenSerializer
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
@@ -111,6 +113,9 @@ class DriverRequestUpdateAPIView(APIView):
 
 
 class DreiverRegisterRequestView(APIView):
+    authentication_classes = []  # Disable authentication
+    permission_classes = []  # Disable permission checks
+
     def post(self,request,*args,**kwargs):
         serialized=PendingDriverSerializer(data=request.data)
           # check if user exists

@@ -34,7 +34,9 @@ class RestaurantProfileAPIView(APIView):
 
 
 class RestaurantAuthToken(ObtainAuthToken):
-    permission_classes=[]
+    authentication_classes = []  # Disable authentication
+    permission_classes = []  # Disable permission checks
+
     serializer_class = PhoneAuthTokenSerializer
     
     def post(self, request, *args, **kwargs):

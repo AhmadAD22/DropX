@@ -301,7 +301,48 @@ class DriverAcceptTrip(APIView):
             return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
         if trip.driver is None:
             trip.driver=driver
+            trip.status=Status.IN_PROGRESS
             trip.save()
             return Response({'result':'Order accepted'},status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
+        
+class DriverRejectTrip(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self,request):
+        try:
+            trip=Trip.objects.get(pk=request.data['trip_id'])
+        except Trip.DoesNotExist:
+            return Response({'error':'Trip does not found'},status=status.HTTP_404_NOT_FOUND)
+        try:
+            driver=Driver.objects.get(pk=request.user.pk)
+        except Driver.DoesNotExist:
+            return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
+        if trip.driver.phone == driver.phone:
+            trip.status=Status.REJECTED
+            trip.save()
+            return Response({'result':'Order Rejected'},status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class DriverComlateTrip(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self,request):
+        try:
+            trip=Trip.objects.get(pk=request.data['trip_id'])
+        except Trip.DoesNotExist:
+            return Response({'error':'Trip does not found'},status=status.HTTP_404_NOT_FOUND)
+        try:
+            driver=Driver.objects.get(pk=request.user.pk)
+        except Driver.DoesNotExist:
+            return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
+        if trip.driver.phone == driver.phone:
+            trip.status=Status.COMPLETED
+            trip.save()
+            return Response({'result':'Order Complated'},status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
