@@ -187,8 +187,11 @@ class CartAccessory(models.Model):
 class TripCar(models.Model):
     image=models.ImageField(upload_to='Car Trip')
     price_per_km=models.FloatField()   
-    name=models.CharField(max_length=50)
+    car_category=models.CharField(max_length=50,choices=carCategory.choices)
     average_speed=models.PositiveSmallIntegerField()
+    
+    def __str__(self) -> str:
+        return self.car_category
     
     def price(self,destance):
         return self.price_per_km*destance

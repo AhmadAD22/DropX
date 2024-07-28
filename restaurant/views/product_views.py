@@ -6,8 +6,7 @@ from ..models import Product
 from accounts.models import *
 from ..serializers.products_serializers import *
 from utils.error_handle import error_handler
-from order.models import OrderItem
-from django.db.models import Avg, Count,Sum
+
 
 
 class ProductListByCategoryView(APIView):
@@ -134,10 +133,3 @@ class AccessoryProductRetrieveUpdateDestroyAPIView(APIView):
         accessory_product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-class MostOrderedProductsAPIView(APIView):
-    def get(self, request):
-        most_ordered_products = OrderItem.objects.values('product_id', 'product__name').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')[:10]
-        product_ids = [item['product_id'] for item in most_ordered_products]
-        products = Product.objects.filter(id__in=product_ids)
-        serializer = ProductListSerializer(products, many=True)
-        return Response(serializer.data)

@@ -205,7 +205,8 @@ class DriverNewTripListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        trips = Trip.objects.filter(driver__isnull=True,status=Status.PENDING)
+        driver=Driver.objects.get(phone=request.user.phone)
+        trips = Trip.objects.filter(driver__isnull=True,status=Status.PENDING,car__car_category=driver.carCategory)
         serializer = DriverTripListSerializer(trips, many=True)
         return Response(serializer.data)
 

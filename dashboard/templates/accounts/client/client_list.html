@@ -1,0 +1,36 @@
+{% extends "../../base.html" %}
+{% block title %}  Clients {% endblock %}
+{% block clients %}active{% endblock clients %}
+{% block users %}active{% endblock users %}
+{% block content %}
+
+<div class="container text-center">
+    <h3 class="text-primary">الزبائن</h3>
+    <form class="mb-3 w-100 d-flex justify-content-center" action="{% url "client_list" %}" method="GET">
+        <div class="input-group w-25 ">
+            <input type="text" class="form-control" placeholder="Search clients" name="search" value="{{ search_query }}">
+            <button class="btn btn-dark" type="submit">بحث</button>
+        </div>
+    </form>
+    <table class="table table-striped table-dark table-hover text-white">
+        <thead>
+            <tr class="text-primary">
+                <th>الرقم</th>
+                <th>الاسم</th>
+                <th>رقم الهاتف</th>
+                <th>البريد الإلكتروني</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+            <tr>
+                <td><a class="text-light" href="{% url "client_update" client.id %}">{{ client.id }}</a></td>
+                <td><a class="text-light"  href="{% url "client_update" client.id %}">{{ client.fullName }}</a></td>
+                <td><a class="text-light"  href="{% url "client_update" client.id %}">{{ client.phone }}</a></td>
+                <td><a class="text-light"  href="{% url "client_update" client.id %}">{{ client.email }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

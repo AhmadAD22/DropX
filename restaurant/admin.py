@@ -6,5 +6,5 @@ admin.site.register(ProductReview)
 admin.site.register(CommonQuestion)
 admin.site.register(RestaurantOpening)
 admin.site.register(RestaurantReview)
-
+admin.site.register(Category)
 # Register your models here.

@@ -122,7 +122,7 @@ class NotificationsHelper:
                                     )
 
 class OrdersUpdates:
-    Driver_ON_WAY='Driver_ON_WAY'
+    Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way
     OFFER_RECEIVED='OFFER_RECEIVED' #send to client when new offer is sent
     OFFER_SELECTED='OFFER_SELECTED' #send to driver when his offer is selected    
     DRIVER_CANCEL_ORDER='DRIVER_CANCEL_ORDER' #send to client when driver cancel 

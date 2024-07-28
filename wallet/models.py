@@ -30,6 +30,7 @@ class Transaction(models.Model):
     class PaymentType(models.TextChoices):
             WALLET='WALLET','wallet'
             E_PAYMENT='E_PAYMENT','e-payment'
+            
     class Status(models.TextChoices):
         PENDING = 'PENDING'
         IN_PROGRESS = 'IN_PROGRESS'
@@ -49,6 +50,7 @@ class Transaction(models.Model):
 
     class Meta:
          ordering=['-createdAt']
+         
 class OrderTransactions(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,blank=True, null=True)
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE,blank=True, null=True)
@@ -56,11 +58,11 @@ class OrderTransactions(models.Model):
 
 
 
-class TopupRequest(models.Model):
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    orderDescription = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    confirmed=models.BooleanField(default=False)
+# class TopupRequest(models.Model):
+#     amount = models.DecimalField(max_digits=10, decimal_places=2)
+#     orderDescription = models.TextField()
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     confirmed=models.BooleanField(default=False)
 
 # class PaymentOrder(models.Model):
 #     offer=models.ForeignKey(Offer, on_delete=models.CASCADE)

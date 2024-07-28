@@ -25,7 +25,12 @@ urlpatterns = [
     path('restaurant/', include('restaurant.urls')),
     path('client/', include('client.urls')),
     path('order/', include('order.urls')),
+    path('dashboard/', include('dashboard.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns +=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+    
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT)

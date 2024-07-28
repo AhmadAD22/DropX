@@ -45,6 +45,7 @@ class OrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model=Order
         fields=['id','destinationLng','destinationLat','destinationAddress','restaurant_name','deliveryDate','totalAmount','status']
+        
 class TripCarSerializer(serializers.ModelSerializer):
     trip_time = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
@@ -52,7 +53,7 @@ class TripCarSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TripCar
-        fields = ('id', 'image','name','distance','trip_time', 'price')
+        fields = ('id', 'image','car_category','distance','trip_time', 'price')
     def get_distance(self, obj):
         return self.context.get('distance')
          

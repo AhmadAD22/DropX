@@ -110,12 +110,12 @@ class Client(User):
         verbose_name_plural = 'Client'
         
 
-    
+#For subscription configrations
 class OrderServiceSubscription(models.Model):
     DURATION_CHOICES = [
-    ("شهر", "شهر"),
-    ("نصف سنة", "نصف سنة"),
-    ("سنة", "سنة"),
+        ("30", "MONTH"),
+        ("182",  "SIX_MONTH"),
+        ("364", "YEAR"),
     ]
     duration=models.CharField(max_length=8,choices=DURATION_CHOICES)
     price=models.DecimalField(max_digits=8, decimal_places=2)
@@ -123,12 +123,12 @@ class OrderServiceSubscription(models.Model):
     def __str__(self) -> str:
         return "توصيل طلبات لمدة"+ self.duration
     
-    
+#For subscription configrations    
 class MembersServiceSubscription(models.Model):
     DURATION_CHOICES = [
-    ("شهر", "شهر"),
-    ("نصف سنة", "نصف سنة"),
-    ("سنة", "سنة"),
+        ("30", "MONTH"),
+        ("182",  "SIX_MONTH"),
+        ("364", "YEAR"),
     ]
     duration=models.CharField(max_length=8,choices=DURATION_CHOICES)
     price=models.DecimalField(max_digits=8, decimal_places=2)
@@ -191,6 +191,45 @@ class Driver(User):
     class Meta:
         verbose_name = 'Driver'
         verbose_name_plural = 'Driver'
+
+class DriverSubscription(models.Model):
+    DURATION_CHOICES = [
+        ("30", "MONTH"),
+        ("182",  "SIX_MONTH"),
+        ("364", "YEAR"),
+    ]
+    driver=models.OneToOneField(Driver,null=True, on_delete=models.CASCADE,related_name="restaurantSubscription")
+    start_date = models.DateTimeField(auto_now_add=True,null=True)
+    end_date=models.DateTimeField(null=True,blank=True, auto_now=False, auto_now_add=False)
+    duration = models.CharField(max_length=8, choices=DURATION_CHOICES)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def calculate_end_date(self):
+        duration_days = int(self.duration)
+        end_date = self.start_date + timedelta(days=duration_days)
+        return end_date
+
+    def calculate_remaining_time(self):
+        current_date = timezone.now()
+        end_date = self.end_date
+        remaining_time = end_date - current_date
+
+        # Extract individual components from the remaining_time timedelta
+        days = remaining_time.days
+        hours, remainder = divmod(remaining_time.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Calculate the remaining months based on 30 days per month
+        remaining_months = days // 30
+        remaining_days = days % 30
+
+        # Create the formatted string representation of the remaining time
+        remaining_time_str = f"{remaining_months} months, {remaining_days} days, {hours} hours"
+
+        return remaining_time_str
+
+    def __str__(self) -> str:
+        return "إشتراك لمدة"+ self.duration
     
 
 

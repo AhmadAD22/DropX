@@ -1,0 +1,218 @@
+
+:root {
+    --primary-color: #FF8300; /* Set the primary color to #FF8300 */
+}
+
+.form-control-file::-webkit-file-upload-button {
+    background-color: var(--primary-color); /* Set the desired background color */
+    color: #fff; /* Set the desired text color */
+    padding: 0.5rem 1rem; /* Adjust the padding as needed */
+    border: none;
+    border-radius: 0.25rem; /* Adjust the border radius as needed */
+    cursor: pointer;
+  }
+  
+  .form-control-file::-moz-file-upload-button {
+    background-color: #007bff; /* Set the desired background color */
+    color: #fff; /* Set the desired text color */
+    padding: 0.5rem 1rem; /* Adjust the padding as needed */
+    border: none;
+    border-radius: 0.25rem; /* Adjust the border radius as needed */
+    cursor: pointer;
+  }
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #575252;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  #preloader.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+/* Override Bootstrap's primary color */
+.btn-primary,
+.navbar-dark .navbar-nav .nav-link,
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+    border-color: var(--primary-color);
+    color: var(--primary-color) !important;
+}
+.content {
+    background-color: #3a3e44;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.content h5 {
+    color: var(--primary-color);
+}
+.chart {
+    background-color: #3a3e44;
+    padding: 20px;
+    border-radius: 10px;
+}
+.btn-warr
+ 
+.form-control {
+    background-color: transparent;
+    border: 1px solid #f6a821 !important;
+    border-radius: 10PX !important;
+    color: #2c2c2c;
+    line-height: normal;
+    height: auto;
+    /* font-size: 0.8571em; */
+    -webkit-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    -moz-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    -o-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    -ms-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    -webkit-box-shadow: none;
+    box-shadow: none !important;
+  }
+
+  .form-control:focus {
+    border: 1px solid #c494ff;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    outline: 0 !important;
+    color: #2c2c2c;
+  }
+  
+  body {
+    background-color: #2C2F33;
+    direction: rtl;
+    color: #FFF;
+}
+.sidebar {
+    background-color: #23272A;
+    height: 100%;
+    width: 250px; /* Adjust this value based on your sidebar width */
+    top: 0;
+    right: 0;
+    position: fixed;
+    z-index: 1030;
+    transition: right 0.3s;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+/* Scrollbar styles for WebKit browsers */
+.sidebar::-webkit-scrollbar {
+    width: 12px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: #23272A;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #000; /* Black color for the thumb */
+    border-radius: 10px;
+    border: 3px solid #23272A;
+}
+/* Scrollbar styles for Firefox */
+.sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: #FF8300 #23272A;
+}
+@media (max-width: 768px) {
+    .sidebar {
+        right: -250px; /* Hide sidebar by default on small screens */
+    }
+    .sidebar.show {
+        right: 0; /* Show sidebar */
+    }
+}
+.sidebar .nav-link {
+    color: #FFF;
+}
+.sidebar .nav-link.active {
+    background-color: #FF8300;
+    color: #FFF;
+    border-radius: 10px;
+}
+.main-content {
+    padding: 20px;
+    margin-right: 250px; /* Adjust this value based on your sidebar width */
+}
+.card {
+    background-color: #2C2F33;
+    border: none;
+    border-radius: 10px;
+    color: #FFF;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.card-header {
+    background-color: #2C2F33;
+    border-bottom: none;
+}
+.card-body {
+    padding: 20px;
+}
+.chart-container {
+    position: relative;
+    height: 40vh;
+    width: 80vw;
+}
+#sidebarToggleBtn {
+    display: none;
+}
+@media (max-width: 768px) {
+    #sidebarToggleBtn {
+        display: block;
+    }
+    .main-content {
+        margin-right: 0;
+    }
+}
+.white-icon {
+    color: white;
+}
+
+.form-check-input:checked {
+    background-color: #FF8300 !important; /* Change this to your desired color */
+    border-color: #dee0e2 !important; /* Change this to your desired color */
+}
+
+
+.btn-danger.delete-btn {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .btn-danger.delete-btn:hover {
+    transform: scale(1.2) rotate(90deg);
+  }
+  
+  .btn-danger.delete-btn:active {
+    transform: scale(0.8);
+  }

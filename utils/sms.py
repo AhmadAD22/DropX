@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+
 class SmsSender:
     def send_otp(self,phone, otp):
         # don't send sms in debug mode

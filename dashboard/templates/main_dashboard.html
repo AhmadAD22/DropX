@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+{% block main_dashboard %}active{% endblock main_dashboard %}
+{% block content %}
+<div class="row text-center m-0">
+    <div class="col-md-4 mb-4 ">
+        <div class="content animate__animated animate__fadeInUp">
+            <h5>جميع المندوبين</h5>
+            <p>{{driver_count}}</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="content animate__animated animate__fadeInUp">
+            <h5>جميع المطاعم</h5>
+            <p>{{restaurant_count}}</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="content animate__animated animate__fadeInUp">
+            <h5>جميع المستخدمين</h5>
+            <p>{{client_count}}</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="content animate__animated animate__fadeInUp">
+            <h5>جميع التصنيفات</h5>
+            <p>{{category_count}}</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="content animate__animated animate__fadeInUp">
+            <h5>المدفوعات</h5>
+            <p>20</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="content animate__animated animate__fadeInUp">
+            <h5>الأرباح</h5>
+            <p>20</p>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="chart animate__animated animate__fadeInUp">
+            <canvas id="usersChart"></canvas>
+            <h5 class="text-center mt-3">المستخدمون</h5>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="chart animate__animated animate__fadeInUp">
+            <canvas id="ordersChart"></canvas>
+            <h5 class="text-center mt-3">الطلبات</h5>
+        </div>
+    </div>
+</div>
+</main>
+</div>
+</div>
+
+{% endblock content %}
