@@ -111,12 +111,17 @@
                 <div class="form-group">
                     <label for="id_avatar">الصورة</label>
                     {{ form.avatar }}
-                    
-                    <img id="uploaded-image" class="img-thumbnail mt-2" src="{{ form.avatar.value.url }}" width="200" alt="Uploaded Image" style="display: block;">
+                
+                    {% if form.avatar.value %}
+                        <img id="uploaded-image" class="img-thumbnail mt-2" src="{{ form.avatar.value.url }}" width="200" alt="Uploaded Image" style="display: block;">
+                    {% else %}
+                        <p class="text-muted">No image uploaded</p>
+                    {% endif %}
+                
                     {% if form.avatar.errors %}
                         <div class="text-danger">
                             {% for error in form.avatar.errors %}
-                            <span>{{ error }}</span><br>
+                                <span>{{ error }}</span><br>
                             {% endfor %}
                         </div>
                     {% endif %}
