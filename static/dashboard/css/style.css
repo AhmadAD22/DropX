@@ -71,6 +71,12 @@
     border-color: var(--primary-color);
     color: var(--primary-color) !important;
 }
+
+.btn-danger:hover {
+    background-color: darken(var(--primary-color), 10%);
+    border-color: rgb(211, 86, 86);
+    color: rgb(211, 86, 86) !important;
+}
 .content {
     background-color: #3a3e44;
     padding: 20px;
@@ -142,7 +148,7 @@
 }
 /* Scrollbar styles for Firefox */
 .sidebar {
-    scrollbar-width: thin;
+    scrollbar-width: auto;
     scrollbar-color: #FF8300 #23272A;
 }
 @media (max-width: 768px) {
@@ -155,15 +161,48 @@
 }
 .sidebar .nav-link {
     color: #FFF;
+    margin-bottom: 5px;
+}
+.sidebar .nav-link:hover {
+    background-color: #FF8300;
+    color: #FFF;
+    border-radius: 10px;
 }
 .sidebar .nav-link.active {
     background-color: #FF8300;
     color: #FFF;
     border-radius: 10px;
 }
+
+.nav .nav-link {
+    color: #FFF;
+    margin-left: 5px;
+}
+.nav .nav-link:hover {
+    background-color: #FF8300;
+    color: #FFF;
+    border-radius: 10px;
+}
+.nav .nav-link.active {
+    background-color: #FF8300;
+    color: #FFF;
+    border-radius: 10px;
+}
+
 .main-content {
+    position: relative;
     padding: 20px;
     margin-right: 250px; /* Adjust this value based on your sidebar width */
+}
+
+#sidebarToggleBtn {
+    position: absolute;
+    left:5px;
+    margin-right: 1rem;
+}
+
+.breadcrumb {
+    margin-left: 3rem; /* Adjust this value to add spacing between the button and breadcrumb */
 }
 .card {
     background-color: #2C2F33;
@@ -176,9 +215,11 @@
     background-color: #2C2F33;
     border-bottom: none;
 }
+
 .card-body {
     padding: 20px;
 }
+
 .chart-container {
     position: relative;
     height: 40vh;
@@ -216,3 +257,55 @@
   .btn-danger.delete-btn:active {
     transform: scale(0.8);
   }
+
+  .circular-avatar {
+    width: 150px; /* Set the width and height to the desired size for the circular image */
+    height: 150px;
+    border-radius: 50%; /* Make the image circular using border-radius */
+    object-fit: cover; /* Ensure the image covers the circular area */
+}
+.circular-avatar-big {
+    width: 300px; /* Set the width and height to the desired size for the circular image */
+    height: 300px;
+    border-radius: 50%; /* Make the image circular using border-radius */
+    object-fit: cover; /* Ensure the image covers the circular area */
+}
+.img-small {
+    width: 200px; /* Set the width and height to the desired size for the circular image */
+    height: 200px;
+    object-fit: cover; /* Ensure the image covers the circular area */
+}
+.img-small :hover{
+    width: 150px; /* Set the width and height to the desired size for the circular image */
+    height: 150px;
+    transform: scale(0.5);
+}
+.image-zoom-container {
+    overflow: hidden;
+}
+
+.image-zoom-container img {
+    transition: transform 0.3s;
+}
+
+.image-zoom-container:hover img {
+    transform: scale(0.9);
+}
+.edit-avatar-btn {
+    position: absolute;
+    bottom: -20px; /* Adjust the positioning of the button as needed */
+    left: 50%;
+    transform: translateX(-50%);
+}
+strong{
+    color: rgb(146, 156, 156);
+}
+
+.gry-title{
+    color: rgb(146, 156, 156);
+}
+hr{
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 5px;
+}
+

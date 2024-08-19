@@ -1,0 +1,56 @@
+
+{% extends "../../../base.html" %}
+{% load static %}
+{% block title %}Financial{% endblock %}
+
+{% block driver %}active{% endblock driver %}
+{% block users %}active{% endblock users %}
+{% block users_collapse %}show{% endblock users_collapse %}
+
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "driver_list" %}">drivers</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "driver_update" driver.id %}">{{ driver.fullName }}</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Financial</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<div class="container mt-5">
+    {% include "accounts/driver/nav.html" with financial="active" %}
+    <div class="row text-center mt-5">
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">الرصيد الحالي</h5>
+                    <p class="card-text">{{wallet.balance}} ر.س</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">الطلبات المكتملة</h5>
+                    <p class="card-text">{{completed_order_number}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">الطلبات المرفوضة</h5>
+                    <p class="card-text">{{rejected_order_number}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">الطلبات الملغية</h5>
+                    <p class="card-text">{{canceled_order_number}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -5,6 +5,11 @@ from rest_framework import fields
 from utils.validators import phoneValidator
 
 
+class SubscriptionConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubscriptionConfig
+        exclude=['id','type']
+        
 class PhoneVitrifactionSerializer(serializers.Serializer):
     phone=fields.CharField(validators=[phoneValidator])
     code=fields.CharField()

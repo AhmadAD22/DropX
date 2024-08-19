@@ -6,11 +6,12 @@ class SmsSender:
         # don't send sms in debug mode
         if settings.DEBUG:
             return True
+        print(phone)
         url = 'https://api.oursms.com/api-a/msgs'
-        username =''
-        token =''
-        src = 'DROPX'
-        dests = phone  
+        username ='DropX'
+        token ='veSsCIICbzcNexMCEDe-'
+        src = 'oursms'
+        dests = str(phone)  
         body = otp
         priority = '0'
         delay = '0'
@@ -37,4 +38,5 @@ class SmsSender:
         if response.status_code == 200:
             return True
         else:
+            print(response.text)
             return False

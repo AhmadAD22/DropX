@@ -8,19 +8,38 @@
 
 {% block clients %}active{% endblock clients %}
 {% block users %}active{% endblock users %}
-
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "client_list" %}">Clients</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "client_update" client_id %}">{{form.fullName.value }}</a></li>
+{% endblock breadcrumbt %}
+{% block users_collapse %}show{% endblock users_collapse %}
 
 {% block content %}
 
 <div class="d-flex justify-content-center">
-    <div class="card w-50">
+    <div class="card">
         <div class="card-body">
-            <h3 class="card-title text-center text-primary">{{ form.fullName.value }} {{client_id}}</h3>
+            <h3 class="card-title text-center text-primary">{{ form.fullName.value }}</h3>
             <button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deleteformModal{{client_id}}">
                 <i class="bi bi-x-octagon white-icon"></i>
               </button>
             <form method="post" enctype="multipart/form-data" class="text-right">
                 {% csrf_token %}
+                <div class="form-row text-center">
+                    <div class="col-md-12 mb-3">
+                        <div class="position-relative">
+                            {% if form.avatar.value %}
+                            <img src="{{ form.avatar.value.url }}" id="avatar" class="circular-avatar img-thumbnail">
+                            {% else %}
+                            <img src="default-avatar.png" id="avatar" class="circular-avatar img-thumbnail"> <!-- Use a default image -->
+                            {% endif %}
+                            <label for="id_avatar" class="btn btn-primary btn-sm edit-avatar-btn mt-2"><i class="bi bi-pencil-fill"></i></label>
+                        </div>
+                        <input type="file" name="avatar" id="id_avatar" style="display:none;">
+                    </div>
+                   
+                </div>
 
                 <div class="form-group">
                     <label for="id_fullName">الإسم</label>
@@ -108,32 +127,14 @@
                     {% endif %}
                 </div>
 
-                <div class="form-group">
-                    <label for="id_avatar">الصورة</label>
-                    {{ form.avatar }}
-                
-                    {% if form.avatar.value %}
-                        <img id="uploaded-image" class="img-thumbnail mt-2" src="{{ form.avatar.value.url }}" width="200" alt="Uploaded Image" style="display: block;">
-                    {% else %}
-                        <p class="text-muted">No image uploaded</p>
-                    {% endif %}
-                
-                    {% if form.avatar.errors %}
-                        <div class="text-danger">
-                            {% for error in form.avatar.errors %}
-                                <span>{{ error }}</span><br>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
                 <button type="submit" class="btn btn-primary mt-3">حفظ</button>
                 
             </form>
             
         </div>
     </div>
-</div><!-- Delete form Modal -->
+</div>
+<!-- Delete form Modal -->
 <div class="modal fade" id="deleteformModal{{client_id}}" tabindex="-1" role="dialog" aria-labelledby="deleteformModalLabel{{client_id}}" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -157,7 +158,23 @@
     </div>
   </div>
   <!-- End Delete form Modal -->
-<script src="{% static "dashboard/js/image_update.js" %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle avatar upload
+        document.getElementById('id_avatar').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var image = document.querySelector('.circular-avatar');
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+</script>
 
 
 {% endblock %}

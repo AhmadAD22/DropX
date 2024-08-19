@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+{% block config_collapse %}show{% endblock config_collapse %}
+{% block config %}active{% endblock config %}
+{% block trip_config %}active{% endblock trip_config %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-primary" href="{% url "trip_car_list" %}">Car Categories</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <div class='text-center text-primary'>
+        <div>
+         <h3>تصنيف السيارات </h3>
+         <a class="btn btn-primary m-2" href="{% url "add_trip_car" %}"> <i class="bi bi-plus-circle white-icon"></i></a>
+        </div> 
+    </div>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-center text-white">
+        
+        <tr class="">
+            <th>تصنيف السيارة</th>
+            <th>  < 3 كم</th>
+            <th>  3 - 6 كم</th>
+            <th> > 6 كم</th>
+            <th>السرعة</th>
+            <th>الصورة</th>
+        </tr>
+        {% for trip_car in trip_cars %}
+        <tr class="clickable-row"  onclick="window.location.href='{% url "update_trip_car" trip_car.id %}'">
+            <td>{{ trip_car.car_category }}</td>
+            <td>{{ trip_car.less_than_three_km }} ر.س</td>
+            <td>{{ trip_car.between_three_and_six_km }} ر.س</td>
+            <td>{{ trip_car.more_than_six_km }} ر.س</td>
+            <td>{{ trip_car.average_speed }}</td>
+            <td><img src="{{ trip_car.image.url }}" alt="Car Image" style="max-width: 100px; max-height: 100px;"></td>
+        </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No subscriptions available.</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+    
+{% endblock %}

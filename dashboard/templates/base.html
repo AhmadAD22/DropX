@@ -23,22 +23,22 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav id="sidebarMenu" class="col-md-2 d-md-block navbar-expand-lg sidebar">
+            <nav id="sidebarMenu" class="col-md-3 d-md-block navbar-expand-lg sidebar">
                 <div class="sidebar-sticky">
                     <h4 class="text-center text-primary m-3">DropX</h4>
                     <ul class="nav flex-column text-right">
                         <li class="nav-item">
-                            <a class="nav-link collapsed" data-toggle="collapse" href="#collapse-myaccount" aria-expanded="false" aria-controls="collapse-myaccount">
+                            <a id="collapse-myaccount-toggle" class="nav-link collapsed" data-toggle="collapse" href="#collapse-myaccount" aria-expanded="true" aria-controls="collapse-myaccount">
                                 <img class="rounded-circle shadow-4-strong" width="25" height="25" alt="avatar2" src="https://mdbcdn.b-cdn.net/img/new/avatars/1.webp" />
-
+                                {{request.user}}
                             </a>
                             <div class="collapse" id="collapse-myaccount">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">مطاعم</a>
+                                        <a class="nav-link" href="#">الملف الشخصي</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">تسجيل خروج</a>
+                                        <a class="nav-link" href="{% url "dashboard-logout" %}">تسجيل خروج</a>
                                     </li>
                                 </ul>
                             </div>
@@ -47,27 +47,33 @@
                             <a class="nav-link {% block main_dashboard %}{% endblock main_dashboard %}" href="{% url "main_dashboard" %}">لوحة التحكم</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link collapsed" data-toggle="collapse" href="#collapse-subscription" aria-expanded="false" aria-controls="collapse-subscription">طلبات الإشتراك</a>
-                            <div class="collapse" id="collapse-subscription">
+                            <a id="collapse-subscription-toggle" class="nav-link {% block requests %}{% endblock requests %}" data-toggle="collapse" href="#collapse-subscription" aria-expanded="true" aria-controls="collapse-subscription">طلبات الإشتراك</a>
+                            <div class="collapse {% block request_collapse %}{% endblock request_collapse %}" id="collapse-subscription">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">مطاعم</a>
+                                        <a class="nav-link {% block restaurant_requests %}{% endblock restaurant_requests %}" href="{% url "restaurant_requests_list" %}">مطاعم</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">مندوبين</a>
+                                        <a class="nav-link {% block driver_requests %}{% endblock driver_requests %}" href="{% url "driver_requests_list" %}">مندوبين</a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link collapsed {% block users %}{% endblock users %}" data-toggle="collapse" href="#collapse-users" aria-expanded="false" aria-controls="collapse-users"> المستخدمين</a>
-                            <div class="collapse" id="collapse-users">
+                            <div class="collapse {% block users_collapse %}{% endblock users_collapse %}" id="collapse-users">
                                 <ul class="nav flex-column">
+                                    {% if request.user.is_superuser %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">مطاعم</a>
+                                        <a class="nav-link {% block admins %}{% endblock admins %}" href="{% url "admin_list" %}">مدير</a>
+                                    </li>
+                                    {% endif %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% block restaurant %}{% endblock restaurant %}" href="{% url "restaurant_list" %}">مطاعم</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">مندوبين</a>
+                                        <a class="nav-link {% block driver %}{% endblock driver %}" href="{% url "driver_list" %}">مندوبين</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link {% block clients %}{% endblock clients %}" href="{% url "client_list" %}">الزبائن</a>
@@ -76,7 +82,27 @@
                             </div>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link collapsed  {% block config %} {% endblock config %}" data-toggle="collapse" href="#collapse-config" aria-expanded="false" aria-controls="collapse-config">الإعدادات</a>
+                            <div class="collapse {% block config_collapse %}{% endblock config_collapse %}" id="collapse-config">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link {% block order_config %}{% endblock order_config %} " href="{% url "order_config_view" %}">الطلبات</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {% block subscription_config %}{% endblock subscription_config %}" href="{% url "subscription_config_list" %}">الإشتراك</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {% block trip_config %}{% endblock trip_config %}" href="{% url "trip_car_list" %}"> السيارات</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        
+                        <li class="nav-item">
                             <a class="nav-link {% block categories %}{% endblock categories %}" href="{% url "category_list" %}">التصنيفات</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% block coupon %}{% endblock coupon %}" href="{% url "coupon_list" %}">كوبونات الخصم</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">العروض</a>
@@ -84,9 +110,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#">الأسئلة والأجوبة</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">كوبونات الخصم</a>
-                        </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link" href="#">عمولة التطبيق</a>
                         </li>
@@ -96,8 +120,8 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#">الدعم</a>
                         </li>
-                        
-                        
+                       
+                       
                     </ul>
                 </div>
                 
@@ -106,7 +130,13 @@
             <!-- Main Content -->
             <main role="main" class="col-md-9 ml-sm-auto col-lg-9 main-content">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                    <h1 class="h3">لوحة التحكم</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb bg-transparent">
+                          {% block breadcrumbt %}
+                          
+                          {% endblock breadcrumbt %}
+                        </ol>
+                    </nav>
                     <button class="btn btn-sm" id="sidebarToggleBtn" type="button" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"><i class="bi bi-menu-button-wide white-icon"></i></span> 
                     </button>
@@ -135,6 +165,8 @@
                 $('#sidebarMenu').toggleClass('show');
             });
         });
+
+        
     </script>
 </body>
 </html>

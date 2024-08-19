@@ -14,7 +14,17 @@ from utils.error_handle import error_handler
 from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
 
-
+class DriverSubscriptionConfigList(APIView):
+    def get(self, request):
+        members = SubscriptionConfig.objects.filter(type="MEMBERS")
+        orders = SubscriptionConfig.objects.filter(type="ORDERS")
+        members_serializer = SubscriptionConfigSerializer(members, many=True)
+        orders_serializer = SubscriptionConfigSerializer(orders, many=True)
+        data={
+            'members':members_serializer.data,
+            'orders':orders_serializer.data,
+        }
+        return Response(data,status=status.HTTP_200_OK)
 
 
 
@@ -173,13 +183,30 @@ class DriverCreateAccountAPIView(APIView):
                 drivingLicense=pending_driver.drivingLicense,
                 carFront=pending_driver.carFront,
                 carBack=pending_driver.carBack,
-                memberSubscription=pending_driver.memberSubscription,
-                orderSubscription=pending_driver.orderSubscription,
                 fcm_token=request.data['fcm_token']
             )
-            print(pending_driver.orderSubscription)
             new_driver.password = make_password(request.data['password'])
             new_driver.save()
+            if pending_driver.memberSubscription:
+                try:
+                    subscription_config=SubscriptionConfig.objects.get(type="MEMBERS",duration=pending_driver.memberSubscription)
+                except SubscriptionConfig.DoesNotExist:
+                    new_driver.delete()
+                    return Response({'error': 'The selectd duration is not defined'})
+                member_subscription=DriverTripSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
+                member_subscription.end_date=member_subscription.calculate_end_date()
+                member_subscription.save()
+                
+            if pending_driver.orderSubscription:
+                try:
+                    subscription_config=SubscriptionConfig.objects.get(type="ORDERS",duration=pending_driver.orderSubscription)
+                except SubscriptionConfig.DoesNotExist:
+                    new_driver.delete()
+                    return Response({'error': 'The selectd duration is not defined'})
+                order_subscription=DriverOrderSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
+                order_subscription.end_date=order_subscription.calculate_end_date()
+                order_subscription.save()
+            
             pending_driver.delete()
             otp.delete()
 

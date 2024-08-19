@@ -68,6 +68,9 @@ class User(AbstractUser):
     fcm_token = models.CharField(max_length=255, blank=True, null=True)
     deleted=models.BooleanField(default=False)
     enabled=models.BooleanField(default=False)
+    
+    class Meta:
+        permissions = (("subscriptions", "Subscriptions Control"), ("Driver", "Subscriptions Control"),)
 
     
     USERNAME_FIELD = 'phone'
@@ -110,32 +113,28 @@ class Client(User):
         verbose_name_plural = 'Client'
         
 
-#For subscription configrations
-class OrderServiceSubscription(models.Model):
-    DURATION_CHOICES = [
-        ("30", "MONTH"),
-        ("182",  "SIX_MONTH"),
-        ("364", "YEAR"),
-    ]
-    duration=models.CharField(max_length=8,choices=DURATION_CHOICES)
-    price=models.DecimalField(max_digits=8, decimal_places=2)
-    
-    def __str__(self) -> str:
-        return "توصيل طلبات لمدة"+ self.duration
+
     
 #For subscription configrations    
-class MembersServiceSubscription(models.Model):
+class SubscriptionConfig(models.Model):
     DURATION_CHOICES = [
         ("30", "MONTH"),
         ("182",  "SIX_MONTH"),
         ("364", "YEAR"),
     ]
+    
+    TYPE_CHOICES=[
+        ("MEMBERS", "Members"),
+        ("ORDERS",  "Orders"),
+        ("RESTAURANT", "Restaurant"),
+    ]
+    type=models.CharField(max_length=10,choices=TYPE_CHOICES)
     duration=models.CharField(max_length=8,choices=DURATION_CHOICES)
     price=models.DecimalField(max_digits=8, decimal_places=2)
     
 
     def __str__(self) -> str:
-        return "توصيل أفرد لمدة"+ self.duration
+        return  self.type
     
 class Car(models.Model):
     carType=models.CharField(max_length=50)
@@ -165,8 +164,6 @@ class Driver(User):
     drivingLicense=models.ImageField(upload_to='proven/')
     carFront=models.ImageField(upload_to='cars/')
     carBack=models.ImageField(upload_to='cars/')
-    memberSubscription=models.ForeignKey(MembersServiceSubscription,null=True,on_delete=models.SET_NULL, related_name='MembersServiceSubscription')
-    orderSubscription=models.ForeignKey(OrderServiceSubscription,null=True,on_delete=models.SET_NULL, related_name='OrderServiceSubscription')
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -192,17 +189,20 @@ class Driver(User):
         verbose_name = 'Driver'
         verbose_name_plural = 'Driver'
 
-class DriverSubscription(models.Model):
+
+class DriverOrderSubscription(models.Model):
     DURATION_CHOICES = [
         ("30", "MONTH"),
         ("182",  "SIX_MONTH"),
         ("364", "YEAR"),
     ]
-    driver=models.OneToOneField(Driver,null=True, on_delete=models.CASCADE,related_name="restaurantSubscription")
+    driver=models.OneToOneField(Driver,null=True, on_delete=models.CASCADE,related_name="driverOrderSubscription")
     start_date = models.DateTimeField(auto_now_add=True,null=True)
     end_date=models.DateTimeField(null=True,blank=True, auto_now=False, auto_now_add=False)
     duration = models.CharField(max_length=8, choices=DURATION_CHOICES)
     price = models.DecimalField(max_digits=8, decimal_places=2)
+    paid=models.BooleanField(default=False)
+    enabled=models.BooleanField(default=True)
 
     def calculate_end_date(self):
         duration_days = int(self.duration)
@@ -231,7 +231,89 @@ class DriverSubscription(models.Model):
     def __str__(self) -> str:
         return "إشتراك لمدة"+ self.duration
     
+    def calculate_remaining_time_arabic(self):
+        current_date = timezone.now()
+        end_date = self.end_date
+        remaining_time = end_date - current_date
 
+        # Extract individual components from the remaining_time timedelta
+        days = remaining_time.days
+        hours, remainder = divmod(remaining_time.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Calculate the remaining months based on 30 days per month
+        remaining_months = days // 30
+        remaining_days = days % 30
+        if remaining_months <0:
+            remaining_months=0
+
+        # Create the formatted string representation of the remaining time
+        remaining_time_str = f"{remaining_months} شهر, {remaining_days} أيام, {hours} ساعات"
+
+        return remaining_time_str
+
+ 
+class DriverTripSubscription(models.Model):
+    DURATION_CHOICES = [
+        ("30", "MONTH"),
+        ("182",  "SIX_MONTH"),
+        ("364", "YEAR"),
+    ]
+    driver=models.OneToOneField(Driver,null=True, on_delete=models.CASCADE,related_name="driverTripSubscription")
+    start_date = models.DateTimeField(auto_now_add=True,null=True)
+    end_date=models.DateTimeField(null=True,blank=True, auto_now=False, auto_now_add=False)
+    duration = models.CharField(max_length=8, choices=DURATION_CHOICES)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    paid=models.BooleanField(default=False)
+    enabled=models.BooleanField(default=True)
+
+    def calculate_end_date(self):
+        duration_days = int(self.duration)
+        end_date = self.start_date + timedelta(days=duration_days)
+        return end_date
+
+    def calculate_remaining_time(self):
+        current_date = timezone.now()
+        end_date = self.end_date
+        remaining_time = end_date - current_date
+
+        # Extract individual components from the remaining_time timedelta
+        days = remaining_time.days
+        hours, remainder = divmod(remaining_time.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Calculate the remaining months based on 30 days per month
+        remaining_months = days // 30
+        remaining_days = days % 30
+
+        # Create the formatted string representation of the remaining time
+        remaining_time_str = f"{remaining_months} months, {remaining_days} days, {hours} hours"
+
+        return remaining_time_str
+    
+    def calculate_remaining_time_arabic(self):
+        current_date = timezone.now()
+        end_date = self.end_date
+        remaining_time = end_date - current_date
+
+        # Extract individual components from the remaining_time timedelta
+        days = remaining_time.days
+        hours, remainder = divmod(remaining_time.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Calculate the remaining months based on 30 days per month
+        remaining_months = days // 30
+        remaining_days = days % 30
+        if remaining_months <0:
+            remaining_months=0
+
+        # Create the formatted string representation of the remaining time
+        remaining_time_str = f"{remaining_months} شهر, {remaining_days} أيام, {hours} ساعات"
+
+        return remaining_time_str
+
+    def __str__(self) -> str:
+        return "إشتراك لمدة"+ self.duration
 
 class Restaurant(User):
     bankName=models.CharField(max_length=50)
@@ -276,14 +358,45 @@ class RestaurantSubscription(models.Model):
     restaurant=models.OneToOneField(Restaurant,null=True, on_delete=models.CASCADE,related_name="restaurantSubscription")
     start_date = models.DateTimeField(auto_now_add=True,null=True)
     end_date=models.DateTimeField(null=True,blank=True, auto_now=False, auto_now_add=False)
-    duration = models.CharField(max_length=8, choices=DURATION_CHOICES)
+    duration = models.CharField(max_length=8)
     price = models.DecimalField(max_digits=8, decimal_places=2)
+    paid=models.BooleanField(default=False)
+    enabled=models.BooleanField(default=True)
 
+    def renew_subscription(self, new_duration):
+        current_end_date = self.end_date
+        new_end_date = current_end_date + timedelta(days=int(new_duration))
+
+        self.duration = new_duration
+        self.end_date = new_end_date
+        self.save()
+        
     def calculate_end_date(self):
         duration_days = int(self.duration)
         end_date = self.start_date + timedelta(days=duration_days)
         return end_date
+    
+        
+    def calculate_remaining_time_arabic(self):
+        current_date = timezone.now()
+        end_date = self.end_date
+        remaining_time = end_date - current_date
 
+        # Extract individual components from the remaining_time timedelta
+        days = remaining_time.days
+        hours, remainder = divmod(remaining_time.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Calculate the remaining months based on 30 days per month
+        remaining_months = days // 30
+        remaining_days = days % 30
+        if remaining_months <0:
+            remaining_months=0
+
+        # Create the formatted string representation of the remaining time
+        remaining_time_str = f"{remaining_months} شهر, {remaining_days} أيام, {hours} ساعات"
+
+        return remaining_time_str
     def calculate_remaining_time(self):
         current_date = timezone.now()
         end_date = self.end_date
@@ -371,6 +484,11 @@ class PendingClient(models.Model):
         return self.phone + ' ' + self.otp.code
 
 class PendingRestaurant(models.Model):
+    DURATION_CHOICES = [
+        ("30", "MONTH"),
+        ("182",  "SIX_MONTH"),
+        ("364", "YEAR"),
+    ]
     gender=models.CharField(max_length=1,choices=Genders.choices)
     idNumber=models.CharField(max_length=10)
     birth=models.DateField()
@@ -387,7 +505,7 @@ class PendingRestaurant(models.Model):
     restaurantLogo=models.ImageField(upload_to='proven/')
     commercialRecordNumber=models.PositiveIntegerField()
     commercialRecordImage=models.ImageField(upload_to='proven/')
-    restaurantSubscription=models.CharField(max_length=10)
+    restaurantSubscription=models.CharField(max_length=10,choices=DURATION_CHOICES)
     otp = models.OneToOneField(OTPRequest,null=True,blank=True, on_delete=models.CASCADE, related_name='pendingRestaurant')
     oldPhone= models.CharField(max_length=10,null=True,default=None)
 
@@ -396,10 +514,10 @@ class PendingRestaurant(models.Model):
 
 class PendingDriver(models.Model):
         DURATION_CHOICES = [
-        ("M", "شهر"),
-        ("6M", "نصف سنة"),
-        ("Y", "سنة"),
-        ]
+        ("30", "MONTH"),
+        ("182",  "SIX_MONTH"),
+        ("364", "YEAR"),
+    ]
         avatar=models.ImageField(upload_to=upload_avatar_path)
         gender=models.CharField(max_length=1,choices=Genders.choices)
         idNumber=models.CharField(max_length=10)
@@ -423,8 +541,8 @@ class PendingDriver(models.Model):
         drivingLicense=models.ImageField(upload_to='proven/')
         carFront=models.ImageField(upload_to='cars/')
         carBack=models.ImageField(upload_to='cars/')
-        memberSubscription=models.ForeignKey(MembersServiceSubscription,null=True,on_delete=models.SET_NULL)
-        orderSubscription=models.ForeignKey(OrderServiceSubscription,null=True,on_delete=models.SET_NULL)
+        memberSubscription=models.CharField(max_length=50,choices=DURATION_CHOICES,null=True,blank=True)
+        orderSubscription=models.CharField(max_length=50,choices=DURATION_CHOICES,null=True,blank=True)
         otp = models.OneToOneField(OTPRequest,null=True, on_delete=models.CASCADE, related_name='pendingDriver')
         oldPhone= models.CharField(max_length=10,null=True,default=None)
         

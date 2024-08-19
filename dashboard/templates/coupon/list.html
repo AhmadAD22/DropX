@@ -1,0 +1,76 @@
+{% extends "../base.html" %}
+
+{% block title %}Coupon List{% endblock %}
+{% block coupon %}active{% endblock coupon %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-primary" href="{% url "coupon_list" %}">Coupons</a></li>
+   
+{% endblock breadcrumbt %}
+{% block content %}
+<div class="container mt-5">
+    <div class='text-center text-primary'>
+        <div>
+         <h1>الكوبونات</h1>
+         <a class="btn btn-primary m-2" href="{% url "add_coupon" %}"> <i class="bi bi-plus-circle white-icon"></i></a>
+         <hr>
+        </div>
+         
+        
+    </div>
+    <form class="mb-3 w-100 d-flex justify-content-center" action="{% url "coupon_list" %}" method="GET">
+        <div class="input-group w-50 ">
+            <input type="text" class="form-control" placeholder="Search restaurants" name="search" value="{{ search_query }}">
+            <button class="btn btn-dark" type="submit">بحث</button>
+        </div>
+    </form>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-center text-white">
+        <thead>
+            <tr>
+                <th>الكود</th>
+                <th>النسبة</th>
+                <th>تاريخ الإنتهاء</th>
+                <th>النوع</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for coupon in coupons %}
+            {% if coupon.is_expired %}
+            <tr class="clickable-row text-danger"  onclick="window.location.href='{% url "update_coupon" coupon.id  %}'">
+            {% else %}   
+            <tr class="clickable-row"  onclick="window.location.href='{% url "update_coupon" coupon.id  %}'">
+            {% endif %}
+                
+                <td>{{ coupon.code }}</td>
+                <td>{{ coupon.percent }}%</td>
+                <td>{{ coupon.expireAt|date:"SHORT_DATE_FORMAT" }}</td>
+                <td>{{ coupon.type }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No coupons available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Pagination links -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if coupons.has_previous %}
+                <a class="btn btn-primary" href="?page=1">&laquo; first</a>
+                <a class="btn btn-primary" href="?page={{ coupons.previous_page_number }}">previous</a>
+            {% endif %}
+    
+            <div class="current m-2">
+                صفحة {{ coupons.number }} من {{ num_pages }}.
+            </div>
+    
+            {% if coupons.has_next %}
+                <a class="btn btn-primary" href="?page={{ coupons.next_page_number }}">next</a>
+                <a class="btn btn-primary"  href="?page={{ num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

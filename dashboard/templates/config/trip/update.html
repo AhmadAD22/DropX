@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %} تعديل سيارة للرحلة {% endblock %}
+{% block trip_cars %} 
+active
+{% endblock %}
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}"> Dashboard</a></li>
+<li class="breadcrumb-item "><a a class="text-light" href="{% url "trip_car_list" %}"> Car Categories</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Update</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="card ">
+      <div class="card-body ">
+        <h3 class="card-title text-center text-primary"> تعديل تصنيف سيارة </h3>
+        <button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deleteformModal{{trip_car.id}}">
+            <i class="bi bi-x-octagon white-icon"></i>
+        </button>
+  
+        <form method="post" enctype="multipart/form-data" class="text-right">
+          {% csrf_token %}
+          <div class="form-group ">
+            <label for="id_car_category">فئة السيارة</label>
+            {{ form.car_category }}
+            {% if form.car_category.errors %}
+              <div class="text-danger">
+                {% for error in form.car_category.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="form-group  ">
+            <label  for="id_image">الصورة</label>
+            {{ form.image }}
+            {% if form.image.errors %}
+              <div class="text-danger">
+                {% for error in form.image.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if form.image.value %}
+            <img id="uploaded-image" src="{{form.image.value.url}}" alt="الصورة المرفوعة" width="100" style="display: block;">
+            {% endif %}
+          </div>
+          
+          
+  
+          <div class="form-group ">
+            <label for="id_less_than_three_km">أقل من ثلاثة كيلومترات</label>
+            {{ form.less_than_three_km }}
+            {% if form.less_than_three_km.errors %}
+              <div class="text-danger">
+                {% for error in form.less_than_three_km.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group ">
+            <label for="id_between_three_and_six_km">بين ثلاثة وستة كيلومترات</label>
+            {{ form.between_three_and_six_km }}
+            {% if form.between_three_and_six_km.errors %}
+              <div class="text-danger">
+                {% for error in form.between_three_and_six_km.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group ">
+            <label for="id_more_than_six_km">أكثر من ستة كيلومترات</label>
+            {{ form.more_than_six_km }}
+            {% if form.more_than_six_km.errors %}
+              <div class="text-danger">
+                {% for error in form.more_than_six_km.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+  
+          
+  
+          <div class="form-group ">
+            <label for="id_average_speed">السرعة المتوسطة</label>
+            {{ form.average_speed }}
+            {% if form.average_speed.errors %}
+              <div class="text-danger">
+                {% for error in form.average_speed.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary text-light mt-3">تعديل</button>
+        </form>
+      </div>
+    </div>
+</div>
+
+
+<!-- Delete form Modal -->
+<div class="modal fade" id="deleteformModal{{trip_car.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteformModalLabel{{trip_car.id}}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="deleteformModalLabel{{trip_car.id}}">حذف تصنيف</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                <p>هل أنت متأكد من حذف {{form.car_category.value}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                <form action="{% url 'delete_trip_car' trip_car.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Delete form Modal -->
+
+<script>
+    const fileInput = document.getElementById("id_image");
+    
+    fileInput.addEventListener("change", function() {
+        const fileName = this.files[0].name;
+        const uploadedImage = document.getElementById("uploaded-image");
+        uploadedImage.src = URL.createObjectURL(this.files[0]);
+        uploadedImage.style.display = "block";
+    });
+</script>
+{% endblock %}

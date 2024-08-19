@@ -1,0 +1,168 @@
+{% extends "../../base.html" %}
+{% load static %}
+{% block title %}تفاصيل السائق{% endblock %}
+
+{% block driver_requests %}active{% endblock driver_requests %}
+{% block requests %}active{% endblock requests %}
+{% block request_collapse %}show{% endblock request_collapse %}
+
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a a class="text-light" href="{% url 'main_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item "><a class="text-light" href="{% url "driver_requests_list" %}">Drivers Requests</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">{{ driver.fullName }}</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center text-white">
+            <h4 class="text-primary">الحساب</h4>
+        </div>
+        
+        <hr>
+        <div class="card-body text-center">
+            <div class="row text-center">
+                <div class="col-md-12 image-zoom-container">
+                    {% if driver.avatar %}
+                    <img src="{{ driver.avatar.url }}" class="circular-avatar img-thumbnail mb-3" alt="صورة السائق">
+                    {% else %}
+                    <img src="{% static "dashboard/images/defult.jpg" %}" class="circular-avatar img-thumbnail mb-3" alt="صورة السائق">
+                    {% endif %}
+                    <p>{{ driver.fullName }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6" dir="rtl">
+                    
+                    <p><strong>الهاتف:</strong> {{ driver.phone }}</p>
+                    <p><strong>البريد الإلكتروني:</strong> {{ driver.email }}</p>
+                    <p><strong>تاريخ الميلاد:</strong> {{ driver.birth }}</p>
+                    
+                    
+                </div>
+                <div class="col-md-6">
+                    <p><strong>الجنس:</strong> {{ driver.get_gender_display }}</p>
+                    <p><strong>الجنسية:</strong> {{ driver.nationality }}</p>
+                    <p><strong>العنوان:</strong> {{ driver.address }}</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">البنك</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong>اسم البنك:</strong> {{ driver.bankName }}</p>
+                            
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p dir="rtl"><strong>IBAN:</strong> {{ driver.iban }}</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">الإشتراك</h4>
+                    <hr>
+                    {% if driver.driverOrderSubscription  %}
+                    <h6 class="gry-title">توصيل طلبات</h6>
+                    <hr class="w-50">
+                    <div class="row">
+                        
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong> المدة(يوم):</strong> {{driver.driverOrderSubscription.duration}}</p>
+                            
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p dir="rtl"><strong>السعر:</strong> {{ driver.driverOrderSubscription.price }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if driver.driverTripSubscription  %}
+                    <h6 class="gry-title">توصيل أفراد</h6>
+                    <hr class="w-50">
+                    <div class="row">
+                        
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong> المدة(يوم):</strong> {{driver.driverTripSubscription.duration}}</p>
+                            
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p dir="rtl"><strong>السعر:</strong> {{ driver.driverTripSubscription.price }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">السيارة</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong>اسم الشركة:</strong> {{ driver.companyName }}</p>
+                            <p><strong>اسم السيارة:</strong> {{ driver.carName }}</p>
+                            <p><strong>فئة السيارة:</strong> {{ driver.get_carCategory_display }}</p>
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong>لون السيارة:</strong> {{ driver.carColor }}</p>
+                            <p><strong>نوع السيارة:</strong> {{ driver.car.carType   }}</p>
+                            <p><strong>موديل السيارة:</strong> {{ driver.carModel }}</p>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">المستندات المثبتة</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-3 image-zoom-container">
+                            {% if driver.carLicense %}
+                            <a href="{{ driver.carLicense.url }}">
+                            <img src="{{ driver.carLicense.url }}" class="img-small img-thumbnail mb-3" alt="رخصة السيارة">
+                            </a>
+                            {% else %}
+                            <img src="{% static "dashboard/images/defult.jpg" %}" class="img-small img-thumbnail mb-3" alt="رخصة السيارة">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 image-zoom-container">
+                            <a href="{{driver.drivingLicense.url }}">
+                            <img src="{{ driver.drivingLicense.url }}" class="img-small img-thumbnail mb-3" alt="رخصة القيادة">
+                            </a>
+                        </div>
+                        <div class="col-md-3 image-zoom-container">
+                            <a href="{{driver.carFront.url }}">
+                            <img src="{{ driver.carFront.url }}" class="img-small img-thumbnail mb-3" alt="صورة أمامية للسيارة">
+                            </a>
+                        </div>
+                        <div class="col-md-3 image-zoom-container">
+                            <a href="{{driver.carBack.url }}">
+                            <img src="{{ driver.carBack.url }}" class="img img-small img-thumbnail mb-3" alt="صورة خلفية للسيارة">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{% url "driver_accept_request" driver.id %}" class="btn btn-primary">قبول</a>
+                    <a href="{% url "driver_reject_request" driver.id %}" class="btn btn-danger">رفض</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

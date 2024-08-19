@@ -1,0 +1,142 @@
+{% extends "../base.html" %}
+
+{% block title %}{{ form.code.value }}{% endblock %}
+{% block coupon %}active{% endblock coupon %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "coupon_list" %}">Coupons</a></li>
+    <li class="breadcrumb-item "><a a class="text-primary" href=""> {{ form.code.value }}</a></li>
+   
+{% endblock breadcrumbt %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center text-primary">تعديل</h4>
+                    <button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deletecouponModal{{ coupon.id }}">
+                        <i class="bi bi-x-octagon white-icon"></i>
+                      </button>
+                    <form method="post" class="text-right" id="couponForm">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <label for="id_code">الكود:</label>
+                            {{ form.code }}
+                            {% for error in form.code.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_percent">النسبة المئوية:</label>
+                            {{ form.percent }}
+                            {% for error in form.percent.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_expireAt">تاريخ الانتهاء:</label>
+                            {{ form.expireAt }}
+                            {% for error in form.expireAt.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_times">عدد المرات:</label>
+                            {{ form.times }}
+                            {% for error in form.times.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_type">النوع:</label>
+                            {{ form.type }}
+                        </div>
+                        <div class="form-group" id="restaurantField">
+                            <label for="id_restaurant">المطعم:</label>
+                            {{ form.restaurant }}
+                        </div>
+                        <div class="form-group" id="driverField">
+                            <label for="id_driver">المندوب:</label>
+                            {{ form.driver }}
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label" for="id_isActive">نشط</label>
+                            {{ form.isActive }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">تعديل</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ <!-- Delete coupon Modal -->
+ <div class="modal fade" id="deletecouponModal{{ coupon.id }}" tabindex="-1" role="dialog" aria-labelledby="deletecouponModalLabel{{ coupon.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deletecouponModalLabel{{ coupon.id }}">حذف التصنيف</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-dark">
+          <p>هل أنت متأكد من حذف:{{coupon.code}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form action="{% url 'delete_coupon' coupon.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Delete coupon Modal -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeField = document.getElementById("id_type");
+        const restaurantField = document.getElementById("restaurantField");
+        const driverField = document.getElementById("driverField");
+        driverField.style.display = 'none';
+        restaurantField.style.display = 'none';
+
+        typeField.addEventListener('change', function() {
+            if (this.value === "عام") {
+                restaurantField.style.display = 'none';
+                driverField.style.display = 'none';
+            } else if (this.value === "مطعم") {
+                restaurantField.style.display = 'block';
+                driverField.style.display = 'none';
+            } else if (this.value === "مندوب") {
+                restaurantField.style.display = 'none';
+                driverField.style.display = 'block';
+            }
+        });
+
+        // Set initial visibility based on the selected value
+        if (typeField.value === "عام") {
+            restaurantField.style.display = 'none';
+            driverField.style.display = 'none';
+        } else if (typeField.value === "مطعم") {
+            restaurantField.style.display = 'block';
+            driverField.style.display = 'none';
+        } else if (typeField.value === "مندوب") {
+            restaurantField.style.display = 'none';
+            driverField.style.display = 'block';
+        }
+    });
+</script>
+
+{% endblock %}

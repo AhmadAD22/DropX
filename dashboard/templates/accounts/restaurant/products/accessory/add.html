@@ -1,0 +1,53 @@
+{% extends "../../../../base.html" %}
+
+{% block title %}Add Accessory Product{% endblock %}
+{% block restaurant %}active{% endblock restaurant %}
+{% block users %}active{% endblock users %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "restaurant_list" %}">Restaurants</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "update_restaurant" restaurant.id %}">{{restaurant.restaurantName}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "product_list" restaurant.id %}">Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "update_product" restaurant.id product.id%}">{{product.name}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Add Accessory</a></li>
+
+{% endblock breadcrumbt %}
+
+{% block content %}
+{% include "accounts/restaurant/nav.html" with product="active" %}
+<div class="d-flex justify-content-center">
+   
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 class="card-title text-center text-primary">إضافة ملحق </h3>
+            <form method="post" enctype="multipart/form-data" class="text-right">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_name">الاسم</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_price">السعر</label>
+                    {{ form.price }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_quantity">الكمية</label>
+                    {{ form.quantity }}
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">حفظ</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // JavaScript code here
+    });
+</script>
+
+{% endblock %}

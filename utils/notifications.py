@@ -120,7 +120,59 @@ class NotificationsHelper:
                                     user=target,
                                     order=orderId,
                                     )
-
+    @classmethod
+    def sendDriverAcceptUpdate(cls,update:str,order:Order,target:User):
+          data={
+            'type':"Driver_Accept",
+            "order-id":str(order.id),
+            'update':update
+        }
+          bodyArgs=[str(order.id)]
+          msg=cls.__localizedMsg( title=update+'_TITLE',
+                                body=update+'_BODY',
+                                bodyArgs=bodyArgs,
+                                data=data,
+                                )
+          if target.fcmToken:
+            msg.token=target.fcmToken
+            cls.__sendMessage(msg)
+            Notification.objects.create(
+                                    title=update+'_TITLE',
+                                    body=update+'_BODY',
+                                    bodyArgs=bodyArgs,
+                                    localized=True,
+                                    user=target,
+                                    order=order,
+                                    )
+          
+    #send new update about order to user
+    # update is value from OrdersUpdates class
+    @classmethod
+    def sendRegistrationUpdate(cls,update:str,target:User):
+        data={
+            'type':"REGISTR_UPDATE",
+            'update':update
+        }
+        bodyArgs=[]
+        msg=cls.__localizedMsg( title=update+'_TITLE',
+                                body=update+'_BODY',
+                                bodyArgs=bodyArgs,
+                                data=data,
+                                )
+        if target.fcm_token:
+            msg.token=target.fcm_token
+            cls.__sendMessage(msg)
+            Notification.objects.create(
+                                    title=update+'_TITLE',
+                                    body=update+'_BODY',
+                                    bodyArgs=bodyArgs,
+                                    localized=True,
+                                    user=target,
+                                    )
+class RegistrationUpdate:
+    REGISTR_ACCEPTED='REGISTR_ACCEPTED'
+    REGISTR_REJECTED='REGISTR_REGECTED'
+    
 class OrdersUpdates:
     Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way
     OFFER_RECEIVED='OFFER_RECEIVED' #send to client when new offer is sent

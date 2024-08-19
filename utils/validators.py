@@ -9,3 +9,13 @@ def phoneValidator(value):
         return Response({"erorr":"INVALID_PHONE_NUMBER"},status=status.HTTP_400_BAD_REQUEST)  
 
     return value
+
+from django import forms
+from django.core.validators import RegexValidator
+
+
+class NumberField(forms.CharField):
+    default_validators = [RegexValidator(r'^[0-9]*$', 'Enter a valid number.', 'invalid')]
+    def __init__(self, *args, **kwargs):
+        super(NumberField, self).__init__(*args, **kwargs)
+        self.widget.attrs.update({'class': 'form-control'})

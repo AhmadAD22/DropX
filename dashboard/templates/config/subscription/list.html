@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+{% block config_collapse %}show{% endblock config_collapse %}
+{% block config %}active{% endblock config %}
+{% block subscription_config %}active{% endblock subscription_config %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-primary" href="{% url "subscription_config_list" %}">Subscriptions Configration</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class='text-center text-primary'>
+        <div>
+         <h3>نقل الطلبات</h3>
+         <hr>
+        </div> 
+    </div>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-center text-white">
+        <thead>
+            <tr>
+                <th>المدة (يوم)</th>
+                <th>السعر</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in order_subscriptions %}
+             
+            <tr class="clickable-row"  onclick="window.location.href='{% url "update_subscription_config" subscription.id  %}'">
+                <td>{{ subscription.duration }}</td>
+                <td>{{ subscription.price }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No subscriptions available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class='text-center text-primary'>
+        <div>
+            <hr>
+         <h3>نقل الأفراد</h3>
+         <hr>
+        </div> 
+    </div>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-center text-white">
+        <thead>
+            <tr>
+                <th>المدة (يوم)</th>
+                <th>السعر</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in member_subscriptions %}
+             
+            <tr class="clickable-row"  onclick="window.location.href='{% url "update_subscription_config" subscription.id  %}'">
+                <td>{{ subscription.duration }}</td>
+                <td>{{ subscription.price }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No subscriptions available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class='text-center text-primary'>
+        <div>
+        <hr>
+         <h3>نقل الطلبات</h3>
+         <hr>
+        </div> 
+    </div>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-center text-white">
+        <thead>
+            <tr>
+                <th>المدة (يوم)</th>
+                <th>السعر</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in restaurant_subscriptions %}
+             
+            <tr class="clickable-row"  onclick="window.location.href='{% url "update_subscription_config" subscription.id  %}'">
+                <td>{{ subscription.duration }}</td>
+                <td>{{ subscription.price }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No subscriptions available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

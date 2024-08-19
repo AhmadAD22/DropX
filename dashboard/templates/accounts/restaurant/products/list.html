@@ -1,0 +1,69 @@
+{% extends "../../../base.html" %}
+{% block title %} Products {% endblock %}
+{% block restaurant %}active{% endblock restaurant %}
+{% block users %}active{% endblock users %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "restaurant_list" %}">Restaurants</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "update_restaurant" restaurant.id %}">{{restaurant.restaurantName}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "product_list" restaurant.id %}">Products</a></li>
+
+{% endblock breadcrumbt %}
+{% block users_collapse %}show{% endblock users_collapse %}
+{% block content %}
+<div class="container mt-5 text-center">
+    {% include "accounts/restaurant/nav.html" with product="active" %}
+    <h3 class="text-primary">المنتجات</h3>
+    <a class="btn btn-primary m-2" href="{% url "add_product" restaurant.id %}"> <i class="bi bi-plus-circle white-icon"></i></a>
+    <form class="mb-3 w-100 d-flex justify-content-center" action="{% url "product_list" restaurant.id %}" method="GET">
+        <div class="input-group w-50 ">
+            <input type="text" class="form-control" placeholder="Search restaurants" name="search" value="{{ search_query }}">
+            <button class="btn btn-dark" type="submit">بحث</button>
+        </div>
+    </form>
+<table class="table table-responsive-sm table-striped table-dark table-hover text-white">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>الإسم</th>
+            <th>السعر</th>
+            <th>الخصم</th>
+            <th>التصنيف</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr class="clickable-row"  onclick="window.location.href='{% url "update_product" restaurant.id product.id %}'">
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.offers }}%</td>
+                <td>{{ product.category.name }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination links -->
+<div class="pagination">
+    <span class="step-links">
+        {% if products.has_previous %}
+            <a class="btn btn-primary" href="?page=1">&laquo; الأول</a>
+            <a class="btn btn-primary" href="?page={{ products.previous_page_number }}">السابق</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ products.number }} of {{ products.paginator.num_pages }}.
+        </span>
+
+        {% if products.has_next %}
+            <a class="btn btn-primary" href="?page={{ products.next_page_number }}">التالي</a>
+            <a class="btn btn-primary" href="?page={{ products.paginator.num_pages }}">الأخير &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+</div>
+
+
+
+{% endblock %}

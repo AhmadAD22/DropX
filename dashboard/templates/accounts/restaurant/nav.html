@@ -1,0 +1,6 @@
+<nav class="nav">
+    <a class="nav-link {{account}}" href="{% url "update_restaurant" restaurant.id %}">الحساب</a>
+    <a class="nav-link {{subscription}}" href="{% url "restaurant_subscription" restaurant.id %}">الإشتراك</a>
+    <a class="nav-link {{financial}}" href="{% url "restaurant_financial_overview" restaurant.id %}">قوائم مالية</a>
+    <a class="nav-link {{product}} " href="{% url "product_list" restaurant.id  %}">المنتجات</a>
+  </nav>

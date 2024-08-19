@@ -1,0 +1,43 @@
+{% extends "../../base.html" %}
+{% block title %} Restaurants {% endblock %}
+{% block restaurant %}active{% endblock restaurant %}
+{% block users %}active{% endblock users %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "restaurant_list" %}">Restaurants</a></li>
+{% endblock breadcrumbt %}
+{% block users_collapse %}show{% endblock users_collapse %}
+{% block content %}
+
+<div class="container text-center">
+    <h3 class="text-primary">المطاعم</h3>
+    <form class="mb-3 w-100 d-flex justify-content-center" action="{% url "restaurant_list" %}" method="GET">
+        <div class="input-group w-50 ">
+            <input type="text" class="form-control" placeholder="Search restaurants" name="search" value="{{ search_query }}">
+            <button class="btn btn-dark" type="submit">بحث</button>
+        </div>
+    </form>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-white">
+        <thead>
+            <tr class="text-primary">
+                <th>#</th>
+                <th>اسم المطعم</th>
+                <th>رقم الهاتف</th>
+                <th>البريد</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for restaurant in restaurants %}
+            
+            <tr class="clickable-row"  onclick="window.location.href='{% url "update_restaurant" restaurant.id %}'">
+                <td><a class="text-light" href="{% url "update_restaurant" restaurant.id %}">{{ restaurant.id }}</a></td>
+                <td><a class="text-light"  href="{% url "update_restaurant" restaurant.id %}">{{ restaurant.restaurantName }}</a></td>
+                <td><a class="text-light"  href="{% url "update_restaurant" restaurant.id %}">{{ restaurant.phone }}</a></td>
+                <td><a class="text-light"  href="{% url "update_restaurant" restaurant.id %}">{{ restaurant.email }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}

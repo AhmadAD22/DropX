@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'client',
     'driver',
     'dashboard',
+    'wallet',
     #Rest framework
     'rest_framework',
     'rest_framework.authtoken',

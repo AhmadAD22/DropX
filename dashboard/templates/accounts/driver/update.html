@@ -1,0 +1,296 @@
+{% extends '../../base.html' %}
+{% load static %}
+{% block title %} Update Driver: {{ form.fullName.value }} {% endblock %}
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a class="text-light" href="{% url "driver_list" %}">Drivers</a></li>
+<li class="breadcrumb-item"><a class="text-primary" href="{% url "driver_update" driver.id %}">{{  form.fullName.value  }}</a></li>
+
+{% endblock breadcrumbt %}
+{% block users_collapse %}show{% endblock users_collapse %}
+
+{% block driver %}active{% endblock driver %}
+{% block users %}active{% endblock users %}
+{% block content %}
+<div class="container mt-5">
+    {% include "accounts/driver/nav.html" with account="active" %}
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 class="card-title text-center text-primary">{{ form.fullName.value }}</h3>
+            <button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deleteformModal{{driver.id}}">
+                <i class="bi bi-x-octagon white-icon"></i>
+              </button>
+            <form method="post" action='' enctype="multipart/form-data" class="form needs-validation text-light" novalidate>
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <p>{{ field|capfirst }}: {{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- Personal Information -->
+                <div class="text-center">
+                    <hr>
+                    <h4>المعلومات الشخصية</h4>
+                    <hr>
+                </div>
+                <div class="form-row text-center">
+                    <div class="col-md-12 mb-3">
+                        <div class="position-relative">
+                            {% if form.avatar.value %}
+                            <img src="{{ form.avatar.value.url }}" id="avatar" class="circular-avatar img-thumbnail">
+                            {% else %}
+                            <img src="default-avatar.png" id="avatar" class="circular-avatar img-thumbnail">
+                            {% endif %}
+                            <label for="id_avatar" class="btn btn-primary btn-sm edit-avatar-btn mt-2"><i class="bi bi-pencil-fill"></i></label>
+                        </div>
+                        <input type="file" name="avatar" id="id_avatar" style="display:none;">
+                    </div>
+                </div>
+                <div class="form-row text-center">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <div>رقم الهاتف</div>
+                            {{ form.phone }}
+                        </div>
+                        <div class="form-group">
+                            <div>الإيميل</div>
+                            {{ form.email }}
+                        </div>
+                        <div class="form-group">
+                            <div>الجنسية</div>
+                            {{ form.nationality }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <div>الإسم الكامل</div>
+                            {{ form.fullName }}
+                        </div>
+                        <div class="form-group">
+                            <div>تاريخ الميلاد</div>
+                            {{ form.birth }}
+                        </div>
+                        <div class="form-group">
+                            <div>الجنس</div>
+                            {{ form.gender }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bank Information -->
+                <div class="text-center">
+                    <hr>
+                    <h4>المعلومات البنكية</h4>
+                    <hr>
+                </div>
+                <div class="form-row text-center">
+                    <div class="col-md-6 mb-3">
+                        <div>اسم البنك</div>
+                        {{ form.bankName }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div>IBAN</div>
+                        {{ form.iban }}
+                    </div>
+                </div>
+
+                <!-- Car Information -->
+                <div class="text-center">
+                    <hr>
+                    <h4>معلومات السيارة</h4>
+                    <hr>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <div>اسم الشركة</div>
+                            {{ form.companyName }}
+                        </div>
+                        <div class="form-group">
+                            <div>نوع السيارة</div>
+                            {{ form.car }}
+                        </div>
+                        <div class="form-group">
+                            <div>اسم السيارة</div>
+                            {{ form.carName }}
+                        </div>
+                       
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <div>فئة السيارة</div>
+                            {{ form.carCategory }}
+                        </div>
+                        <div class="form-group">
+                            <div>لون السيارة</div>
+                            {{ form.carColor }}
+                        </div>
+                        <div class="form-group">
+                            <div>موديل السيارة</div>
+                            {{ form.carModel }}
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <div>رخصة السيارة</div>
+                            {% if form.carLicense.value %}
+                            <div class="position-relative">
+                                <img src="{{ form.carLicense.value.url }}" class="img-small img-thumbnail carLicense-img" height="50px">
+                                <label for="id_carLicense" class="btn btn-primary btn-sm edit-avatar-btn mt-2"><i class="bi bi-pencil-fill"></i></label>
+                            </div>
+                            {% endif %}
+                            <input type="file" name="carLicense" id="id_carLicense" style="display:none;">
+                        </div>
+
+                        
+                            
+                            <div class="form-group">
+                                <div>رخصة القيادة</div>
+                                {% if form.drivingLicense.value %}
+                                <div class="position-relative">
+                                    <img src="{{ form.drivingLicense.value.url }}" class="img-small img-thumbnail drivingLicense-img" height="50px">
+                                    <label for="id_drivingLicense" class="btn btn-primary btn-sm edit-avatar-btn mt-2"><i class="bi bi-pencil-fill"></i></label>
+                                </div>
+                                {% endif %}
+                                <input type="file" name="drivingLicense" id="id_drivingLicense" style="display:none;">
+                            </div>
+                        
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        
+                        <div class="form-group">
+                            <div>صورة السيارة من الأمام</div>
+                            <div class="position-relative">
+                                {% if form.carFront.value %}
+                                <img src="{{ form.carFront.value.url }}" id="carFront" class="img-small carFront-img  img-thumbnail">
+                                {% else %}
+                                <img src="default-avatar.png" id="carFront" class="carFront-img img-thumbnail">
+                                {% endif %}
+                                <label for="id_carFront" class="btn btn-primary btn-sm edit-avatar-btn mt-2"><i class="bi bi-pencil-fill"></i></label>
+                            </div>
+                            <input type="file" name="carFront" id="id_carFront" style="display:none;">
+                        </div>
+                        <div class="form-group">
+                            <div>صورة السيارة من الخلف</div>
+                            {% if form.carBack.value %}
+                            <div class="position-relative">
+                                <img src="{{ form.carBack.value.url }}" class="img-small img-thumbnail carBack-img" height="50px">
+                                <label for="id_carBack" class="btn btn-primary btn-sm edit-avatar-btn mt-2"><i class="bi bi-pencil-fill"></i></label>
+                            </div>
+                            {% endif %}
+                            <input type="file" name="carBack" id="id_carBack" style="display:none;">
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">حفظ</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete form Modal -->
+<div class="modal fade" id="deleteformModal{{driver.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteformModalLabel{{driver.id}}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteformModalLabel{{driver.id}}">حذف الزبون</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-dark">
+          <p> هل أنت متأكد من حذف {{form.fullName.value}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+          <form action="{% url 'driver_delete' driver.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">حذف</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Delete form Modal -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle avatar upload
+        document.getElementById('id_avatar').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var image = document.querySelector('.circular-avatar');
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle carFront upload
+        document.getElementById('id_carFront').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var image = document.querySelector('.carFront-img');
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        document.getElementById('id_carBack').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var image = document.querySelector('.carBack-img');
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+         // Handle carLicense upload
+         document.getElementById('id_carLicense').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var image = document.querySelector('.carLicense-img');
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    
+        // Handle drivingLicense upload
+        document.getElementById('id_drivingLicense').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var image = document.querySelector('.drivingLicense-img');
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+    // Handle carBack upload
+    
+</script>
+{% endblock %}

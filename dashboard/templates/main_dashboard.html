@@ -2,6 +2,10 @@
 
 {% block title %} Dashboard {% endblock %}
 {% block main_dashboard %}active{% endblock main_dashboard %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-primary" href="{% url "main_dashboard" %}">Dashboard</a></li>
+   
+{% endblock breadcrumbt %}
 {% block content %}
 <div class="row text-center m-0">
     <div class="col-md-4 mb-4 ">

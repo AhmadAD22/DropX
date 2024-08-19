@@ -13,6 +13,12 @@ from utils.error_handle import error_handler
 from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
 
+class RestaurantSubscriptionConfigList(APIView):
+    def get(self, request):
+        subscription_configs = SubscriptionConfig.objects.filter(type="RESTAURANT")
+        serializer = SubscriptionConfigSerializer(subscription_configs, many=True)
+        return Response(serializer.data)
+
 class RestaurantProfileAPIView(APIView):
     permission_classes=[IsAuthenticated]
 
@@ -51,7 +57,7 @@ class RestaurantAuthToken(ObtainAuthToken):
             restaurant = Restaurant.objects.get(phone=user.phone)
 
         except User.DoesNotExist:
-            return Response({'error': 'not a restaurant account'})
+            return Response({'error': 'not a restaurant account'},status=status.HTTP_404_NOT_FOUND)
         
         if check_password(password, user.password):
             if restaurant.phone == user.phone:
@@ -83,9 +89,9 @@ class RestaurantRegisterRequestView(APIView):
             return Response({'error': 'MANY_OTP_REQUESTS'}, status=status.HTTP_409_CONFLICT)
         if serialized.is_valid():
             otp=OTPRequest.objects.create(phone=request.data['phone'],type=OTPRequest.Types.REGISTER)
-            serialized.save(otp=otp) 
             sms = SmsSender()
             if sms.send_otp(request.data['phone'].replace('0', '966', 1), f" Your OTP for registration is: {otp}"):
+                serialized.save(otp=otp)
                 return Response({"result":"Wait to recive OTP"}, status=status.HTTP_201_CREATED)
             else:
                 return Response({'error': 'Failed to send OTP", "SMS_SEND_FAILED'}, status=status.HTTP_502_BAD_GATEWAY)
@@ -106,7 +112,7 @@ class RestaurantCreateAccountAPIView(APIView):
             pendingRestaurant = otp.pendingRestaurant   
             
             if User.objects.filter(Q(phone=pendingRestaurant.phone) | Q(email=pendingRestaurant.email)).exists():
-                return Response({'error': 'IDENTIFIER_EXISTS'})
+                return Response({'error': 'IDENTIFIER_EXISTS'},status=status.HTTP_409_CONFLICT)
 
             newRestaurant = Restaurant.objects.create(
                 fullName=pendingRestaurant.fullName,
@@ -129,7 +135,11 @@ class RestaurantCreateAccountAPIView(APIView):
             )
             newRestaurant.password = make_password(request.data['password'])
             newRestaurant.save()
-            restaurantSubscription=RestaurantSubscription.objects.create(restaurant=newRestaurant,price=1,duration=pendingRestaurant.restaurantSubscription)
+            try:
+                subscription_config=SubscriptionConfig.objects.get(type="RESTAURANT",duration=pendingRestaurant.restaurantSubscription)
+            except SubscriptionConfig.DoesNotExist:
+                return Response({'error': 'The selectd duration is not defined'})
+            restaurantSubscription=RestaurantSubscription.objects.create(restaurant=newRestaurant,price=subscription_config.price,duration=pendingRestaurant.restaurantSubscription)
             restaurantSubscription.end_date=restaurantSubscription.calculate_end_date()
             restaurantSubscription.save()
             pendingRestaurant.delete()
@@ -137,7 +147,7 @@ class RestaurantCreateAccountAPIView(APIView):
             
 
             return Response({"result": "Restaurant. created successfully"}, status=status.HTTP_201_CREATED)
-        return Response({'error': 'The phone is not verified'})
+        return Response({'error': 'The phone is not verified'},status=status.HTTP_404_NOT_FOUND)
     
 
 class PendingRestaurantRequestUpdateAPIView(APIView):
@@ -187,5 +197,25 @@ class ChangeRestaurantStatus(APIView):
             restaurant.restaurantStatus=True
             restaurant.save()
             return Response({"status":restaurant.restaurantStatus},status=status.HTTP_200_OK)
+        
+class RenewSubscriptionAPIView(APIView):
+    def post(self, request):
+        new_duration = request.data.get('new_duration')
+
+        try:
+            restaurant_subscription = RestaurantSubscription.objects.get(restaurant__phone=request.user.phone)
+            current_end_date = restaurant_subscription.end_date
+            new_end_date = current_end_date + timedelta(days=int(new_duration))
+
+            restaurant_subscription.duration = new_duration
+            restaurant_subscription.end_date = new_end_date
+            restaurant_subscription.save()
+
+            return Response({'message': 'Subscription renewed successfully'})
+        except RestaurantSubscription.DoesNotExist:
+            return Response({'error': 'Restaurant subscription not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+
 
       

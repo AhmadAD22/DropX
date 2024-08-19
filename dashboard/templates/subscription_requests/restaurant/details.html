@@ -1,0 +1,131 @@
+{% extends "../../base.html" %}
+{% load static %}
+{% block title %}تفاصيل المطعم{% endblock %}
+
+{% block restaurant_requests %}active{% endblock restaurant_requests %}
+{% block requests %}active{% endblock requests %}
+{% block request_collapse %}show{% endblock request_collapse %}
+
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a a class="text-light" href="{% url 'main_dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item "><a class="text-light" href="{% url "restaurant_requests_list" %}">Restaurant Requests</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">{{ restaurant.restaurantName }}</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center text-white">
+            <h4 class="text-primary">الحساب</h4>
+        </div>
+        
+        <hr>
+        <div class="card-body text-center">
+            <div class="row text-center">
+                <div class="col-md-12 image-zoom-container">
+                    {% if restaurant.restaurantLogo %}
+                    <img src="{{ restaurant.restaurantLogo.url }}" class="circular-avatar img-thumbnail mb-3" alt="صورة المطعم">
+                    {% else %}
+                    <img src="{% static "dashboard/images/default.jpg" %}" class="circular-avatar img-thumbnail mb-3" alt="صورة المطعم">
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>{{ restaurant.fullName }}</p>
+                
+                <div class="row">
+                <div class="col-md-6" dir="rtl">
+                    <p><strong>رقم الهاتف:</strong> {{ restaurant.phone }}</p>
+                    <p><strong>البريد الإلكتروني:</strong> {{ restaurant.email }}</p>
+                    <p><strong>تاريخ الميلاد:</strong> {{ restaurant.birth }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>الجنس:</strong> {{ restaurant.get_gender_display }}</p>
+                    <p><strong>الجنسية:</strong> {{ restaurant.nationality }}</p>
+                    <p><strong>العنوان:</strong> {{ restaurant.address }}</p>
+                </div>
+                </div>
+            </div>
+            </div>
+            
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">المطعم</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong>اسم المطعم:</strong> {{ restaurant.restaurantName }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>رقم السجل التجاري:</strong> {{ restaurant.commercialRecordNumber }}</p>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12" dir="rtl">
+                            <p><div><strong>الوصف</strong></div> {{ restaurant.description }}</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">البنك</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong>اسم البنك:</strong> {{ restaurant.bankName }}</p>
+                            
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p dir="rtl"><strong>IBAN:</strong> {{ restaurant.iban }}</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">الوثائق المطلوبة</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6 image-zoom-container">
+                            {% if restaurant.commercialRecordImage %}
+                            <a href="{{ restaurant.commercialRecordImage.url }}">
+                                <img src="{{ restaurant.commercialRecordImage.url }}" class="img-small img-thumbnail mb-3" alt="صورة السجل التجاري">
+                            </a>
+                            {% else %}
+                            <img src="{% static "dashboard/images/default.jpg" %}" class="img-small img-thumbnail mb-3" alt="صورة السجل التجاري">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 image-zoom-container">
+                            {% if restaurant.restaurantLogo %}
+                            <a href="{{ restaurant.restaurantLogo.url }}">
+                                <img src="{{ restaurant.restaurantLogo.url }}" class="img-small img-thumbnail mb-3" alt="صورة المطعم">
+                            </a>
+                            {% else %}
+                            <img src="{% static "dashboard/images/default.jpg" %}" class="img-small img-thumbnail mb-3" alt="صورة المطعم">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{% url "restaurant_accept_request" restaurant.id %}" class="btn btn-primary">قبول</a>
+                    <a href="{% url "restaurant_reject_request" restaurant.id %}" class="btn btn-danger">رفض</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

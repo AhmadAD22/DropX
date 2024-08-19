@@ -1,0 +1,108 @@
+{% extends "../../base.html" %}
+{% load static %}
+{% block title %}تفاصيل السائق{% endblock %}
+
+{% block driver %}active{% endblock driver %}
+{% block users %}active{% endblock users %}
+{% block users_collapse %}show{% endblock users_collapse %}
+
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "driver_list" %}">Drivers</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url  "driver_details" driver.id %}">{{ driver.fullName }}</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Subscriptions</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<div class="container mt-5">
+    {% include "accounts/driver/nav.html" with subscription="active" %}
+    <div class="card">
+       <div class="card-header text-center text-white">
+            <h4 class="text-primary">الإشتراكات</h4>
+        </div>
+        
+        <hr>
+        <div class="card-body text-center">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">توصيل طلبات</h4>
+                    <hr>
+                    {% if order_subscriptions %}
+                    {% for subscription in order_subscriptions %}
+                    <div class="row">
+                        
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong> المدة(يوم):</strong> {{subscription.duration}}</p>
+                            <p><strong>تاريخ النهاية</strong> {{subscription.end_date |date:"SHORT_DATE_FORMAT"}}</p>
+                            <p><strong>الدفع:</strong> {% if subscription.paid  %} تم الدفع {% else %} لم يتم الدفع {% endif %}</p>
+                            
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p dir="rtl"><strong>السعر:</strong> {{ subscription.price }}</p>
+                            <p dir="rtl"><strong>المتبقي:</strong> {{ subscription.calculate_remaining_time_arabic }}</p>
+                            <p><strong>الحالة:</strong> {% if subscription.enabled == True %}<b class="text-primary"> مفعل </b>{% else %}<b class="text-danger"> معطل </b> {% endif %}</p>
+                        </div>
+                        
+                    </div>
+                    <hr class="w-50">
+                    <div class="row">
+                        <div class="col-md-12" dir="rtl">
+                            {% if driver.driverOrderSubscription.enabled == True %}
+                            <a class="btn btn-danger" href="{% url "driver_order_subscription_disable" driver.id %}">تعطيل</a>
+                            {% else %}
+                            <a class="btn btn-primary" href="{% url "driver_order_subscription_enable" driver.id %}">تفعيل</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div>لا يوجد إشتراك</div>
+                    {% endif %}
+
+                   
+    
+                    <hr class="">
+                    <h4 class="text-primary">توصيل الأفراد</h4>
+                    {% if trip_subscriptions  %}
+                    {% for subscription in trip_subscriptions %}
+                    <div class="row">
+                        
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong> المدة(يوم):</strong> {{subscription.duration}}</p>
+                            <p><strong>تاريخ النهاية</strong> {{subscription.end_date |date:"SHORT_DATE_FORMAT"}}</p>
+                            <p><strong>الدفع:</strong> {% if subscription.paid  %} تم الدفع {% else %} لم يتم الدفع {% endif %}</p>
+                            
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p dir="rtl"><strong>السعر:</strong> {{ subscription.price }}</p>
+                            <p dir="rtl"><strong>المتبقي:</strong> {{ subscription.calculate_remaining_time_arabic }}</p>
+                            <p><strong>الحالة:</strong> {% if subscription.enabled == True %}<b class="text-primary"> مفعل </b>{% else %}<b class="text-danger"> معطل </b> {% endif %}</p>
+                        </div>
+                        
+                    </div>
+                    <hr class="w-50">
+                    <div class="row">
+                        <div class="col-md-12" dir="rtl">
+                            {% if driver.driverTripSubscription.enabled == True %}
+                            <a class="btn btn-danger" href="{% url "driver_trip_subscription_desable" driver.id %}">تعطيل</a>
+                            {% else %}
+                            <a class="btn btn-primary" href="{% url "driver_trip_subscription_enable" driver.id %}">تفعيل</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% endfor %}
+                    {% else %}
+                    <div>لا يوجد إشتراك</div>
+                    {% endif %}
+                    
+                    
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}

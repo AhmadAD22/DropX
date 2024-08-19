@@ -1,7 +1,9 @@
 from django import forms
 from accounts.models import Client
+from utils.validators import NumberField
 
 class ClientForm(forms.ModelForm):
+    phone=NumberField()
     class Meta:
         model = Client
         fields = ['id','avatar','fullName', 'email', 'phone', 'latitude', 'longitude', 'address', 'enabled']

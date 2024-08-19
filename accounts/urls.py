@@ -34,6 +34,7 @@ urlpatterns = [
         path('user/phone-reset-verify', ResetPhoneVerifyView.as_view(), name='client-update'),
         
         #Driver
+        path('driver/subscription-config',DriverSubscriptionConfigList.as_view()),
         path('driver/login', DriverAuthToken.as_view()),
         path('driver/driver-request_register',DreiverRegisterRequestView.as_view()),
         path('driver/driver-create-account',DriverCreateAccountAPIView.as_view()),
@@ -44,13 +45,14 @@ urlpatterns = [
         path('admin/driver-aproval-request-update', AdminAprovalDriverUpdateRequestAPIView.as_view(), name='driver-aproval-request-update'),
         path('admin/restaurant-aproval-request-update', AdminAprovalRestaurantUpdateRequestAPIView.as_view(), name='restaurant-aproval-request-update'),
         
-        
+        path('restaurant/subscription-config',RestaurantSubscriptionConfigList.as_view()),
         path('restaurant/request_register',RestaurantRegisterRequestView.as_view()),
         path('restaurant/create-account',RestaurantCreateAccountAPIView.as_view(),name='Client-data-post-request'),
         path('restaurant/login', RestaurantAuthToken.as_view()),
         path('restaurant/info-profile', RestaurantProfileAPIView.as_view(), name='restaurant-retrieve'),
         path('restaurant/request-update-profile', PendingRestaurantRequestUpdateAPIView.as_view(), name='restaurant-request-update'),
         path('restaurant/change-status', ChangeRestaurantStatus.as_view(), name='restaurant-change-status'),
+        path('restaurant/renew-subscription/', RenewSubscriptionAPIView.as_view(), name='renew_subscription'),
         
              
     

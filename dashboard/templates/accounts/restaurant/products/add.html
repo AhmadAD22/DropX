@@ -1,0 +1,89 @@
+{% extends "../../../base.html" %}
+{% block title %} Add Product {% endblock %}
+{% block restaurant %}active{% endblock restaurant %}
+{% block users %}active{% endblock users %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "restaurant_list" %}">Restaurants</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "update_restaurant" restaurant.id %}">{{restaurant.restaurantName}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "product_list" restaurant.id %}">Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Add</a></li>
+
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+
+<div class="d-flex justify-content-center">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title text-center text-primary">إضافة منتج</h3>
+            <form method="post" enctype="multipart/form-data" class="text-right">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_category">الفئة</label>
+                    {{ form.category }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_image">الصورة</label>
+                    <input type="file" name="image" id="id_image" class="form-control-file" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="id_name">الاسم</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description">الوصف</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_price">السعر</label>
+                    {{ form.price }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_offers">نسبة الخصم (%)</label>
+                    {{ form.offers }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_quantity">الكمية</label>
+                    {{ form.quantity }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_minimumOrder">الحد الأدنى للطلب</label>
+                    {{ form.minimumOrder }}
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">حفظ</button>
+                
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle image upload
+        document.getElementById('id_image').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    // Display the selected image preview if needed
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}

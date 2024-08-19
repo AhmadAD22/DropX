@@ -1,0 +1,198 @@
+{% extends "../../base.html" %}
+{% block title %} تحديث المشرف: {{ user.fullName }} {% endblock %}
+{% block admins %}active{% endblock admins %}
+{% block users %}active{% endblock users %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "admin_list" %}">admins</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "admin_list" %}">{{user.fullName}}</a></li>
+{% endblock breadcrumbt %}
+{% block users_collapse %}show{% endblock users_collapse %}
+{% block content %}
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6 text-center">
+            <h2 class="text-primary">تحديث المشرف</h2>
+            <button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deleteformModal{{user.id}}">
+                <i class="bi bi-x-octagon white-icon"></i>
+            </button>
+              
+            <form method="post" class="text-right" id="addAdminForm" onsubmit="return validatePasswords()">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_phone">الهاتف:</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.phone.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_fullName">الإسم</label>
+                    {{ form.fullName }}
+                    {% if form.fullName.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.fullName.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_email">البريد الإلكتروني:</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.email.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_nationality">الجنسية:</label>
+                    {{ form.nationality }}
+                    {% if form.nationality.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.nationality.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_is_superuser">هل هو مشرف فائق؟</label>
+                    {{ form.is_superuser }}
+                    {% if form.is_superuser.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.is_superuser.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_permissions">الصلاحيات:</label>
+                    {{ form.permissions }}
+                    {% if form.permissions.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.permissions.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <a type="button" class="text-light" data-toggle="modal" data-target="#changepasswordModal{{user.id}}">
+                        تغيير كلمة المرور
+                    </a>
+                </div>
+                <button type="submit" class="btn btn-primary">تعديل</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete form Modal -->
+<div class="modal fade" id="deleteformModal{{user.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteformModalLabel{{user.id}}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteformModalLabel{{user.id}}">حذف المشرف</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                <p>هل أنت متأكد من حذف {{form.fullName.value}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                <form action="{% url 'delete_admin' user.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Delete form Modal -->
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changepasswordModal{{user.id}}" tabindex="-1" role="dialog" aria-labelledby="changepasswordModalLabel{{user.id}}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content text-right">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changepasswordModalLabel{{user.id}}">تغيير كلمة المرور</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-dark">
+                <form action="{% url "change_password" user.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="new_password">كلمة المرور الجديدة</label>
+                        <div class="input-group">
+                            <input type="password" id="id_password" name="new_password" class="form-control" placeholder="كلمة المرور الجديدة">
+                            <div class="input-group-append">
+                                <span id="eye_icon_password" class="bi bi-eye" onclick="togglePasswordVisibility('id_password', 'eye_icon_password')"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">تأكيد كلمة المرور</label>
+                        <div class="input-group">
+                            <input type="password" id="id_confirm_password" name="confirm_password" class="form-control" placeholder="تأكيد كلمة المرور" oninput="validatePasswords()">
+                            <div class="input-group-append">
+                                <span id="eye_icon_confirm" class="bi bi-eye" onclick="togglePasswordVisibility('id_confirm_password', 'eye_icon_confirm')"></span>
+                            </div>
+                            <div id="passwordError" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <button id="saveButton" type="submit" class="btn btn-primary" onclick="validatePasswords()" disabled>حفظ</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Change Password Modal -->
+
+<!-- Add the provided JavaScript functions -->
+<script>
+    function togglePasswordVisibility(fieldId, eyeIconId) {
+        var passwordField = document.getElementById(fieldId);
+        var eyeIcon = document.getElementById(eyeIconId);
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            eyeIcon.classList.remove('bi-eye');
+            eyeIcon.classList.add('bi-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            eyeIcon.classList.remove('bi-eye-slash');
+            eyeIcon.classList.add('bi-eye');
+        }
+    }
+
+    function validatePasswords() {
+        var password = document.getElementById('id_password').value;
+        var confirmPassword = document.getElementById('id_confirm_password').value;
+        var saveButton = document.getElementById('saveButton');
+
+        if (password !== confirmPassword) {
+            document.getElementById('passwordError').innerText = 'كلمة المرور غير متطابقة';
+            saveButton.disabled = true;
+        } else {
+            document.getElementById('passwordError').innerText = '';
+            saveButton.disabled = false;
+        }
+    }
+</script>
+{% endblock %}

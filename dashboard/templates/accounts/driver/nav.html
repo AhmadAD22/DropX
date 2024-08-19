@@ -1,0 +1,5 @@
+<nav class="nav">
+    <a class="nav-link {{account}} " href="{% url "driver_update" driver.id %}">الحساب</a>
+    <a class="nav-link {{subscription}}" href="{% url "driver_subscription" driver.id %}">الإشتراك</a>
+    <a class="nav-link {{financial}}" href="{% url "driver_financial_overview" driver.id %}">قوائم مالية</a>
+  </nav>

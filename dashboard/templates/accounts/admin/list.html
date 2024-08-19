@@ -1,0 +1,44 @@
+{% extends "../../base.html" %}
+{% block title %}  admins {% endblock %}
+{% block admins %}active{% endblock admins %}
+{% block users %}active{% endblock users %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "admin_list" %}">admins</a></li>
+{% endblock breadcrumbt %}
+{% block users_collapse %}show{% endblock users_collapse %}
+{% block content %}
+
+<div class="container text-center">
+    <h3 class="text-primary">المديرين</h3>
+    <a class="btn btn-primary m-2" href="{% url "add_user_with_permissions" %}"> <i class="bi bi-plus-circle white-icon"></i></a>
+
+    <form class="mb-3 w-100 d-flex justify-content-center" action="{% url "admin_list" %}" method="GET">
+        <div class="input-group w-50 ">
+            <input type="text" class="form-control" placeholder="Search admins" name="search" value="{{ search_query }}">
+            <button class="btn btn-dark" type="submit">بحث</button>
+        </div>
+    </form>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-white">
+        <thead>
+            <tr class="text-primary">
+                <th>الرقم</th>
+                <th>الاسم</th>
+                <th>رقم الهاتف</th>
+                <th>البريد الإلكتروني</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for admin in admins %}
+            
+            <tr class="clickable-row"  onclick="window.location.href='{% url "update_admin" admin.id %}'">
+                <td><a class="text-light" href="#">{{ admin.id }}</a></td>
+                <td><a class="text-light"  href="#">{{ admin.fullName }}</a></td>
+                <td><a class="text-light"  href="#">{{ admin.phone }}</a></td>
+                <td><a class="text-light"  href="#">{{ admin.email }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

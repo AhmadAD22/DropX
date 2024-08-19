@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %} إضافة سيارة للرحلة {% endblock %}
+{% block trip_cars %} 
+active
+{% endblock %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}"> Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "trip_car_list" %}"> Car Categories</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Add</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="card ">
+      <div class="card-body ">
+        <h3 class="card-title text-center text-primary"> إضافة تصنيف سيارة </h3>
+  
+        <form method="post" enctype="multipart/form-data" class="text-right">
+          {% csrf_token %}
+          <div class="form-group ">
+            <label for="id_car_category">فئة السيارة</label>
+            {{ form.car_category }}
+            {% if form.car_category.errors %}
+              <div class="text-danger">
+                {% for error in form.car_category.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="form-group  ">
+            <label  for="id_image">الصورة</label>
+            {{ form.image }}
+            {% if form.image.errors %}
+              <div class="text-danger">
+                {% for error in form.image.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <img id="uploaded-image" src="" alt="الصورة المرفوعة" width="100" style="display: none;">
+          </div>
+          
+          
+  
+          <div class="form-group ">
+            <label for="id_less_than_three_km">أقل من ثلاثة كيلومترات</label>
+            {{ form.less_than_three_km }}
+            {% if form.less_than_three_km.errors %}
+              <div class="text-danger">
+                {% for error in form.less_than_three_km.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group ">
+            <label for="id_between_three_and_six_km">بين ثلاثة وستة كيلومترات</label>
+            {{ form.between_three_and_six_km }}
+            {% if form.between_three_and_six_km.errors %}
+              <div class="text-danger">
+                {% for error in form.between_three_and_six_km.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group ">
+            <label for="id_more_than_six_km">أكثر من ستة كيلومترات</label>
+            {{ form.more_than_six_km }}
+            {% if form.more_than_six_km.errors %}
+              <div class="text-danger">
+                {% for error in form.more_than_six_km.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+  
+          
+  
+          <div class="form-group ">
+            <label for="id_average_speed">السرعة المتوسطة</label>
+            {{ form.average_speed }}
+            {% if form.average_speed.errors %}
+              <div class="text-danger">
+                {% for error in form.average_speed.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary text-light mt-3">إضافة</button>
+        </form>
+      </div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById("id_image");
+    
+    fileInput.addEventListener("change", function() {
+        const fileName = this.files[0].name;
+        const uploadedImage = document.getElementById("uploaded-image");
+        uploadedImage.src = URL.createObjectURL(this.files[0]);
+        uploadedImage.style.display = "block";
+    });
+</script>
+{% endblock %}

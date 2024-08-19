@@ -1,0 +1,64 @@
+{% extends "../../base.html" %}
+{% load static %}
+{% block title %}Subscriptions{% endblock %}
+
+{% block restaurant %}active{% endblock restaurant %}
+{% block users %}active{% endblock users %}
+{% block users_collapse %}show{% endblock users_collapse %}
+
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "restaurant_list" %}">restaurants</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "update_restaurant" restaurant.id %}">{{ restaurant.fullName }}</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Subscriptions</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<div class="container mt-5">
+    {% include "accounts/restaurant/nav.html" with subscription="active" %}
+    <div class="card">
+       <div class="card-header text-center text-white">
+            
+        </div>
+    
+        <div class="card-body text-center">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary">إشتراك المطعم</h4>
+                    <hr>
+                    {% if restaurant_subscriptions %}
+                    {% for subscription in restaurant_subscriptions %}
+                    <div class="row">
+                        
+                        <div class="col-md-6" dir="rtl">
+                            <p><strong> المدة(يوم):</strong> {{subscription.duration}}</p>
+                            <p><strong>تاريخ النهاية</strong> {{subscription.end_date |date:"SHORT_DATE_FORMAT"}}</p>
+                            <p><strong>الدفع:</strong> {% if subscription.paid  %} تم الدفع {% else %} لم يتم الدفع {% endif %}</p>
+                            
+                        </div>
+                        <div class="col-md-6" dir="rtl">
+                            <p dir="rtl"><strong>السعر:</strong> {{ subscription.price }}</p>
+                            <p dir="rtl"><strong>المتبقي:</strong> {{ subscription.calculate_remaining_time_arabic }}</p>
+                            <p><strong>الحالة:</strong> {% if subscription.enabled == True %}<b class="text-primary"> مفعل </b>{% else %}<b class="text-danger"> معطل </b> {% endif %}</p>
+                        </div>
+                        
+                    </div>
+                    <hr class="w-50">
+                    <div class="row">
+                        <div class="col-md-12" dir="rtl">
+                            {% if subscription.enabled == True %}
+                            <a class="btn btn-danger" href="{% url "restaurant_order_subscription_disable" restaurant.id %}">تعطيل</a>
+                            {% else %}
+                            <a class="btn btn-primary" href="{% url "restaurant_order_subscription_enable" restaurant.id %}">تفعيل</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div>لا يوجد إشتراك</div>
+                    {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

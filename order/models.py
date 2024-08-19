@@ -28,13 +28,27 @@ class CanceledBy(models.TextChoices):
 class Payment(models.TextChoices):
     WALLET='WALLET','wallet'
     E_PAYMENT='E_PAYMENT','e-payment'
-
+class CouponType(models.TextChoices):
+    GENERAL='عام'
+    RESTAURANT='مطعم'
+    DRIVER='مندوب'
+    
 class Coupon(models.Model):
+    type=models.CharField( max_length=50,choices=CouponType.choices)
+    restaurant=models.ForeignKey(Restaurant,null=True,blank=True, on_delete=models.CASCADE,related_name='restaurantCoupon')
+    driver=models.ForeignKey(Driver,null=True,blank=True, on_delete=models.CASCADE,related_name='driverCoupon')
     code=models.CharField(max_length=10,unique=True)
     percent=models.PositiveIntegerField()
     expireAt=models.DateField(null=True)
     times=models.PositiveIntegerField()
     isActive=models.BooleanField(default=True)
+    
+    def is_expired(self):
+        if self.expireAt is None:
+            return False
+        if self.times == 0:
+            return False
+        return (self.expireAt < timezone.now().date()) 
     
 class OrderConfig(models.Model):
     tax = models.DecimalField(max_digits=10, decimal_places=2)
@@ -186,8 +200,11 @@ class CartAccessory(models.Model):
     
 class TripCar(models.Model):
     image=models.ImageField(upload_to='Car Trip')
-    price_per_km=models.FloatField()   
-    car_category=models.CharField(max_length=50,choices=carCategory.choices)
+    price_per_km=models.FloatField(null=True,blank=True)   
+    less_than_three_km=models.FloatField(null=True,blank=True)
+    between_three_and_six_km=models.FloatField(null=True,blank=True)
+    more_than_six_km=models.FloatField(null=True,blank=True)
+    car_category=models.CharField(max_length=50)
     average_speed=models.PositiveSmallIntegerField()
     
     def __str__(self) -> str:
@@ -195,7 +212,7 @@ class TripCar(models.Model):
     
     def price(self,destance):
         return self.price_per_km*destance
-    
+     
     def trip_time(self, distance):
         trip_duration = distance / self.average_speed
         hours = int(trip_duration)

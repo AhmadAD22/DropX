@@ -1,0 +1,42 @@
+{% extends "../../base.html" %}
+{% block title %}  Drivers {% endblock %}
+{% block driver %}active{% endblock driver %}
+{% block users %}active{% endblock users %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "driver_list" %}">Drivers</a></li>
+{% endblock breadcrumbt %}
+{% block users_collapse %}show{% endblock users_collapse %}
+{% block content %}
+
+<div class="container text-center">
+    <h3 class="text-primary">المندوبيين</h3>
+    <form class="mb-3 w-100 d-flex justify-content-center" action="{% url "driver_list" %}" method="GET">
+        <div class="input-group w-50 ">
+            <input type="text" class="form-control" placeholder="Search drivers" name="search" value="{{ search_query }}">
+            <button class="btn btn-dark" type="submit">بحث</button>
+        </div>
+    </form>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-white">
+        <thead>
+            <tr class="text-primary">
+                <th>#</th>
+                <th>الاسم</th>
+                <th>رقم الهاتف</th>
+                <th>البريد الإلكتروني</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for driver in drivers %}
+            
+            <tr class="clickable-row"  onclick="window.location.href='{% url "driver_update" driver.id %}'">
+                <td><a class="text-light" href="{% url "driver_update" driver.id %}">{{ driver.id }}</a></td>
+                <td><a class="text-light"  href="{% url "driver_update" driver.id %}">{{ driver.fullName }}</a></td>
+                <td><a class="text-light"  href="{% url "driver_update" driver.id %}">{{ driver.phone }}</a></td>
+                <td><a class="text-light"  href="{% url "driver_update" driver.id %}">{{ driver.email }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
