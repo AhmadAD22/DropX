@@ -9,7 +9,7 @@
 {% block breadcrumbt %}
 <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "restaurant_list" %}">restaurants</a></li>
-<li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "update_restaurant" restaurant.id %}">{{ restaurant.fullName }}</a></li>
+<li class="breadcrumb-item active" aria-current="page"><a class="text-light" href="{% url "update_restaurant" restaurant.id %}">{{ restaurant.restaurantName }}</a></li>
 <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Subscriptions</a></li>
 {% endblock breadcrumbt %}
 

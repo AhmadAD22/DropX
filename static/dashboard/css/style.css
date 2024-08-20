@@ -11,6 +11,10 @@
     border-radius: 0.25rem; /* Adjust the border radius as needed */
     cursor: pointer;
   }
+
+.modal-title{
+    color: #23272A!important;
+}
   
   .form-control-file::-moz-file-upload-button {
     background-color: #007bff; /* Set the desired background color */

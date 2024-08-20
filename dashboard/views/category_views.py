@@ -31,7 +31,7 @@ def category_update(request, pk):
             return redirect('category_list')
     else:
         form = CategoryForm(instance=category)
-    return render(request, 'category/update.html', {'form': form})
+    return render(request, 'category/update.html', {'form': form,'category':category})
 
 # # عرض لحذف فئة
 def category_delete(request, pk):

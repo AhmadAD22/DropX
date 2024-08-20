@@ -20,7 +20,9 @@ active
     <div class="card">
         <div class="card-body">
             <h3 class="card-title text-center text-primary">Update Category </h3>
-
+            <button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deleteCategoryModal{{ category.id }}">
+                <i class="bi bi-x-octagon white-icon"></i>
+              </button>
             <form method="post" enctype="multipart/form-data" class="text-right">
                 {% csrf_token %}
 
@@ -62,7 +64,30 @@ active
     </div>
 </div>
 
-
+ <!-- Delete Category Modal -->
+ <div class="modal fade" id="deleteCategoryModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteCategoryModalLabel{{ category.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteCategoryModalLabel{{ category.id }}">حذف التصنيف</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-dark">
+          <p>هل أنت متأكد من حذف:{{category.name}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form action="{% url 'category_delete' category.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Delete Category Modal -->
 
 <script>
     const fileInput = document.getElementById("id_image");

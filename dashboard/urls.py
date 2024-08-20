@@ -15,10 +15,10 @@ from .views.coupon import *
 from .views.accounts.products import *
 from .views.accounts.restaurant_financial import *
 from .views.accounts.driver_financial import *
+from .views.question import *
 urlpatterns = [
 path('login',login_view,name="dashboard-login"),
 path('logout',logout_view,name="dashboard-logout"),
-
 path('',main_dashboard,name="main_dashboard"),
 
 #Categories
@@ -26,12 +26,17 @@ path('categories', category_list,name='category_list'),
 path('category/create/', category_create, name='category_create'),
 path('category/update/<int:pk>/', category_update, name='category_update'),
 path('category/delete/<int:pk>/',category_delete, name='category_delete'),
-#
+
 # Coupon
 path('coupons/', coupon_list, name='coupon_list'),
 path('add_coupon/', add_coupon, name='add_coupon'),
 path('coupons/<int:pk>/update/',update_coupon, name='update_coupon'),
 path('coupons/<int:pk>/delete/', delete_coupon, name='delete_coupon'),
+#Common Questions
+path('common_question/', common_question_list, name='common_question_list'),
+path('common_question/create/', common_question_create, name='common_question_create'),
+path('common_question/update/<int:pk>/', common_question_update, name='common_question_update'),
+path('common_question/delete/<int:pk>/',common_question_delete, name='common_question_delete'),
 
 
 #Products

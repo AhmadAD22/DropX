@@ -1,5 +1,8 @@
 import requests
 from django.conf import settings
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class SmsSender:
     def send_otp(self,phone, otp):
@@ -8,8 +11,8 @@ class SmsSender:
             return True
         print(phone)
         url = 'https://api.oursms.com/api-a/msgs'
-        username ='DropX'
-        token ='veSsCIICbzcNexMCEDe-'
+        username =str(os.getenv('SMS_USERNAME'))
+        token =str(os.getenv('SMS_TOKEN'))
         src = 'oursms'
         dests = str(phone)  
         body = otp

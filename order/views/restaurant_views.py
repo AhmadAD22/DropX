@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import Order
+from ..models import Order,Status
 from ..serializers.restaurant_serializer import *
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, date
@@ -194,3 +194,23 @@ class OrderDetailAPIView(APIView):
             return Response({"error":"Order does not found"})
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+class RestaurantAcceptOrderAPIView(APIView):
+
+    def post(self, request, pk):
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({"error":"Order does not found"})
+        order.status=Status.IN_PROGRESS
+        return Response({"result":"Order accepted"})
+    
+class RestaurantRejectOrderAPIView(APIView):
+
+    def post(self, request, pk):
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({"error":"Order does not found"})
+        order.status=Status.REJECTED
+        return Response({"result":"Order rejected"})

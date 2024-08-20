@@ -29,17 +29,25 @@
                     <ul class="nav flex-column text-right">
                         <li class="nav-item">
                             <a id="collapse-myaccount-toggle" class="nav-link collapsed" data-toggle="collapse" href="#collapse-myaccount" aria-expanded="true" aria-controls="collapse-myaccount">
-                                <img class="rounded-circle shadow-4-strong" width="25" height="25" alt="avatar2" src="https://mdbcdn.b-cdn.net/img/new/avatars/1.webp" />
-                                {{request.user}}
+                                <img class="rounded-circle shadow-4-strong" width="25" height="25" alt="avatar2" src="{% static "dashboard/images/user.png" %}" />
+                                {% if request.user.is_authenticated %}
+                                {{request.user.fullName}}
+                                {% else %}
+                                User
+                                {% endif %}
                             </a>
                             <div class="collapse" id="collapse-myaccount">
                                 <ul class="nav flex-column">
+                                    {% if request.user.is_authenticated %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">الملف الشخصي</a>
+                                        <a class="nav-link" href="#">حسابي</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url "dashboard-logout" %}">تسجيل خروج</a>
                                     </li>
+                                    {% else %}
+                                    <a class="nav-link" href="{% url "dashboard-login" %}">تسجيل دخول</a>
+                                    {% endif %}
                                 </ul>
                             </div>
                         </li>
@@ -108,7 +116,7 @@
                             <a class="nav-link" href="#">العروض</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">الأسئلة والأجوبة</a>
+                            <a class="nav-link {% block common_question %}{% endblock common_question %}" href="{% url "common_question_list" %}">الأسئلة والأجوبة</a>
                         </li>
                         
                         <li class="nav-item">

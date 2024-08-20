@@ -1,0 +1,70 @@
+{% extends "../base.html" %}
+
+{% block title %} Common Questions {% endblock %}
+{% block common_question %}active{% endblock common_question %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-primary" href="{% url "common_question_list" %}">Common Questions</a></li>
+   
+{% endblock breadcrumbt %}
+{% block content %}
+<div class="container text-center mt-5">
+    <div class='text-center text-primary'>
+        <div>
+         <h3>Common Questions</h3>
+         <a class="btn btn-primary m-2" href="{% url "common_question_create" %}"><i class="bi bi-plus-circle white-icon"></i></a>
+         <hr>
+        </div> 
+    </div>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-center text-white">
+        
+        <tr class="text-primary">
+            <th>السؤال</th>
+            <th>الجواب</th>
+        </tr>
+        {% for common_question in page_obj %}
+        <tr class="clickable-row" onclick="window.location.href='{% url "common_question_update" common_question.id %}'">
+            <td>
+                {% if common_question.question|length > 25 %}
+                   {{ common_question.question|slice:":25" }}...
+               {% else %}
+                   {{ common_question.question }}
+               {% endif %}
+       </td>
+            <td>
+                     {% if common_question.answer|length > 25 %}
+                        {{ common_question.answer|slice:":25" }}...
+                    {% else %}
+                        {{ common_question.answer }}
+                    {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2">لا يوجد </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% if page_obj.has_other_pages %}
+    <ul class="pagination justify-content-center bg-transparent">
+        {% if page_obj.has_previous %}
+        <li class="page-item ml-2">
+            <a class="page-link btn btn-primary " href="?page=1">&laquo; الأول</a>
+        </li>
+        <li class="page-item ml-2">
+            <a class="page-link btn btn-primary" href="?page={{ page_obj.previous_page_number }}">السابق</a>
+        </li>
+        {% endif %}
+        <li class="page-item ml-2 disabled"><a class="page-link bg-transparent border-0" href="#">الصفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}</a></li>
+        {% if page_obj.has_next %}
+        <li class="page-item ml-2">
+            <a class="page-link btn btn-primary" href="?page={{ page_obj.next_page_number }}">التالي</a>
+        </li>
+        <li class="page-item ml-1">
+            <a class="page-link btn btn-primary" href="?page={{ page_obj.paginator.num_pages }}">الأخير &raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock %}

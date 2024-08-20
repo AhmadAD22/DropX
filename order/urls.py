@@ -13,6 +13,9 @@ path('restaurant/today-orders', RestaurantTodayOrdersListAPIView.as_view(), name
 path('restaurant/month-orders', RestaurantMonthOrdersListAPIView.as_view(), name='order-list'),
 path('restaurant/year-orders', RestaurantYearOrdersListAPIView.as_view(), name='order-list'),
 path('restaurant/statistics-orders', RestaurantStatisticsOrdersListAPIView.as_view(), name='order-list'),
+path('restaurant/accept-order/<int:pk>', RestaurantAcceptOrderAPIView.as_view(), name='restaurant-accept-order'),
+path('restaurant/reject-order/<int:pk>', RestaurantRejectOrderAPIView.as_view(), name='restaurant-accept-order'),
+
 #Driver
 path('driver/new-orders', DriverNewOrderListAPIView.as_view(), name='driver-new-order'),
 path('driver/current-orders', DriverCurrentOrdersListAPIView.as_view(), name='driver-current-order'),

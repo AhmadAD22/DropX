@@ -12,9 +12,10 @@ def generate_signature(order_number, order_amount, order_currency, order_descrip
     
     return sha1_hash
 # Create your views here.
-
 import requests
 from django.http import JsonResponse
+
+# Define the generate_signature function
 
 def initiate_payment(request):
     url = 'https://api.edfapay.com/payment/initiate'
@@ -51,7 +52,7 @@ def initiate_payment(request):
     response = requests.post(url, data=payload)
 
     if response.status_code == 200:
-        return JsonResponse(response.json)
+        return JsonResponse(response.json())
     else:
         print(response.text)
-        return JsonResponse({'erorr':response.text})
+        return JsonResponse({'error': response.text}, safe=False)
