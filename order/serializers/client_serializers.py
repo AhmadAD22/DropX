@@ -31,7 +31,13 @@ class ClientOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
-            'id','destinationName','destinationPhone','destinationAddress','destinationLng','destinationLat','deliveryDate', 'status','tax','commission', 'orderDate', 'total_price','deliveryCost','total_products','price_with_tax', 'price_with_tax_with_coupon','items'
+            'id','destinationName','destinationPhone','destinationAddress',
+            'destinationLng','destinationLat',
+            'deliveryDate', 'status','tax',
+            'commission', 'orderDate',
+            'total_price','deliveryCost',
+            'total_products','price_with_tax',
+            'price_with_tax_with_coupon','items'
         )    
 
 
@@ -75,6 +81,6 @@ class TripSerializer(serializers.ModelSerializer):
             'id', 'note', 'tripDate',
             'sourceLat', 'sourceLng', 'sourceAddress',
             'destinationLat', 'destinationLng', 'destinationAddress',
-            'car','distance', 'price', 'coupon','tax','price_with_tax','price_with_tax_with_coupon',
+            'car','distance', 'commission','price', 'coupon','tax','price_with_tax','price_with_tax_with_coupon',
         )
         read_only_fields = ('price_with_tax', 'price_with_tax_with_coupon')

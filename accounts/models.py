@@ -163,8 +163,17 @@ class CarCategory(models.Model):
     def __str__(self) -> str:
         return self.car_category
     
-    def price(self,destance):
-        return self.price_per_km*destance
+    def price(self,distance):
+       
+            if distance <3:
+                km_price=self.less_than_three_km
+                return round(distance * km_price,2)
+            elif distance>=3 and distance<=6:
+                km_price=self.between_three_and_six_km
+                return round(distance * km_price,2)
+            else:
+                km_price=self.between_three_and_six_km 
+                return round(distance * km_price,2)
      
     def trip_time(self, distance):
         trip_duration = distance / self.average_speed

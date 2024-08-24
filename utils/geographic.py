@@ -30,4 +30,4 @@ def calculate_distance(sourceLat, sourceLon, destenationLat, destenationLon):
     # Calculate the distance using Geopy
     dist = geodesic(sourcePoint, destenationPoint).kilometers
 
-    return dist
+    return round(dist,2)

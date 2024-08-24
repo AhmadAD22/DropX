@@ -4,21 +4,21 @@ from ..serializers.client_serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from accounts.models import Client
+from accounts.models import Client,CarCategory
 from utils.geographic import calculate_distance
-from utils.pyment import Orderpayment
+from utils.payment.order_pyment import Orderpayment
 
 class TripCarAPIView(APIView):
     
     def get(self, request, *args, **kwargs):
-        car = TripCar.objects.all()
+        cars = CarCategory.objects.all()
          # Get distance from query parameter
         source_lat = request.query_params.get('source_lat')
         source_lon = request.query_params.get('source_lon')
         destenation_lat = request.query_params.get('destenation_lat')
         destenation_lon = request.query_params.get('destenation_lon')
         distance=calculate_distance(source_lat,source_lon,destenation_lat,destenation_lon)
-        serializer = TripCarSerializer(car, context={'distance': distance},many=True)
+        serializer = TripCarSerializer(cars, context={'distance': distance},many=True)
         return Response(serializer.data)
     
     

@@ -268,6 +268,9 @@ class Trip(models.Model):
         else:
             tax = decimal.Decimal(0)
         return round(tax, 2)
+    def commission(self):
+        order_config=OrderConfig.objects.first()
+        return order_config.commission
         
     def price_with_tax(self):
         tax = self.tax()
@@ -278,6 +281,7 @@ class Trip(models.Model):
         return round(tax + decimal.Decimal(price) , 2)
 
     def price_with_tax_with_coupon(self):
+        commission=Decimal(self.commission())
         tax = self.tax()
         if self.price is not None:
             price = Decimal(self.price)
@@ -286,4 +290,4 @@ class Trip(models.Model):
         if self.coupon:
             coupon_percent = Decimal(self.coupon.percent) / 100
             price = price - (price * coupon_percent)
-        return (tax + price).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        return (tax +commission+ price).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)

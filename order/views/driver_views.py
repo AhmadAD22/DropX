@@ -10,6 +10,9 @@ from django.db.models import Sum
 from django.db.models import Q
 from accounts.models import *
 from utils.notifications import *
+from wallet.models import UserWallet,PaymentTrip
+from django.db import transaction
+
 
 
 class DriverNewOrderListAPIView(APIView):
@@ -133,7 +136,7 @@ class RestaurantTodayOrdersListAPIView(APIView):
 
 class DriverAcceptOrder(APIView):
     permission_classes = [IsAuthenticated]
-    
+    @transaction.atomic
     def post(self,request):
         try:
             order=Order.objects.get(pk=request.data['order_id'])
@@ -175,26 +178,42 @@ class OnWayNotification(APIView):
        
        
 class DeliveryConfirm(APIView):
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[IsAuthenticated]
+    @transaction.atomic
     def post(self,request):
         try:
             order=Order.objects.get(id=request.data['order_id'])
-        except:
+            restaurant=order.items.first().product.restaurant
+            driver_wallet=UserWallet.objects.get(user__phone=order.driver.phone)
+            restaurant_wallet=UserWallet.objects.get(user__phone=restaurant.phone)
+        except Order.DoesNotExist:
             return Response({'error':'Order does not found'},status=status.HTTP_404_NOT_FOUND)
-        order.status=Status.COMPLETED
-        restaurant=order.items.first().product.restaurant
+        except UserWallet.DoesNotExist:
+            return Response({'error':'Driver or Restuaurant does not have wallet'},status=status.HTTP_404_NOT_FOUND)
         
-        NotificationsHelper.sendOrderUpdate(
-            update=OrdersUpdates.ORDER_COMPLETE,
-            orderId=order,
-            target=restaurant,
-            )
-        NotificationsHelper.sendOrderUpdate(
-            update=OrdersUpdates.ORDER_COMPLETE,
-            orderId=order,
-            target=order.client,
-            )
-        return Response({'result':'The order delivered'},status=status.HTTP_200_OK)
+        if order.status==Status.IN_PROGRESS:
+            order.status=Status.COMPLETED
+            order.save()
+            total_price_for_restaurant=order.total_price()
+            restaurant_wallet.balance+=Decimal(total_price_for_restaurant)
+            restaurant_wallet.save()
+            delivery_cost=order.deliveryCost()
+            driver_wallet.balance+=Decimal(delivery_cost)
+            driver_wallet.save()
+            
+            NotificationsHelper.sendOrderUpdate(
+                update=OrdersUpdates.ORDER_COMPLETE,
+                orderId=order,
+                target=restaurant,
+                )
+            NotificationsHelper.sendOrderUpdate(
+                update=OrdersUpdates.ORDER_COMPLETE,
+                orderId=order,
+                target=order.client,
+                )
+            return Response({'result':'The order delivered'},status=status.HTTP_200_OK)
+        else:
+            return Response({'error':'The order status must be in progress or the order already complated'},status=status.HTTP_409_CONFLICT)
     
     
 
@@ -339,11 +358,19 @@ class DriverComlateTrip(APIView):
             return Response({'error':'Trip does not found'},status=status.HTTP_404_NOT_FOUND)
         try:
             driver=Driver.objects.get(pk=request.user.pk)
+            driver_wallet=UserWallet.objects.get(user__phone=driver.phone)
         except Driver.DoesNotExist:
             return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
+        except UserWallet.DoesNotExist:
+            return Response({'error':'Driver does not have a wallet. '},status=status.HTTP_404_NOT_FOUND)
         if trip.driver.phone == driver.phone:
-            trip.status=Status.COMPLETED
-            trip.save()
+            if trip.status==Status.IN_PROGRESS:
+                trip.status=Status.COMPLETED
+                trip.save()
+                driver_wallet.balance+=Decimal(trip.price)
+                driver_wallet.save()
+            else:
+                return Response({'error':'The order status must be in progress or the order already complated'},status=status.HTTP_400_BAD_REQUEST)
             return Response({'result':'Order Complated'},status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
