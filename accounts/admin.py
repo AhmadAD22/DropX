@@ -12,7 +12,7 @@ admin.site.register(OTPRequest)
 
 admin.site.register(PendingDriver)
 admin.site.register(Car)
-
+admin.site.register(CarCategory)
 admin.site.register(PendingRestaurant)
 admin.site.register(RestaurantSubscription)
 admin.site.register(Notification)

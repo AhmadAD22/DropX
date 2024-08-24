@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from utils.error_handle import error_handler
 from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
+from wallet.models import UserWallet
 
 class RestaurantSubscriptionConfigList(APIView):
     def get(self, request):
@@ -135,6 +136,8 @@ class RestaurantCreateAccountAPIView(APIView):
             )
             newRestaurant.password = make_password(request.data['password'])
             newRestaurant.save()
+            user_wallet=UserWallet.objects.create(user=newRestaurant,balance=0.0)
+            user_wallet.save()
             try:
                 subscription_config=SubscriptionConfig.objects.get(type="RESTAURANT",duration=pendingRestaurant.restaurantSubscription)
             except SubscriptionConfig.DoesNotExist:

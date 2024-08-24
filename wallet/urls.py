@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import initiate_payment
+from .views.e_payment.common import *
 urlpatterns = [
-    path('',initiate_payment)
+    path('e_payment',PaymentCallbackView.as_view()),
+    path('finalize',finalizePayment,name='finalize_payment'),
 ]

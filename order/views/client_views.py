@@ -4,10 +4,10 @@ from ..serializers.client_serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
 from accounts.models import Client
-
 from utils.geographic import calculate_distance
+from utils.pyment import Orderpayment
+
 class TripCarAPIView(APIView):
     
     def get(self, request, *args, **kwargs):
@@ -88,3 +88,19 @@ class ClientCancelOrderListAPIView(APIView):
         serializer = ClientOrderSerializer(order)
         return Response(serializer.data)
         
+        
+class ClientPayOrderAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request,order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'erorr':'The order does not found!'},status=status.HTTP_404_NOT_FOUND)
+        payment_respons=Orderpayment.initiate_payment(order=order,request=request)
+        print(payment_respons)
+        if payment_respons.status_code == 200:
+            return Response(payment_respons.json())
+        
+        else: 
+            
+            return Response({'error': payment_respons.text})

@@ -150,14 +150,35 @@ class carCategory(models.TextChoices):
     SEDAN = 'سيدان\كروس'
     BIG= 'كبيرة 6 ركاب'
     BUSINESS='أعمال'
-
+    
+class CarCategory(models.Model):
+    image=models.ImageField(upload_to='Car Trip')
+    price_per_km=models.FloatField(null=True,blank=True)   
+    less_than_three_km=models.FloatField(null=True,blank=True)
+    between_three_and_six_km=models.FloatField(null=True,blank=True)
+    more_than_six_km=models.FloatField(null=True,blank=True)
+    car_category=models.CharField(max_length=50)
+    average_speed=models.PositiveSmallIntegerField()
+    
+    def __str__(self) -> str:
+        return self.car_category
+    
+    def price(self,destance):
+        return self.price_per_km*destance
+     
+    def trip_time(self, distance):
+        trip_duration = distance / self.average_speed
+        hours = int(trip_duration)
+        minutes = int((trip_duration * 60) % 60)
+        return {'hours':hours, 'minutes':minutes}
+    
 class Driver(User):
     bankName=models.CharField(max_length=50)
     iban=models.CharField(max_length=21)
     companyName=models.CharField(max_length=50)
     car=models.ForeignKey(Car,on_delete=models.CASCADE)
     carName=models.CharField(max_length=50)
-    carCategory=models.CharField(max_length=12,choices=carCategory.choices)
+    carCategory=models.ForeignKey(CarCategory, on_delete=models.CASCADE)
     carColor=models.CharField(max_length=50)
     carModel=models.CharField(max_length=50)
     carLicense=models.ImageField(upload_to='proven/')
@@ -534,7 +555,7 @@ class PendingDriver(models.Model):
         companyName=models.CharField(max_length=50)
         car=models.ForeignKey(Car,on_delete=models.CASCADE)
         carName=models.CharField(max_length=50)
-        carCategory=models.CharField(max_length=12,choices=carCategory.choices)
+        carCategory=models.ForeignKey(CarCategory, on_delete=models.CASCADE)
         carModel=models.CharField(max_length=50)
         carColor=models.CharField(max_length=50)
         carLicense=models.ImageField(upload_to='proven/')
@@ -557,6 +578,7 @@ class Notification(models.Model):
     localized=models.BooleanField(default=True)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     order=models.ForeignKey('order.Order',on_delete=models.CASCADE,blank=True, null=True)
+    trip=models.ForeignKey('order.Trip',on_delete=models.CASCADE,blank=True, null=True)
 
     class Meta:
         ordering=['-sentAt']

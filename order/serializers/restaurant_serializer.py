@@ -33,7 +33,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
-            'id','client','payment', 'status','tax', 'orderDate', 'total_price','total_products','price_with_tax', 'price_with_tax_with_coupon','items'
+            'id','client','payment', 'status','tax', 'commission','orderDate', 'total_price','deliveryCost','total_products','price_with_tax', 'price_with_tax_with_coupon','items'
         )        
 
 class OrderListSerializer(serializers.ModelSerializer):

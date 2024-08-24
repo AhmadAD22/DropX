@@ -8,7 +8,7 @@ from datetime import datetime, date
 from django.utils import timezone
 from django.db.models import Sum
 
-
+from utils.notifications import NotificationsHelper,OrdersUpdates
 
 
 class RestaurantNewOrderListAPIView(APIView):
@@ -202,8 +202,13 @@ class RestaurantAcceptOrderAPIView(APIView):
             order = Order.objects.get(pk=pk)
         except Order.DoesNotExist:
             return Response({"error":"Order does not found"})
-        order.status=Status.IN_PROGRESS
+        NotificationsHelper.sendOrderUpdate(
+            update=OrdersUpdates.ORDER_COMPLETE,
+            orderId=order,
+            target=order.client,
+            )
         return Response({"result":"Order accepted"})
+        
     
 class RestaurantRejectOrderAPIView(APIView):
 
@@ -212,5 +217,15 @@ class RestaurantRejectOrderAPIView(APIView):
             order = Order.objects.get(pk=pk)
         except Order.DoesNotExist:
             return Response({"error":"Order does not found"})
+        NotificationsHelper.sendOrderUpdate(
+            update=OrdersUpdates.ORDER_COMPLETE,
+            orderId=order,
+            target=order.client,
+            )
+        NotificationsHelper.sendOrderUpdate(
+            update=OrdersUpdates.ORDER_COMPLETE,
+            orderId=order,
+            target=order.driver,
+            )
         order.status=Status.REJECTED
         return Response({"result":"Order rejected"})

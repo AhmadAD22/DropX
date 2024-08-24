@@ -27,7 +27,7 @@ class DriverForm(forms.ModelForm):
             'companyName': forms.TextInput(attrs={'class': 'form-control'}),
             'car': forms.Select(attrs={'class': 'form-control'}),
             'carName': forms.TextInput(attrs={'class': 'form-control'}),
-            'carCategory': forms.Select(attrs={'class': 'form-control'}),
+            # 'carCategory': forms.Select(attrs={'class': 'form-control'}),
             'carColor': forms.TextInput(attrs={'class': 'form-control'}),
             'carModel': forms.TextInput(attrs={'class': 'form-control'}),
             'carLicense': forms.FileInput(attrs={'class': 'form-control'}),

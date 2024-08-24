@@ -121,6 +121,30 @@ class NotificationsHelper:
                                     order=orderId,
                                     )
     @classmethod
+    def sendTripUpdate(cls,update:str,tripId:Trip,target:User):
+        data={
+            'type':"Trip_UPDATE",
+            "trip-id":str(tripId.id),
+            'update':update
+        }
+        bodyArgs=[str(tripId.id)]
+        msg=cls.__localizedMsg( title=update+'_TITLE',
+                                body=update+'_BODY',
+                                bodyArgs=bodyArgs,
+                                data=data,
+                                )
+        if target.fcm_token:
+            msg.token=target.fcm_token
+            cls.__sendMessage(msg)
+            Notification.objects.create(
+                                    title=update+'_TITLE',
+                                    body=update+'_BODY',
+                                    bodyArgs=bodyArgs,
+                                    localized=True,
+                                    user=target,
+                                    trip=tripId,
+                                    )
+    @classmethod
     def sendDriverAcceptUpdate(cls,update:str,order:Order,target:User):
           data={
             'type':"Driver_Accept",
@@ -175,13 +199,16 @@ class RegistrationUpdate:
     
 class OrdersUpdates:
     Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way
-    OFFER_RECEIVED='OFFER_RECEIVED' #send to client when new offer is sent
-    OFFER_SELECTED='OFFER_SELECTED' #send to driver when his offer is selected    
+    RESTAURANT_ACCEPTED=  'RESTAURANT_ACCEPTED'#send to Client when his order is accepted
+    RESTAURANT_REJECTED=  'RESTAURANT_REJECTED'#send to Client and driver when the client order is rejected
     DRIVER_CANCEL_ORDER='DRIVER_CANCEL_ORDER' #send to client when driver cancel 
     CLIENT_CANCEL_ORDER='CLIENT_CANCEL_ORDER' #send to driver when client cancel 
+    RESTAURANT_CANCEL_ORDER='CLIENT_CANCEL_ORDER' #send to driver when client cancel 
     DRIVER_ASK_CANCEL_ORDER='DRIVER_ASK_CANCEL_ORDER' #send to client when driver ask to cancel 
     CLIENT_ASK_CANCEL_ORDER='CLIENT_ASK_CANCEL_ORDER' #send to driver when client ask to cancel 
     ORDER_COMPLETE='ORDER_COMPLETE' #send to client when driver finish order
     ORDER_COMPLETE_DRIVER='ORDER_COMPLETE_DRIVER' #send to driver when driver finish order
     CANCEL_REJECTED='CANCEL_REJECTED' #send when cancel rejected
+    CLIENT_PAID_ORDER='CLIENT_PAID_ORDER'#Send to reastaurant and driver to notify them the order is paid
+    CLIENT_PAID_TRIP='CLIENT_PAID_TRIP'#Send to reastaurant and driver to notify them the order is paid
     

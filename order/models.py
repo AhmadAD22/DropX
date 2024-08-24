@@ -1,12 +1,12 @@
 from django.db import models
 from accounts.models import *
-from restaurant.models import *
+from restaurant.models import Product,AccessoryProduct
 from django.db.models import Sum
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
-
+from utils.geographic import calculate_distance
 
 class Status(models.TextChoices):
     PENDING = 'PENDING','Pending'
@@ -71,9 +71,12 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices)
     orderDate = models.DateTimeField(auto_now_add=True)
     deliveryDate = models.DateTimeField(blank=True, null=True,default=None)
+    checkoutAt=models.DateTimeField(blank=True, null=True,default=None)
+    deliveryCost=models.DecimalField(max_digits=10, decimal_places=2)
     tax = models.DecimalField(max_digits=10, decimal_places=2)
     totalAmount = models.DecimalField(max_digits=10, decimal_places=2)
     coupon=models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True,blank=True)
+    canceledBy=models.CharField( max_length=50,choices=CanceledBy,null=True,blank=True)
    # transactions=models.ManyToManyField('wallet.Transaction',through='wallet.OrderTransactions')
     def __str__(self) -> str:
         return '#' +str(self.pk)
@@ -100,6 +103,24 @@ class Order(models.Model):
         """Calculates the total number of products ordered."""
         return self.items.aggregate(total_products=Sum('quantity'))['total_products'] or 0
     
+    def deliveryCost(self):
+        distance=calculate_distance(self.restaurantLat,self.restaurantLng,self.destinationLat,self.destinationLng)
+        carCategory=CarCategory.objects.filter(car_category='نقل طلبات')
+        if carCategory:
+            
+            carCategory=carCategory.first()
+            if distance <3:
+                km_price=carCategory.less_than_three_km
+                return round(distance * km_price,2)
+            elif distance>=3 and distance<=6:
+                km_price=carCategory.between_three_and_six_km
+                return round(distance * km_price,2)
+            else:
+                km_price=carCategory.between_three_and_six_km 
+                return round(distance * km_price,2)
+        else:
+            return round(distance * 2,2)
+    
     def tax(self):
         tax_config=OrderConfig.objects.first().tax
         tax = self.total_price() * (decimal.Decimal(tax_config) / 100) if tax_config else decimal.Decimal(0)
@@ -109,14 +130,18 @@ class Order(models.Model):
         tax = self.tax()
         price = self.total_price()
         return round(tax + price,2)
+    def commission(self):
+        return decimal.Decimal(OrderConfig.objects.first().commission)
     
     def price_with_tax_with_coupon(self):
         tax = self.tax()
         price = self.total_price()
+        deliveryCost=  Decimal(self.deliveryCost()) 
+        commission=self.commission()
         if self.coupon:
             coupon_percent = decimal.Decimal(self.coupon.percent) / 100
             price = price - (price * coupon_percent)
-        return round(tax + price, 2)
+        return round(tax + deliveryCost+commission + price, 2)
 
 
 class OrderItem(models.Model):
@@ -158,11 +183,6 @@ class Cart(models.Model):
         # Calculate total price for items
         for item in self.items.all():
             total_price += item.item_with_accessories_total_price()
-
-        # Calculate total price for accessories
-        # for item in self.items.all():
-        #     for accessory in item.accessories.all():
-        #         total_price += accessory.accessory_total_price()
 
         return total_price
     def tax(self):
@@ -231,7 +251,7 @@ class Trip(models.Model):
     destinationLat=models.DecimalField(max_digits=9, decimal_places=6)
     destinationLng=models.DecimalField(max_digits=9, decimal_places=6)
     destinationAddress=models.CharField(max_length=100)
-    car=models.ForeignKey(TripCar,on_delete=models.CASCADE,related_name='tripcar')
+    car=models.ForeignKey(CarCategory,on_delete=models.CASCADE,related_name='tripcar')
     distance = models.FloatField(null=True,blank=True)
     price = models.FloatField(null=True,blank=True)
     tax = models.DecimalField(max_digits=10, decimal_places=2)
