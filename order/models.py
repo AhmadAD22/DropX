@@ -10,6 +10,7 @@ from utils.geographic import calculate_distance
 
 class Status(models.TextChoices):
     PENDING = 'PENDING','Pending'
+    ACCEPTED = 'ACCEPTED','Accepted'
     IN_PROGRESS = 'IN_PROGRESS','In Progress'
     COMPLETED = 'COMPLETED','Completed'
     CANCELLED = 'CANCELLED','Cancelled'
@@ -20,9 +21,8 @@ class CancelRequest(models.TextChoices):
     CLIENT='CLIENT','Client'
     RESTAURANT='RESTAURANT','Restaurant'
     
-class CanceledBy(models.TextChoices):
+class RejectedBy(models.TextChoices):
     DRIVER='DRIVER','Driver'
-    CLIENT='CLIENT','Client'
     RESTAURANT='RESTAURANT','Restaurant'
     
 class Payment(models.TextChoices):
@@ -76,10 +76,10 @@ class Order(models.Model):
     tax = models.DecimalField(max_digits=10, decimal_places=2)
     totalAmount = models.DecimalField(max_digits=10, decimal_places=2)
     coupon=models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True,blank=True)
-    canceledBy=models.CharField( max_length=50,choices=CanceledBy,null=True,blank=True)
-   # transactions=models.ManyToManyField('wallet.Transaction',through='wallet.OrderTransactions')
+    rejectedBy=models.CharField( max_length=50,choices=RejectedBy.choices,null=True,blank=True)
     def __str__(self) -> str:
         return '#' +str(self.pk)
+    
 
     
     

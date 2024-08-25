@@ -1,36 +1,61 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import Order,Status
+from ..models import Order,Status,OrderConfig ,RejectedBy
 from ..serializers.restaurant_serializer import *
-from rest_framework.permissions import IsAuthenticated
+from utils.permissions import ResturantSubscripted
 from datetime import datetime, date
 from django.utils import timezone
 from django.db.models import Sum
-
+from rest_framework.permissions import IsAuthenticated
 from utils.notifications import NotificationsHelper,OrdersUpdates
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+
+class CustomTokenAuthentication(TokenAuthentication):
+    def authenticate(self, request):
+        try:
+            # Perform token authentication as usual
+            user_auth_tuple = super().authenticate(request)
+            return user_auth_tuple
+        except AuthenticationFailed as e:
+            if str(e) == 'Invalid token.':
+                # Raise custom AuthenticationFailed exception with a custom message
+                raise AuthenticationFailed({"error": "Invalid token."})
+            else:
+                raise
 
 
 class RestaurantNewOrderListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ResturantSubscripted]
+    # authentication_classes = [CustomTokenAuthentication]
     def get(self, request):
         
-        orders = Order.objects.filter(driver__isnull=False,status='PENDING',items__product__restaurant_id=request.user.id)
+        orders = Order.objects.filter(driver__isnull=False,status=Status.PENDING,items__product__restaurant_id=request.user.id)
         serializer = OrderListSerializer(orders, many=True)
         return Response(serializer.data)
 
 class RestaurantCurrentOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ResturantSubscripted]
     def get(self, request):
-        orders = Order.objects.filter(driver__isnull=False,status='IN_PROGRESS',items__product__restaurant_id=request.user.id)
-        serializer = OrderListSerializer(orders, many=True)
-        return Response(serializer.data)
+        in_progress_orders = Order.objects.filter(driver__isnull=False,status='IN_PROGRESS',items__product__restaurant_id=request.user.id)
+        accepted_orders = Order.objects.filter(driver__isnull=False,status=Status.ACCEPTED,items__product__restaurant_id=request.user.id)
+        accepted_serializer = OrderListSerializer(accepted_orders, many=True)
+        in_progress_serializer = OrderListSerializer(in_progress_orders, many=True)
+        data={
+            'accepted_orders':accepted_serializer.data,
+            'in_progress_orders': in_progress_serializer.data
+        }
+        
+        
+        return Response(data)
     
     
 
     
 class RestaurantPreviousOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ResturantSubscripted]
     def get(self, request):
         complatedOrders = Order.objects.filter(driver__isnull=False,status='COMPLETED',items__product__restaurant_id=request.user.id)
         complatedOrdersSerializer = OrderListSerializer(complatedOrders, many=True)
@@ -47,7 +72,7 @@ class RestaurantPreviousOrdersListAPIView(APIView):
 
 
 class RestaurantStatisticsOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ResturantSubscripted]
 
     def get(self, request):
         # Get the current date, month, and year
@@ -99,7 +124,7 @@ class RestaurantStatisticsOrdersListAPIView(APIView):
         return Response(data)
 
 class RestaurantTodayOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ResturantSubscripted]
 
     def get(self, request):
         # Get the current date
@@ -128,7 +153,7 @@ class RestaurantTodayOrdersListAPIView(APIView):
 
 
 class RestaurantMonthOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ResturantSubscripted]
 
     def get(self, request):
         # Get the current month
@@ -158,7 +183,7 @@ class RestaurantMonthOrdersListAPIView(APIView):
     
     
 class RestaurantYearOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ResturantSubscripted]
 
     def get(self, request):
         # Get the current year
@@ -202,8 +227,10 @@ class RestaurantAcceptOrderAPIView(APIView):
             order = Order.objects.get(pk=pk)
         except Order.DoesNotExist:
             return Response({"error":"Order does not found"})
+        order.status=Status.ACCEPTED
+        order.save()
         NotificationsHelper.sendOrderUpdate(
-            update=OrdersUpdates.ORDER_COMPLETE,
+            update=OrdersUpdates.RESTAURANT_ACCEPTED,
             orderId=order,
             target=order.client,
             )
@@ -216,16 +243,34 @@ class RestaurantRejectOrderAPIView(APIView):
         try:
             order = Order.objects.get(pk=pk)
         except Order.DoesNotExist:
-            return Response({"error":"Order does not found"})
-        NotificationsHelper.sendOrderUpdate(
-            update=OrdersUpdates.ORDER_COMPLETE,
-            orderId=order,
-            target=order.client,
-            )
-        NotificationsHelper.sendOrderUpdate(
-            update=OrdersUpdates.ORDER_COMPLETE,
-            orderId=order,
-            target=order.driver,
-            )
-        order.status=Status.REJECTED
-        return Response({"result":"Order rejected"})
+            return Response({"error":"Order does not found"},status=status.HTTP_404_NOT_FOUND)
+        if order.status==Status.REJECTED:
+            return Response({"error":"Order already rejected"},status=status.HTTP_409_CONFLICT)
+        current_date = date.today()
+        order_config=OrderConfig.objects.first()
+        
+        rejectedOrdersCount = Order.objects.filter(driver__isnull=False,status='REJECTED',
+                                              items__product__restaurant_id=request.user.id,
+                                              orderDate__date=current_date,
+                                              rejectedBy=RejectedBy.RESTAURANT
+                                              ).count()
+        
+        if(rejectedOrdersCount<=order_config.maxRejectedNumber):
+            order.status=Status.REJECTED
+            order.rejectedBy=RejectedBy.RESTAURANT
+            order.save()
+            NotificationsHelper.sendOrderUpdate(
+                update=OrdersUpdates.RESTAURANT_REJECTED,
+                orderId=order,
+                target=order.client,
+                )
+            
+            NotificationsHelper.sendOrderUpdate(
+                update=OrdersUpdates.RESTAURANT_REJECTED,
+                orderId=order,
+                target=order.driver,
+                )
+            
+            return Response({"result":"Order rejected"})
+        else:
+            return Response({"error":"You can't reject more than "+str(order_config.maxRejectedNumber)+" orders today"},status=status.HTTP_400_BAD_REQUEST)

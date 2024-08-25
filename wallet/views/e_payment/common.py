@@ -9,7 +9,8 @@ from utils.payment.order_pyment import payment_order_handeler,payment_trip_hande
 from utils.payment.payment_subscription import *
 
 class PaymentCallbackView(APIView):
-  
+    permission_classes=[]
+    authentication_classes=[]
     @transaction.atomic
     def post(self, request):
         action = request.data['action']
