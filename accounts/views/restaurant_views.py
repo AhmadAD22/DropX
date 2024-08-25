@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from utils.error_handle import error_handler
 from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
-from wallet.models import UserWallet
+from wallet.models import UserWallet,RestaurantSubscriptionPayment
 
 class RestaurantSubscriptionConfigList(APIView):
     def get(self, request):
@@ -70,6 +70,7 @@ class RestaurantAuthToken(ObtainAuthToken):
                             'id': restaurant.id,
                             'phone': restaurant.phone,
                             'email': restaurant.email,
+                            'subscription_paid':restaurant.restaurantSubscription.paid
                             
                         }
                     })
@@ -145,10 +146,10 @@ class RestaurantCreateAccountAPIView(APIView):
             restaurantSubscription=RestaurantSubscription.objects.create(restaurant=newRestaurant,price=subscription_config.price,duration=pendingRestaurant.restaurantSubscription)
             restaurantSubscription.end_date=restaurantSubscription.calculate_end_date()
             restaurantSubscription.save()
+            restaurantSubscriptionPayment=RestaurantSubscriptionPayment.objects.create(subscription=restaurantSubscription,duration=subscription_config.duration,price=subscription_config.price)
+            restaurantSubscriptionPayment.save()
             pendingRestaurant.delete()
             otp.delete()
-            
-
             return Response({"result": "Restaurant. created successfully"}, status=status.HTTP_201_CREATED)
         return Response({'error': 'The phone is not verified'},status=status.HTTP_404_NOT_FOUND)
     

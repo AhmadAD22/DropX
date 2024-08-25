@@ -6,12 +6,14 @@ from ..models import Product
 from accounts.models import *
 from ..serializers.products_serializers import *
 from utils.error_handle import error_handler
+from utils.permissions import ResturantSubscripted
 
-
+class RetaurantPermissions(APIView):
+    permission_classes=[IsAuthenticated,ResturantSubscripted]
 
 class ProductListByCategoryView(APIView):
     
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [ResturantSubscripted] 
     
     def get(self, request,category_id):
         try:
@@ -26,9 +28,7 @@ class ProductListByCategoryView(APIView):
 
 
 ################ Product Views###################
-class ProductListCreateView(APIView):
-    
-    permission_classes = [IsAuthenticated] 
+class ProductListCreateView(RetaurantPermissions):
     
     def get(self, request):
         restaurant=Restaurant.objects.get(phone=request.user.phone)

@@ -378,6 +378,12 @@ class Restaurant(User):
     class Meta:
         verbose_name = 'Restaurant'
         verbose_name_plural = 'Restaurant'
+        
+class RenewRestaurantSubscription(models.Model):
+     restaurant=models.ForeignKey(Restaurant,null=True, on_delete=models.CASCADE,related_name="RenewSubscription")
+     duration = models.CharField(max_length=8)
+     price = models.DecimalField(max_digits=8, decimal_places=2)
+     paid=models.BooleanField(default=False)
 
 class RestaurantSubscription(models.Model):
     DURATION_CHOICES = [
@@ -392,6 +398,11 @@ class RestaurantSubscription(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     paid=models.BooleanField(default=False)
     enabled=models.BooleanField(default=True)
+    
+    def is_expired(self):
+        current_time = timezone.now()
+        
+        return current_time > self.end_date
 
     def renew_subscription(self, new_duration):
         current_end_date = self.end_date

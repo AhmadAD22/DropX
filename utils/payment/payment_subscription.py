@@ -7,22 +7,22 @@ from django.urls import reverse
 from utils.notifications import NotificationsHelper,OrdersUpdates
 from .order_pyment import generate_signature
 import requests
-
+from wallet.models import RestaurantSubscriptionPayment 
 
 ###Restaurant Subscription
-class RestaurantSubscriptionPayment:
+class PaymentRestaurantSubscription:
     @classmethod
-    def initiate_payment(self,subscription:RestaurantSubscription,request):
+    def initiate_payment(self,subscription_req:RestaurantSubscriptionPayment,request):
         url = 'https://api.edfapay.com/payment/initiate'
-        subscription_number = str(subscription.pk)
-        subscription_amount = str(subscription.price)
+        subscription_number = str(subscription_req.pk)
+        subscription_amount = str(subscription_req.price)
         subscription_currency = "SAR"
         merchant_password = str(os.getenv('MERCHANT_PASSWORD'))
-        names = subscription.restaurant.fullName.split()
+        names = subscription_req.subscription.restaurant.fullName.split()
         firstName = names[0]
         lastName = names[-1]
-        subscription_description=f'payment restaurant subscription with %.2f {subscription_currency}' % subscription.price
-        subscription_id=f"RS{subscription.id}"
+        subscription_description=f'payment restaurant subscription with %.2f {subscription_currency}' % subscription_req.price
+        subscription_id=f"RS{subscription_req.id}"
         client_ip, _ = get_client_ip(request)
         if client_ip is None:
             # Unable to get the client's IP address
@@ -38,12 +38,12 @@ class RestaurantSubscriptionPayment:
             'req_token': 'Y',
             'payer_first_name': str(firstName),
             'payer_last_name': str(lastName),
-            'payer_address': str(subscription.restaurant.address),
+            'payer_address': str(subscription_req.subscription.restaurant.address),
             'payer_country': 'SA',
             'payer_city': 'Riyadh',
             'payer_zip': '00000',
-            'payer_email': str(subscription.restaurant.email),
-            'payer_phone': str(subscription.restaurant.phone),
+            'payer_email': str(subscription_req.subscription.restaurant.email),
+            'payer_phone': str(subscription_req.subscription.restaurant.phone),
             'payer_ip': str(client_ip),
             'term_url_3ds': request.build_absolute_uri(reverse('finalize_payment')),
             'recurring_init': 'N',
@@ -56,13 +56,26 @@ class RestaurantSubscriptionPayment:
         return response
     
 def restaurant_subscription_payment_handeler(order_id,trans_id,amount):
-    try:
-        subscription=RestaurantSubscription.objects.get(pk=order_id)
-    except RestaurantSubscription.DoesNotExist:
-        return False
-    subscription.paid=True
-    subscription.save()
-    return True
+    subscription_req=RestaurantSubscriptionPayment.objects.get(pk=order_id)
+    
+    if subscription_req.subscription.paid==False:
+        subscription=subscription_req.subscription
+        subscription.paid=True
+        subscription.save()
+        subscription_req.paid=True
+        subscription_req.save()
+        return True
+    else:
+         subscription=subscription_req.subscription
+         subscription.renew_subscription(subscription_req.duration)
+         subscription_req.paid=True
+         subscription_req.save()
+         return True
+         
+        
+        
+        
+    
 
     
     

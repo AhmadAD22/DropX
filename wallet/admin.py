@@ -4,3 +4,4 @@ from .models import *
 admin.site.register(UserWallet)
 admin.site.register(PaymentOrder)
 admin.site.register(PaymentTrip)
+admin.site.register(RestaurantSubscriptionPayment)

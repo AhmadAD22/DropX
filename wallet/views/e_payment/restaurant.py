@@ -3,8 +3,8 @@ from accounts.models import RestaurantSubscription
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from utils.payment.payment_subscription import RestaurantSubscriptionPayment
-
+from utils.payment.payment_subscription import PaymentRestaurantSubscription
+from ...models import RestaurantSubscriptionPayment
 
 
 class RestaurantPaysubscriptionAPIView(APIView):
@@ -14,7 +14,9 @@ class RestaurantPaysubscriptionAPIView(APIView):
             subscription = RestaurantSubscription.objects.get(restaurant__phone=request.user.phone)
         except RestaurantSubscription.DoesNotExist:
             return Response({'erorr':'The subscription does not found!'},status=status.HTTP_404_NOT_FOUND)
-        payment_respons=RestaurantSubscriptionPayment.initiate_payment(subscription=subscription,request=request)
+        subscription_req=RestaurantSubscriptionPayment.objects.filter(subscription=subscription,paid=False)
+        payment_respons=PaymentRestaurantSubscription.initiate_payment(subscription_req=subscription_req.first(),request=request)
+        
         if payment_respons.status_code == 200:
             return Response(payment_respons.json())
         
