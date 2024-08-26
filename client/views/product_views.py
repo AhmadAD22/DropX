@@ -13,8 +13,10 @@ from django.db.models import Avg, Count,Sum
 class FavoriteProductListAPIView(APIView):
     permission_classes=[IsAuthenticated]
     def get(self, request):
-        favorite_products = FavoriteProduct.objects.filter(client__phone=request.user.phone)
-        serializer = FavoriteProductSerializer(favorite_products, many=True)
+        favorite_products = FavoriteProduct.objects.filter(client__phone=request.user.phone).values_list('product_id', flat=True)
+        products=Product.objects.filter(id__in=favorite_products)
+        serializer = ClientProductListSerializer(products, many=True,context={'request': request})
+        
         return Response(serializer.data)
 
     def post(self, request):
@@ -60,7 +62,7 @@ class ProductDetailsAPIView(APIView):
             product=Product.objects.get(id=product_id)
         except Product.DoesNotExist:
             return Response({"error":"Product does not found"},status=status.HTTP_404_NOT_FOUND)
-        product_serializer=ProductSerializer(product)
+        product_serializer=ProductSerializer(product,context={'request': request})
         return Response(product_serializer.data,status=status.HTTP_200_OK)
         
 
@@ -70,7 +72,7 @@ class ProductSearchAPIView(APIView):
     def get(self, request):
         query = request.query_params.get('query', '')
         products = Product.objects.filter(name__icontains=query)
-        serializer = ProductListSerializer(products, many=True)
+        serializer = ClientProductListSerializer(products, many=True,context={'request': request})
         return Response(serializer.data)
 
 class ProductFilterAPIView(APIView):
@@ -92,7 +94,7 @@ class ProductFilterAPIView(APIView):
 
         
 
-        serializer = ProductListSerializer(products, many=True)
+        serializer = ClientProductListSerializer(products, many=True,context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class MostOrderedProductsAPIView(APIView):
@@ -100,5 +102,5 @@ class MostOrderedProductsAPIView(APIView):
         most_ordered_products = OrderItem.objects.values('product_id', 'product__name').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')[:10]
         product_ids = [item['product_id'] for item in most_ordered_products]
         products = Product.objects.filter(id__in=product_ids)
-        serializer = ProductListSerializer(products, many=True)
+        serializer = ClientProductListSerializer(products, many=True,context={'request': request})
         return Response(serializer.data)
