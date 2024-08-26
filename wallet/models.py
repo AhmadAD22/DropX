@@ -1,7 +1,7 @@
 from django.db import models
 # Create your models here.
 from django.db import models
-from accounts.models import User,RestaurantSubscription
+from accounts.models import User,RestaurantSubscription,DriverOrderSubscription,DriverTripSubscription
 from order.models import Order,Trip
 
 class UserWallet(models.Model):
@@ -28,4 +28,17 @@ class RestaurantSubscriptionPayment(models.Model):
      duration = models.CharField(max_length=8)
      price = models.DecimalField(max_digits=8, decimal_places=2)
      paid=models.BooleanField(default=False)
+     
+class DriverOrderSubscriptionPayment(models.Model):
+     subscription=models.ForeignKey(DriverOrderSubscription,on_delete=models.CASCADE,related_name="RenewOrderSubscription")
+     duration = models.CharField(max_length=8)
+     price = models.DecimalField(max_digits=8, decimal_places=2)
+     paid=models.BooleanField(default=False)
+     
+class DriverTripSubscriptionPayment(models.Model):
+     subscription=models.ForeignKey(DriverTripSubscription,on_delete=models.CASCADE,related_name="RenewTripSubscription")
+     duration = models.CharField(max_length=8)
+     price = models.DecimalField(max_digits=8, decimal_places=2)
+     paid=models.BooleanField(default=False)
+
 

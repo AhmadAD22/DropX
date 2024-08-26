@@ -13,6 +13,8 @@ from utils.error_handle import error_handler
 from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
 from wallet.models import UserWallet,RestaurantSubscriptionPayment
+from django.db import IntegrityError
+
 
 class RestaurantSubscriptionConfigList(APIView):
     def get(self, request):
@@ -205,20 +207,31 @@ class ChangeRestaurantStatus(APIView):
 class RenewSubscriptionAPIView(APIView):
     def post(self, request):
         new_duration = request.data.get('new_duration')
-
         try:
             restaurant_subscription = RestaurantSubscription.objects.get(restaurant__phone=request.user.phone)
-            current_end_date = restaurant_subscription.end_date
-            new_end_date = current_end_date + timedelta(days=int(new_duration))
-
-            restaurant_subscription.duration = new_duration
-            restaurant_subscription.end_date = new_end_date
-            restaurant_subscription.save()
-
-            return Response({'message': 'Subscription renewed successfully'})
         except RestaurantSubscription.DoesNotExist:
             return Response({'error': 'Restaurant subscription not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+        try:
+                subscription_config=SubscriptionConfig.objects.get(type="RESTAURANT",duration=new_duration)
+        except SubscriptionConfig.DoesNotExist:
+                return Response({'error': 'The selectd duration is not defined'},status=status.HTTP_404_NOT_FOUND)
+            
+        try:
+            restaurantSubscriptionPayment = RestaurantSubscriptionPayment.objects.create(
+                subscription=restaurant_subscription,
+                duration=subscription_config.duration,
+                price=subscription_config.price
+            )
+            restaurantSubscriptionPayment.save()
+            # Additional logic after successfully creating and saving the object
+        except IntegrityError as e:
+            # Handle integrity error, such as unique constraint violation
+            return Response({'error': f"IntegrityError occurred: {e}"},status=status.HTTP_404_NOT_FOUND)
+            print()
+        except Exception as e:
+            # Handle other exceptions
+            return Response({'error': f"{e}"},status=status.HTTP_404_NOT_FOUND)
+        return Response({'result': 'Success, Please Pay to active the renew'})
         
 
 

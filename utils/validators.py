@@ -19,3 +19,7 @@ class NumberField(forms.CharField):
     def __init__(self, *args, **kwargs):
         super(NumberField, self).__init__(*args, **kwargs)
         self.widget.attrs.update({'class': 'form-control'})
+        
+
+
+    

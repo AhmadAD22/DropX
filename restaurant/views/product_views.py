@@ -11,9 +11,7 @@ from utils.permissions import ResturantSubscripted
 class RetaurantPermissions(APIView):
     permission_classes=[IsAuthenticated,ResturantSubscripted]
 
-class ProductListByCategoryView(APIView):
-    
-    permission_classes = [ResturantSubscripted] 
+class ProductListByCategoryView(RetaurantPermissions):
     
     def get(self, request,category_id):
         try:
@@ -46,7 +44,7 @@ class ProductListCreateView(RetaurantPermissions):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProductRetrieveUpdateDeleteView(APIView):
+class ProductRetrieveUpdateDeleteView(RetaurantPermissions):
             
     permission_classes = [IsAuthenticated] 
     def get(self, request, pk):
@@ -84,7 +82,7 @@ class ProductRetrieveUpdateDeleteView(APIView):
     
 ################Accessory Product Views##################################
 
-class AccessoryProductListCreateAPIView(APIView):
+class AccessoryProductListCreateAPIView(RetaurantPermissions):
     def get(self, request,product_id):
         try:
             product=Product.objects.get(id=product_id)
@@ -105,7 +103,7 @@ class AccessoryProductListCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AccessoryProductRetrieveUpdateDestroyAPIView(APIView):
+class AccessoryProductRetrieveUpdateDestroyAPIView(RetaurantPermissions):
     def get(self, request, pk):
         try:
             accessory_product = AccessoryProduct.objects.get(pk=pk)

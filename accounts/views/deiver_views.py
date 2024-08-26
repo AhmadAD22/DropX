@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from utils.error_handle import error_handler
 from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
+from wallet.models import DriverOrderSubscriptionPayment,DriverTripSubscriptionPayment,UserWallet
 
 class DriverSubscriptionConfigList(APIView):
     def get(self, request):
@@ -128,7 +129,7 @@ class DreiverRegisterRequestView(APIView):
 
     def post(self,request,*args,**kwargs):
         serialized=PendingDriverSerializer(data=request.data)
-          # check if user exists
+        # check if user exists
         if Driver.objects.filter(Q(phone=request.data['phone'])|Q(email=request.data['email'])).exists():
             return Response({'error': 'Phone number or email already exists'}, status=status.HTTP_409_CONFLICT)
         
@@ -187,6 +188,7 @@ class DriverCreateAccountAPIView(APIView):
             )
             new_driver.password = make_password(request.data['password'])
             new_driver.save()
+            user_wallet=UserWallet.objects.create(user=new_driver,balance=0.0)
             if pending_driver.memberSubscription:
                 try:
                     subscription_config=SubscriptionConfig.objects.get(type="MEMBERS",duration=pending_driver.memberSubscription)
@@ -196,6 +198,8 @@ class DriverCreateAccountAPIView(APIView):
                 member_subscription=DriverTripSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
                 member_subscription.end_date=member_subscription.calculate_end_date()
                 member_subscription.save()
+                memberSubscriptionPayment=DriverTripSubscriptionPayment.objects.create(subscription=member_subscription,duration=subscription_config.duration,price=subscription_config.price)
+                memberSubscriptionPayment.save()
                 
             if pending_driver.orderSubscription:
                 try:
@@ -206,6 +210,8 @@ class DriverCreateAccountAPIView(APIView):
                 order_subscription=DriverOrderSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
                 order_subscription.end_date=order_subscription.calculate_end_date()
                 order_subscription.save()
+                orderSubscriptionPayment=DriverOrderSubscriptionPayment.objects.create(subscription=order_subscription,duration=subscription_config.duration,price=subscription_config.price)
+                orderSubscriptionPayment.save()
             
             pending_driver.delete()
             otp.delete()

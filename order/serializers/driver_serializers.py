@@ -16,17 +16,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ('product', 'quantity', 'unitPrice', 'discount', 'note','get_total_price', 'accessories')
 
 
-# class OrderSerializer(serializers.ModelSerializer):
-#     items = OrderItemSerializer(many=True)
-
-#     class Meta:
-#         model = Order
-#         fields = (
-#             'client', 'deiver', 'restaurantLat', 'restaurantLng', 'restaurantAddress',
-#             'destinationLat', 'destinationLng', 'destinationAddress', 'driverLat', 'driverLng',
-#             'payment', 'status', 'orderDate', 'deliveryDate',  'totalAmount', 'coupon', 'items'
-#         )
-   
          
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)

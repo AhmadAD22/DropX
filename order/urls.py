@@ -30,7 +30,6 @@ path('client/current-orders', ClientCurrentOrdersListAPIView.as_view(), name='cl
 path('client/previous-orders', ClientPreviousOrdersListAPIView.as_view(), name='client-previous-order'),
 path('client/order/<int:order_id>/', ClientOrderDetailsListAPIView.as_view(), name='client-order-details'),
 path('client/cancel-order/<int:order_id>/', ClientCancelOrderListAPIView.as_view(), name='client-cancel-order'),
-path('client/initial-payment/<int:order_id>/', ClientPayOrderAPIView.as_view(), name='client-initial-payment'),
 
 
 path('restaurant/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),

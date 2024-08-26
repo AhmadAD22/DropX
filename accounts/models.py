@@ -184,7 +184,7 @@ class CarCategory(models.Model):
 class Driver(User):
     bankName=models.CharField(max_length=50)
     iban=models.CharField(max_length=21)
-    companyName=models.CharField(max_length=50)
+    companyName=models.CharField(max_length=50,null=True,blank=True)
     car=models.ForeignKey(Car,on_delete=models.CASCADE)
     carName=models.CharField(max_length=50)
     carCategory=models.ForeignKey(CarCategory, on_delete=models.CASCADE)
@@ -233,6 +233,18 @@ class DriverOrderSubscription(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     paid=models.BooleanField(default=False)
     enabled=models.BooleanField(default=True)
+    
+    def is_expired(self):
+        current_time = timezone.now()
+        return current_time > self.end_date
+    def renew_subscription(self, new_duration):
+        current_end_date = self.end_date
+        new_end_date = current_end_date + timedelta(days=int(new_duration))
+
+        self.duration = new_duration
+        self.end_date = new_end_date
+        self.save()
+        
 
     def calculate_end_date(self):
         duration_days = int(self.duration)
@@ -296,6 +308,20 @@ class DriverTripSubscription(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     paid=models.BooleanField(default=False)
     enabled=models.BooleanField(default=True)
+    
+    def is_expired(self):
+        current_time = timezone.now()
+        
+        return current_time > self.end_date
+    
+    def renew_subscription(self, new_duration):
+        current_end_date = self.end_date
+        new_end_date = current_end_date + timedelta(days=int(new_duration))
+
+        self.duration = new_duration
+        self.end_date = new_end_date
+        self.save()
+        
 
     def calculate_end_date(self):
         duration_days = int(self.duration)
@@ -379,11 +405,6 @@ class Restaurant(User):
         verbose_name = 'Restaurant'
         verbose_name_plural = 'Restaurant'
         
-class RenewRestaurantSubscription(models.Model):
-     restaurant=models.ForeignKey(Restaurant,null=True, on_delete=models.CASCADE,related_name="RenewSubscription")
-     duration = models.CharField(max_length=8)
-     price = models.DecimalField(max_digits=8, decimal_places=2)
-     paid=models.BooleanField(default=False)
 
 class RestaurantSubscription(models.Model):
     DURATION_CHOICES = [

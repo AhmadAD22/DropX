@@ -12,28 +12,27 @@ from accounts.models import *
 from utils.notifications import *
 from wallet.models import UserWallet,PaymentTrip
 from django.db import transaction
-
-
+from utils.permissions import DriverOrderSubscripted,DriverTripSubscripted
 
 class DriverNewOrderListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverOrderSubscripted]
     def get(self, request):
         orders = Order.objects.filter(driver__isnull=True,status='PENDING')
         serializer = DriverOrderListSerializer(orders, many=True)
         return Response(serializer.data)
     
 class DriverCurrentOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverOrderSubscripted]
     def get(self, request):
         orders = Order.objects.filter(
             Q(driver=request.user) &
-            (Q(status='IN_PROGRESS') | Q(status='PENDING')) 
+            (Q(status='IN_PROGRESS') | Q(status=Status.ACCEPTED)) 
                   )
         serializer = DriverOrderListSerializer(orders, many=True)
         return Response(serializer.data)
 
 class DriverPreviousOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverOrderSubscripted]
     def get(self, request):
         complatedOrders = Order.objects.filter(driver=request.user,
                                                status='COMPLETED',
@@ -57,8 +56,7 @@ class DriverPreviousOrdersListAPIView(APIView):
     
 
 class DriverStatisticsOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [DriverOrderSubscripted]
     def get(self, request):
         # Get the current date, month, and year
         current_date = date.today()
@@ -106,7 +104,7 @@ class DriverStatisticsOrdersListAPIView(APIView):
         return Response(data)
 
 class RestaurantTodayOrdersListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverOrderSubscripted]
 
     def get(self, request):
         # Get the current date
@@ -135,7 +133,7 @@ class RestaurantTodayOrdersListAPIView(APIView):
 
 
 class DriverAcceptOrder(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverOrderSubscripted]
     @transaction.atomic
     def post(self,request):
         try:
@@ -155,7 +153,7 @@ class DriverAcceptOrder(APIView):
         
         
 class OnWayNotification(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverOrderSubscripted]
     
     def post(self,request):
         try:
@@ -178,7 +176,7 @@ class OnWayNotification(APIView):
        
        
 class DeliveryConfirm(APIView):
-    permission_classes=[IsAuthenticated]
+    permission_classes = [DriverOrderSubscripted]
     @transaction.atomic
     def post(self,request):
         try:
@@ -221,7 +219,7 @@ class DeliveryConfirm(APIView):
 
 
 class DriverNewTripListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverTripSubscripted]
 
     def get(self, request):
         driver=Driver.objects.get(phone=request.user.phone)
@@ -231,7 +229,7 @@ class DriverNewTripListAPIView(APIView):
 
 
 class DriverCurrentTripsListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverTripSubscripted]
 
     def get(self, request):
         trips = Trip.objects.filter(
@@ -243,7 +241,7 @@ class DriverCurrentTripsListAPIView(APIView):
 
 
 class DriverPreviousTripsListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverTripSubscripted]
 
     def get(self, request):
         completed_trips = Trip.objects.filter(driver=request.user, status='COMPLETED')
@@ -264,7 +262,7 @@ class DriverPreviousTripsListAPIView(APIView):
 
 
 class DriverStatisticsTripsListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverTripSubscripted]
 
     def get(self, request):
         current_date = date.today()
@@ -308,7 +306,7 @@ class DriverStatisticsTripsListAPIView(APIView):
     
     
 class DriverAcceptTrip(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverTripSubscripted]
     
     def post(self,request):
         try:
@@ -328,7 +326,7 @@ class DriverAcceptTrip(APIView):
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
         
 class DriverRejectTrip(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverTripSubscripted]
     
     def post(self,request):
         try:
@@ -349,7 +347,7 @@ class DriverRejectTrip(APIView):
 
 
 class DriverComlateTrip(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DriverTripSubscripted]
     
     def post(self,request):
         try:
