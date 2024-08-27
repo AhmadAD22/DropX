@@ -130,6 +130,7 @@ class CheckoutView(APIView):
             total_price = cart.total_price_with_tax()
 
             # Apply the coupon if provided
+            coupon=None
             if coupon_code:
                 coupon = Coupon.objects.filter(code=coupon_code, isActive=True).first()
                 if coupon:
@@ -141,21 +142,40 @@ class CheckoutView(APIView):
             # Calculate the tax
             # tax = total_price * (order_config.tax / 100)
             client = Client.objects.get(phone=request.user.phone)
-            
+            restaurant=cart.items.first().product.restaurant
+            #Delivery Cost
+            deliveryCost=0.0
+            distance=calculate_distance(restaurant.latitude,restaurant.longitude,client_latitude,client_longitude)
+            carCategory=CarCategory.objects.filter(car_category='نقل طلبات')
+            if carCategory:
+                
+                carCategory=carCategory.first()
+                if distance <3:
+                    km_price=carCategory.less_than_three_km
+                    deliveryCost= round(distance * km_price,2)
+                elif distance>=3 and distance<=6:
+                    km_price=carCategory.between_three_and_six_km
+                    deliveryCost= round(distance * km_price,2)
+                else:
+                    km_price=carCategory.between_three_and_six_km 
+                    deliveryCost= round(distance * km_price,2)
+            else:
+                deliveryCost= round(distance * 2,2)
+                
             # Create the order
             order = Order.objects.create(
                 client=client,
-                restaurantLat=cart.items.first().product.restaurant.latitude,
-                restaurantLng=cart.items.first().product.restaurant.longitude,
-                restaurantAddress=cart.items.first().product.restaurant.address,
+                restaurantLat=restaurant.latitude,
+                restaurantLng=restaurant.longitude,
+                restaurantAddress=restaurant.address,
                 destinationLat=client_latitude,
                 destinationLng=client_longitude,
                 destinationAddress=client_address,
                 destinationPhone=client_phone,
                 destinationName=client_name,
                 deliveryDate=delivery_date,
-                # payment=payment_method,
                 status=Status.PENDING,
+                deliveryCost=deliveryCost,
                 totalAmount=total_price,
                 coupon=coupon
             )

@@ -72,7 +72,7 @@ class Order(models.Model):
     orderDate = models.DateTimeField(auto_now_add=True)
     deliveryDate = models.DateTimeField(blank=True, null=True,default=None)
     checkoutAt=models.DateTimeField(blank=True, null=True,default=None)
-    deliveryCost=models.DecimalField(max_digits=10, decimal_places=2)
+    deliveryCost=models.DecimalField(max_digits=10, decimal_places=2,null=True)
     tax = models.DecimalField(max_digits=10, decimal_places=2)
     totalAmount = models.DecimalField(max_digits=10, decimal_places=2)
     coupon=models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True,blank=True)
@@ -81,6 +81,7 @@ class Order(models.Model):
         return '#' +str(self.pk)
     
 
+    
     
     
     def total_price(self):
@@ -103,23 +104,7 @@ class Order(models.Model):
         """Calculates the total number of products ordered."""
         return self.items.aggregate(total_products=Sum('quantity'))['total_products'] or 0
     
-    def deliveryCost(self):
-        distance=calculate_distance(self.restaurantLat,self.restaurantLng,self.destinationLat,self.destinationLng)
-        carCategory=CarCategory.objects.filter(car_category='نقل طلبات')
-        if carCategory:
-            
-            carCategory=carCategory.first()
-            if distance <3:
-                km_price=carCategory.less_than_three_km
-                return round(distance * km_price,2)
-            elif distance>=3 and distance<=6:
-                km_price=carCategory.between_three_and_six_km
-                return round(distance * km_price,2)
-            else:
-                km_price=carCategory.between_three_and_six_km 
-                return round(distance * km_price,2)
-        else:
-            return round(distance * 2,2)
+    
     
     def tax(self):
         tax_config=OrderConfig.objects.first().tax
@@ -136,7 +121,7 @@ class Order(models.Model):
     def price_with_tax_with_coupon(self):
         tax = self.tax()
         price = self.total_price()
-        deliveryCost=  Decimal(self.deliveryCost()) 
+        deliveryCost=  Decimal(self.deliveryCost) 
         commission=self.commission()
         if self.coupon:
             coupon_percent = decimal.Decimal(self.coupon.percent) / 100
