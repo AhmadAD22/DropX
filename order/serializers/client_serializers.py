@@ -81,6 +81,20 @@ class TripSerializer(serializers.ModelSerializer):
             'id', 'note', 'tripDate',
             'sourceLat', 'sourceLng', 'sourceAddress',
             'destinationLat', 'destinationLng', 'destinationAddress',
-            'car','distance', 'commission','price', 'coupon','tax','price_with_tax','price_with_tax_with_coupon',
+            'car','distance', 'status','commission','price', 'coupon','tax','price_with_tax','price_with_tax_with_coupon',
         )
         read_only_fields = ('price_with_tax', 'price_with_tax_with_coupon')
+        
+class TripListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trip
+        fields = (
+            'id', 'tripDate',
+            'sourceLat', 'sourceLng', 'sourceAddress',
+            'destinationLat', 'destinationLng', 'destinationAddress',
+            'distance','price_with_tax_with_coupon','status'
+        )
+        read_only_fields = ('id', 'tripDate',
+            'sourceLat', 'sourceLng', 'sourceAddress',
+            'destinationLat', 'destinationLng', 'destinationAddress',
+            'distance','price_with_tax_with_coupon',)

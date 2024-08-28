@@ -13,6 +13,8 @@ from utils.notifications import *
 from wallet.models import UserWallet,PaymentTrip
 from django.db import transaction
 from utils.permissions import DriverOrderSubscripted,DriverTripSubscripted
+from utils.notifications import NotificationsHelper,OrdersUpdates,TripUpdates
+
 
 class DriverNewOrderListAPIView(APIView):
     permission_classes = [DriverOrderSubscripted]
@@ -319,8 +321,13 @@ class DriverAcceptTrip(APIView):
             return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
         if trip.driver is None:
             trip.driver=driver
-            trip.status=Status.IN_PROGRESS
+            trip.status=Status.ACCEPTED
             trip.save()
+            NotificationsHelper.sendTripUpdate(
+            update=TripUpdates.DRIVER_ACCEPTED,
+            tripId=trip,
+            target=trip.client,
+            )
             return Response({'result':'Order accepted'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
@@ -340,6 +347,11 @@ class DriverRejectTrip(APIView):
         if trip.driver.phone == driver.phone:
             trip.status=Status.REJECTED
             trip.save()
+            NotificationsHelper.sendTripUpdate(
+            update=TripUpdates.DRIVER_REJECTED,
+            tripId=trip,
+            target=trip.client,
+            )
             return Response({'result':'Order Rejected'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
@@ -367,6 +379,11 @@ class DriverComlateTrip(APIView):
                 trip.save()
                 driver_wallet.balance+=Decimal(trip.price)
                 driver_wallet.save()
+                NotificationsHelper.sendTripUpdate(
+                update=TripUpdates.TRIP_COMPLATED,
+                tripId=trip,
+                target=trip.client,
+                )
             else:
                 return Response({'error':'The order status must be in progress or the order already complated'},status=status.HTTP_400_BAD_REQUEST)
             return Response({'result':'Order Complated'},status=status.HTTP_200_OK)

@@ -101,8 +101,28 @@ class CheckoutView(APIView):
             cart = Cart.objects.get(client__phone=request.user.phone)
         except Cart.DoesNotExist:
             return Response({'error': 'Cart not found.'}, status=status.HTTP_404_NOT_FOUND)
-        cart_serializer=CartCheckoutSerializer(cart)
-        return Response(cart_serializer.data,status=status.HTTP_200_OK)
+        coupon_code = request.query_params.get('coupon_code')
+        if coupon_code:
+            
+            try:
+                coupon=Coupon.objects.get(code=coupon_code,isActive=True)
+            except Coupon.DoesNotExist:
+                return Response({'error': 'Coupon not found or inactive.'}, status=status.HTTP_404_NOT_FOUND)
+            if coupon.type==CouponType.DRIVER:
+                return Response({'error': 'Coupon not intended for orders.'}, status=status.HTTP_400_BAD_REQUEST)
+            if coupon.is_expired():
+                return Response({'error': 'Coupon is expired.'}, status=status.HTTP_400_BAD_REQUEST)
+            # Get the order config
+            order_config = OrderConfig.objects.first()
+            used_coupn_count=Order.objects.filter(client__phone=request.user.phone,coupon=coupon).count()
+            if used_coupn_count > coupon.times:
+                return Response({'error': 'You have reached the maximum number of coupon uses allowed.'}, status=status.HTTP_400_BAD_REQUEST)
+            cart_serializer=CartCheckoutSerializer(cart,context={'coupon':coupon})
+            return Response(cart_serializer.data,status=status.HTTP_200_OK)
+        else:
+            cart_serializer=CartCheckoutSerializer(cart,context={'coupon':None})
+            return Response(cart_serializer.data,status=status.HTTP_200_OK)
+
 
         
 

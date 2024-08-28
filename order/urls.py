@@ -46,7 +46,9 @@ path('checkout/', CheckoutView.as_view(), name='checkout'),
 
 
 path('tripcars/', TripCarAPIView.as_view(), name='tripcar-detail'),
-path('trip-order/', ClientCreateTripAPIView.as_view(), name='tripcar-detail'),
+path('trip-order/', ClientCreateTripAPIView.as_view(), name='create-trip'),
+path('current-trip/', ClientCurrentTripsListAPIView.as_view(), name='current-trip'),
+path('previous-trip/', ClientPreviousTripsListAPIView.as_view(), name='previous-trip'),
 
 path('trips-driver/new/', DriverNewTripListAPIView.as_view(), name='driver-new-trips-list'),
 path('trips-driver/current/', DriverCurrentTripsListAPIView.as_view(), name='driver-current-trips-list'),

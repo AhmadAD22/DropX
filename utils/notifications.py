@@ -109,17 +109,18 @@ class NotificationsHelper:
                                 bodyArgs=bodyArgs,
                                 data=data,
                                 )
-        if target.fcm_token:
-            msg.token=target.fcm_token
-            cls.__sendMessage(msg)
-            Notification.objects.create(
-                                    title=update+'_TITLE',
-                                    body=update+'_BODY',
-                                    bodyArgs=bodyArgs,
-                                    localized=True,
-                                    user=target,
-                                    order=orderId,
-                                    )
+        if target.notificationEnabled==True:
+            if target.fcm_token:
+                msg.token=target.fcm_token
+                cls.__sendMessage(msg)
+                Notification.objects.create(
+                                        title=update+'_TITLE',
+                                        body=update+'_BODY',
+                                        bodyArgs=bodyArgs,
+                                        localized=True,
+                                        user=target,
+                                        order=orderId,
+                                        )
     @classmethod
     def sendTripUpdate(cls,update:str,tripId:Trip,target:User):
         data={
@@ -133,17 +134,18 @@ class NotificationsHelper:
                                 bodyArgs=bodyArgs,
                                 data=data,
                                 )
-        if target.fcm_token:
-            msg.token=target.fcm_token
-            cls.__sendMessage(msg)
-            Notification.objects.create(
-                                    title=update+'_TITLE',
-                                    body=update+'_BODY',
-                                    bodyArgs=bodyArgs,
-                                    localized=True,
-                                    user=target,
-                                    trip=tripId,
-                                    )
+        if target.notificationEnabled==True:
+            if target.fcm_token:
+                msg.token=target.fcm_token
+                cls.__sendMessage(msg)
+                Notification.objects.create(
+                                        title=update+'_TITLE',
+                                        body=update+'_BODY',
+                                        bodyArgs=bodyArgs,
+                                        localized=True,
+                                        user=target,
+                                        trip=tripId,
+                                        )
     @classmethod
     def sendDriverAcceptUpdate(cls,update:str,order:Order,target:User):
           data={
@@ -157,18 +159,19 @@ class NotificationsHelper:
                                 bodyArgs=bodyArgs,
                                 data=data,
                                 )
-          if target.fcmToken:
-            msg.token=target.fcmToken
-            cls.__sendMessage(msg)
-            Notification.objects.create(
-                                    title=update+'_TITLE',
-                                    body=update+'_BODY',
-                                    bodyArgs=bodyArgs,
-                                    localized=True,
-                                    user=target,
-                                    order=order,
-                                    )
-          
+          if target.notificationEnabled==True:
+            if target.fcmToken:
+                msg.token=target.fcmToken
+                cls.__sendMessage(msg)
+                Notification.objects.create(
+                                        title=update+'_TITLE',
+                                        body=update+'_BODY',
+                                        bodyArgs=bodyArgs,
+                                        localized=True,
+                                        user=target,
+                                        order=order,
+                                        )
+            
     #send new update about order to user
     # update is value from OrdersUpdates class
     @classmethod
@@ -183,19 +186,27 @@ class NotificationsHelper:
                                 bodyArgs=bodyArgs,
                                 data=data,
                                 )
-        if target.fcm_token:
-            msg.token=target.fcm_token
-            cls.__sendMessage(msg)
-            Notification.objects.create(
-                                    title=update+'_TITLE',
-                                    body=update+'_BODY',
-                                    bodyArgs=bodyArgs,
-                                    localized=True,
-                                    user=target,
-                                    )
+        if target.notificationEnabled==True:
+            if target.fcm_token:
+                msg.token=target.fcm_token
+                cls.__sendMessage(msg)
+                Notification.objects.create(
+                                        title=update+'_TITLE',
+                                        body=update+'_BODY',
+                                        bodyArgs=bodyArgs,
+                                        localized=True,
+                                        user=target,
+                                        )
 class RegistrationUpdate:
     REGISTR_ACCEPTED='REGISTR_ACCEPTED'
     REGISTR_REJECTED='REGISTR_REGECTED'
+    
+    
+class TripUpdates:
+    Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way
+    DRIVER_ACCEPTED=  'DRIVER_ACCEPTED'#send to Client when his order is accepted
+    DRIVER_REJECTED=  'DRIVER_REJECTED'
+    TRIP_COMPLATED=  'TRIP_COMPLATED'
     
 class OrdersUpdates:
     Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way

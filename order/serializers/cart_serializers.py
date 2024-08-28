@@ -80,10 +80,20 @@ class CartCheckoutSerializer(serializers.ModelSerializer):
     client_address=serializers.CharField(source='client.address',read_only=True)
     client_latitude=serializers.CharField(source='client.latitude',read_only=True)
     client_longitude=serializers.CharField(source='client.longitude',read_only=True)
-        
+    price_after_coupon=serializers.SerializerMethodField()
+    coupon_percent=serializers.SerializerMethodField() 
 
     class Meta:
         model = Cart
-        fields = ['id','client_name' ,'client_phone','client_latitude','client_longitude','client_address','items','tax','total_price','total_price_with_tax']
+        fields = ['id','client_name' ,'client_phone','client_latitude','client_longitude','client_address','items','tax','commission','total_price','total_price_with_tax','coupon_percent','price_after_coupon']
         
-        
+    def get_price_after_coupon(self,obj):
+       if self.context['coupon']:
+           return obj.price_with_tax_with_coupon(self.context['coupon'])
+       else:
+           return None
+    def get_coupon_percent(self,obj):
+       if self.context['coupon']:
+           return self.context['coupon'].percent
+       else:
+           return None  

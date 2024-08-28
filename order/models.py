@@ -174,8 +174,25 @@ class Cart(models.Model):
         tax_config= OrderConfig.objects.first().tax 
         tax = self.total_price() * (decimal.Decimal(tax_config) / 100) if tax_config else decimal.Decimal(0)
         return round(tax, 2)
+    def commission(self):
+        order_config=OrderConfig.objects.first()
+        return order_config.commission
+    
     def total_price_with_tax(self):
-        return self.tax() + self.total_price()
+        return self.tax() + self.total_price() + self.commission()
+    
+    
+    def price_with_tax_with_coupon(self,coupon):
+        commission=Decimal(self.commission())
+        tax = self.tax()
+        if self.total_price() is not None:
+            price = Decimal(self.total_price())
+        else:
+            price = Decimal(0)
+        if coupon:
+            coupon_percent = Decimal(coupon.percent) / 100
+            price = price - (price * coupon_percent)
+        return (tax +commission+ price).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
@@ -276,3 +293,4 @@ class Trip(models.Model):
             coupon_percent = Decimal(self.coupon.percent) / 100
             price = price - (price * coupon_percent)
         return (tax +commission+ price).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+    

@@ -44,7 +44,27 @@ class TripDetailAPIView(APIView):
             return Response(serializer.data)
         except Trip.DoesNotExist:
             return Response({'message': 'Trip not found'}, status=404)
-        
+ 
+ 
+class ClientCurrentTripsListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        trips = Trip.objects.filter(
+            Q(client=request.user) &
+            (Q(status='IN_PROGRESS') | Q(status='PENDING')| Q(status=Status.ACCEPTED)) 
+                  )
+        serializer = TripListSerializer(trips, many=True)
+        return Response(serializer.data) 
+    
+class ClientPreviousTripsListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        trips = Trip.objects.filter(
+            Q(client=request.user) &
+            (Q(status=Status.COMPLETED) | Q(status=Status.CANCELLED)| Q(status=Status.REJECTED)) 
+                  )
+        serializer = TripListSerializer(trips, many=True)
+        return Response(serializer.data)          
         
 class ClientCurrentOrdersListAPIView(APIView):
     permission_classes = [IsAuthenticated]
