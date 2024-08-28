@@ -30,13 +30,18 @@ path('client/current-orders', ClientCurrentOrdersListAPIView.as_view(), name='cl
 path('client/previous-orders', ClientPreviousOrdersListAPIView.as_view(), name='client-previous-order'),
 path('client/order/<int:order_id>/', ClientOrderDetailsListAPIView.as_view(), name='client-order-details'),
 path('client/cancel-order/<int:order_id>/', ClientCancelOrderListAPIView.as_view(), name='client-cancel-order'),
+path('client/track-order/<int:order_id>/', ClientTrackOrderAPIView.as_view(), name='client-track-order'),
+
 
 
 path('restaurant/<int:pk>/', OrderDetailAPIView.as_view(), name='order-detail'),
 
 path('cart/', CartAPIView.as_view(), name='cart-list'),
 path('add-product-to-cart/', AddProductToCartAPIView.as_view(), name='add-to-cart'),
+path('update-product-quantity/', UpadteItemQuantityCartAPIView.as_view(), name='update-product-quantity'),
 path('add-accessory-to-cart/', AddAccessoryProductToCartAPIView.as_view(), name='add-accessory-to-cart'),
+path('update-accessory-quantity/', UpadteAccessoryItemQuantityCartAPIView.as_view(), name='update-accessory-quantity'),
+
 path('checkout/', CheckoutView.as_view(), name='checkout'),
 
 

@@ -104,3 +104,9 @@ class MostOrderedProductsAPIView(APIView):
         products = Product.objects.filter(id__in=product_ids)
         serializer = ClientProductListSerializer(products, many=True,context={'request': request})
         return Response(serializer.data)
+    
+class ProductOffersAPIView(APIView):
+    def get(self, request):
+        products = Product.objects.all().order_by('-offers')[:5]
+        serializer = ClientProductListSerializer(products, many=True,context={'request': request})
+        return Response(serializer.data)

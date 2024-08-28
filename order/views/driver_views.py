@@ -321,7 +321,7 @@ class DriverAcceptTrip(APIView):
             trip.driver=driver
             trip.status=Status.IN_PROGRESS
             trip.save()
-            return Response({'result':'Order accepted'},status=status.HTTP_404_NOT_FOUND)
+            return Response({'result':'Order accepted'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
         
@@ -340,7 +340,7 @@ class DriverRejectTrip(APIView):
         if trip.driver.phone == driver.phone:
             trip.status=Status.REJECTED
             trip.save()
-            return Response({'result':'Order Rejected'},status=status.HTTP_404_NOT_FOUND)
+            return Response({'result':'Order Rejected'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
 
@@ -369,6 +369,6 @@ class DriverComlateTrip(APIView):
                 driver_wallet.save()
             else:
                 return Response({'error':'The order status must be in progress or the order already complated'},status=status.HTTP_400_BAD_REQUEST)
-            return Response({'result':'Order Complated'},status=status.HTTP_404_NOT_FOUND)
+            return Response({'result':'Order Complated'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)

@@ -159,7 +159,7 @@ class CheckoutView(APIView):
                 else:
                     km_price=carCategory.between_three_and_six_km 
                     deliveryCost= round(distance * km_price,2)
-            else:
+            else:   
                 deliveryCost= round(distance * 2,2)
                 
             # Create the order
@@ -221,3 +221,28 @@ class CheckoutView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         
+class UpadteItemQuantityCartAPIView(APIView):
+    permission_classes=[IsAuthenticated]
+    def put(self, request):
+        item_id = request.data.get('item_id')
+        quantity = request.data.get('quantity')
+        try:
+            item=CartItem.objects.get(id=item_id)
+        except:
+            return Response({'error': 'Item does not found.'}, status=status.HTTP_404_NOT_FOUND)
+        item.quantity=quantity
+        item.save()
+        return Response({'result': 'Quantity updated.'}, status=status.HTTP_200_OK)
+    
+class UpadteAccessoryItemQuantityCartAPIView(APIView):
+    permission_classes=[IsAuthenticated]
+    def put(self, request):
+        accessory_item_id = request.data.get('accessory_item_id')
+        quantity = request.data.get('quantity')
+        try:
+            accessory_item=CartAccessory.objects.get(id=accessory_item_id)
+        except:
+            return Response({'error': 'Item does not found.'}, status=status.HTTP_404_NOT_FOUND)
+        accessory_item.quantity=quantity
+        accessory_item.save()
+        return Response({'result': 'Quantity updated.'}, status=status.HTTP_200_OK)

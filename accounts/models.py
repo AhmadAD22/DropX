@@ -68,6 +68,7 @@ class User(AbstractUser):
     fcm_token = models.CharField(max_length=255, blank=True, null=True)
     deleted=models.BooleanField(default=False)
     enabled=models.BooleanField(default=False)
+    notificationEnabled=models.BooleanField(default=True)
     
     class Meta:
         permissions = (("subscriptions", "Subscriptions Control"), ("Driver", "Subscriptions Control"),)

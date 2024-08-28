@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from accounts.models import Client,CarCategory
 from utils.geographic import calculate_distance
 from utils.payment.order_pyment import Orderpayment
-
+from datetime import date
 class TripCarAPIView(APIView):
     
     def get(self, request, *args, **kwargs):
@@ -83,12 +83,36 @@ class ClientCancelOrderListAPIView(APIView):
             order = Order.objects.get(id=order_id)
         except Order.DoesNotExist:
             return Response({'erorr':'The order does not found!'},status=status.HTTP_404_NOT_FOUND)
-        order.status=Status.CANCELLED
-        order.save()
-        serializer = ClientOrderSerializer(order)
-        return Response(serializer.data)
+        if order.status==Status.PENDING:
+            cancelled_order_count=Order.objects.filter(client=request.user,status=Status.CANCELLED,orderDate__date=date.today(),).count()
+            orderConfig=OrderConfig.objects.first()
+            if cancelled_order_count <= orderConfig.maxRejectedNumber:
+                order.status=Status.CANCELLED
+                order.save()
+                serializer = ClientOrderSerializer(order)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+            else:
+                return Response({'erorr':'Exceeded cancellation limit!'},status=status.HTTP_400_BAD_REQUEST)
         
+        else:
+            return Response({'erorr':'Only pending orders can be cancelled!'},status=status.HTTP_400_BAD_REQUEST)
         
+class ClientTrackOrderAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request,order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'erorr':'The order does not found!'},status=status.HTTP_404_NOT_FOUND)
+        data={
+            'id':order.id,
+            'status':order.status,
+            'date':order.orderDate
+        }
+        return Response(data,status=status.HTTP_200_OK)
+
+        
+                
 class ClientPayOrderAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request,order_id):
