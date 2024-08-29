@@ -207,6 +207,7 @@ class TripUpdates:
     DRIVER_ACCEPTED=  'DRIVER_ACCEPTED'#send to Client when his order is accepted
     DRIVER_REJECTED=  'DRIVER_REJECTED'
     TRIP_COMPLATED=  'TRIP_COMPLATED'
+    CLIENT_CANCEL_TRIP='CLIENT_CANCEL_TRIP'
     
 class OrdersUpdates:
     Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way

@@ -41,12 +41,16 @@ path('add-product-to-cart/', AddProductToCartAPIView.as_view(), name='add-to-car
 path('update-product-quantity/', UpadteItemQuantityCartAPIView.as_view(), name='update-product-quantity'),
 path('add-accessory-to-cart/', AddAccessoryProductToCartAPIView.as_view(), name='add-accessory-to-cart'),
 path('update-accessory-quantity/', UpadteAccessoryItemQuantityCartAPIView.as_view(), name='update-accessory-quantity'),
+path('delete-product-from-cart/', DeleteItemCartAPIView.as_view(), name='delete-product-from-cart'),
+path('delete-accessory-from-cart/', DeleteAccessoryItemCartAPIView.as_view(), name='delete-accessory-from-cart'),
+
 
 path('checkout/', CheckoutView.as_view(), name='checkout'),
 
 
 path('tripcars/', TripCarAPIView.as_view(), name='tripcar-detail'),
 path('trip-order/', ClientCreateTripAPIView.as_view(), name='create-trip'),
+path('client/cancell-trip/<int:trip_id>/', ClientCancellTripAPIView.as_view(), name='cancell-trip'),
 path('current-trip/', ClientCurrentTripsListAPIView.as_view(), name='current-trip'),
 path('previous-trip/', ClientPreviousTripsListAPIView.as_view(), name='previous-trip'),
 

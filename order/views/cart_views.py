@@ -250,9 +250,13 @@ class UpadteItemQuantityCartAPIView(APIView):
             item=CartItem.objects.get(id=item_id)
         except:
             return Response({'error': 'Item does not found.'}, status=status.HTTP_404_NOT_FOUND)
-        item.quantity=quantity
-        item.save()
-        return Response({'result': 'Quantity updated.'}, status=status.HTTP_200_OK)
+        if quantity == 0:
+            item.delete()
+            return Response({'result': 'order deleted.'}, status=status.HTTP_200_OK)
+        else:
+            item.quantity=quantity
+            item.save()
+            return Response({'result': 'Quantity updated.'}, status=status.HTTP_200_OK)
     
 class UpadteAccessoryItemQuantityCartAPIView(APIView):
     permission_classes=[IsAuthenticated]
@@ -263,6 +267,34 @@ class UpadteAccessoryItemQuantityCartAPIView(APIView):
             accessory_item=CartAccessory.objects.get(id=accessory_item_id)
         except:
             return Response({'error': 'Item does not found.'}, status=status.HTTP_404_NOT_FOUND)
-        accessory_item.quantity=quantity
-        accessory_item.save()
-        return Response({'result': 'Quantity updated.'}, status=status.HTTP_200_OK)
+        if quantity == 0:
+            accessory_item.delete()
+            return Response({'result': 'order deleted.'}, status=status.HTTP_200_OK)
+        else:
+            accessory_item.quantity=quantity
+            accessory_item.save()
+            return Response({'result': 'Quantity updated.'}, status=status.HTTP_200_OK)
+
+class DeleteItemCartAPIView(APIView):
+    permission_classes=[IsAuthenticated]
+    def delete(self, request):
+        item_id = request.data.get('item_id')
+        try:
+            item=CartItem.objects.get(id=item_id)
+        except:
+            return Response({'error': 'Item does not found.'}, status=status.HTTP_404_NOT_FOUND)
+        item.delete()
+        return Response({'result': 'order deleted.'}, status=status.HTTP_200_OK)
+    
+class DeleteAccessoryItemCartAPIView(APIView):
+    permission_classes=[IsAuthenticated]
+    def delete(self, request):
+        accessory_item_id = request.data.get('accessory_item_id')
+        try:
+            accessory_item=CartAccessory.objects.get(id=accessory_item_id)
+        except:
+            return Response({'error': 'Item does not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        accessory_item.delete()
+        return Response({'result': 'order deleted.'}, status=status.HTTP_200_OK)
+    

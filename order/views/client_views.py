@@ -8,6 +8,7 @@ from accounts.models import Client,CarCategory
 from utils.geographic import calculate_distance
 from utils.payment.order_pyment import Orderpayment
 from datetime import date
+from utils.notifications import NotificationsHelper,TripUpdates
 class TripCarAPIView(APIView):
     
     def get(self, request, *args, **kwargs):
@@ -23,7 +24,6 @@ class TripCarAPIView(APIView):
     
     
 
-
 class ClientCreateTripAPIView(APIView):
     def post(self, request):
         try:
@@ -36,6 +36,25 @@ class ClientCreateTripAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class ClientCancellTripAPIView(APIView):
+    def post(self, request,trip_id):
+        try:
+            trip = Trip.objects.get(id=trip_id)
+            if trip.status == Status.PENDING:
+                trip.status=Status.CANCELLED
+                trip.save()
+                NotificationsHelper.sendTripUpdate(
+                    update=TripUpdates.CLIENT_CANCEL_TRIP,
+                    tripId=trip,
+                    target=trip.driver,
+                    )
+                return Response({'result':'Trip cancelled'},status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'You cannot cancel a trip with this status.'}, status=404)
+        except Trip.DoesNotExist:
+            return Response({'error': 'Trip not found'}, status=404)
+ 
+       
 class TripDetailAPIView(APIView):
     def get(self, request, trip_id):
         try:
@@ -43,7 +62,7 @@ class TripDetailAPIView(APIView):
             serializer = TripSerializer(trip)
             return Response(serializer.data)
         except Trip.DoesNotExist:
-            return Response({'message': 'Trip not found'}, status=404)
+            return Response({'erorr': 'Trip not found'}, status=404)
  
  
 class ClientCurrentTripsListAPIView(APIView):
