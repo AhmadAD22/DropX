@@ -34,6 +34,7 @@ urlpatterns = [
         path('user/phone-reset-verify', ResetPhoneVerifyView.as_view(), name='client-update'),
         
         #Driver
+        path('driver/cars',CarTypelist.as_view()),
         path('driver/subscription-config',DriverSubscriptionConfigList.as_view()),
         path('driver/login', DriverAuthToken.as_view()),
         path('driver/driver-request_register',DreiverRegisterRequestView.as_view()),

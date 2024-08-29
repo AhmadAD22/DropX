@@ -11,6 +11,7 @@ from .views.subscription_requests.restaurant import *
 from .views.config.order import *
 from .views.config.trip import *
 from .views.config.subscription import *
+from .views.config.app import *
 from .views.coupon import *
 from .views.accounts.products import *
 from .views.accounts.restaurant_financial import *
@@ -99,6 +100,8 @@ path('financial/driver/<int:driver_id>', driver_financial_overview, name='driver
 #Config
     #order
     path('order-config/', order_config_view, name='order_config_view'),
+    #App
+     path('app-config/', edit_app_config, name='edit_app_config'),
     #subscription
     path('subscription-config/', subscription_config_list, name='subscription_config_list'),
     path('subscription-config/<int:pk>', update_subscription_config, name='update_subscription_config'),

@@ -8,6 +8,13 @@ class PendingDriverSerializer(serializers.ModelSerializer):
         model = PendingDriver
         exclude=['otp','oldPhone']
         
+class CarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Car
+        fields = [
+                'id', 'carType'
+                ]
+            
 class UpdateDriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = PendingDriver
@@ -28,4 +35,15 @@ class DeiverSerializer(serializers.ModelSerializer):
             'phone', 'latitude', 'longitude', 'address', 'bankName', 'iban', 'companyName',
             'car', 'carName', 'carCategory', 'carColor', 'carLicense', 'drivingLicense',
             'carFront', 'carBack', 'memberSubscription', 'orderSubscription',
+        ]
+        
+class DeiverProfileSerializer(serializers.ModelSerializer):
+    car=serializers.CharField(source='car.carType')
+    class Meta:
+        model=Driver
+        fields = [
+            'id', 'avatar', 'gender', 'idNumber', 'birth', 'fullName', 'nationality', 'email',
+            'phone', 'latitude', 'longitude', 'address', 'bankName', 'iban', 'companyName',
+            'car', 'carName', 'carCategory', 'carColor', 'carLicense', 'drivingLicense',
+            'carFront', 'carBack',
         ]

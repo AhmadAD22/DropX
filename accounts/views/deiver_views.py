@@ -16,6 +16,8 @@ from django.contrib.auth.hashers import make_password
 from wallet.models import DriverOrderSubscriptionPayment,DriverTripSubscriptionPayment,UserWallet
 
 class DriverSubscriptionConfigList(APIView):
+    authentication_classes=[]
+    permission_classes=[]
     def get(self, request):
         members = SubscriptionConfig.objects.filter(type="MEMBERS")
         orders = SubscriptionConfig.objects.filter(type="ORDERS")
@@ -26,6 +28,15 @@ class DriverSubscriptionConfigList(APIView):
             'orders':orders_serializer.data,
         }
         return Response(data,status=status.HTTP_200_OK)
+    
+class CarTypelist(APIView):
+    authentication_classes=[]
+    permission_classes=[]
+    def get(self, request):
+        cars=Car.objects.all()
+        print(cars)
+        cars_serializer=CarSerializer(cars,many=True)
+        return Response(cars_serializer.data,status=200)
 
 
 
@@ -51,6 +62,16 @@ class DriverAuthToken(ObtainAuthToken):
         if check_password(password, user.password):
             if driver.phone == user.phone:
                 token, _ = Token.objects.get_or_create(user=user)
+                order_subscription_paid=None
+                trip_subscription_paid=None
+                if driver.driverOrderSubscription.paid==True:
+                    order_subscription_paid=True
+                else:
+                    order_subscription_paid=False
+                if driver.driverTripSubscription.paid==True:
+                    trip_subscription_paid=True
+                else:
+                    trip_subscription_paid=False
                 if driver.enabled==True:
                     return Response({
                         'token': token.key,
@@ -58,6 +79,8 @@ class DriverAuthToken(ObtainAuthToken):
                             'id': driver.id,
                             'phone': driver.phone,
                             'email': driver.email,
+                            'order_subscription_paid':order_subscription_paid,
+                            'trip_subscription_paid':trip_subscription_paid
                             
                         }
                     })
@@ -78,10 +101,11 @@ class DriverProfileAPIView(APIView):
     def get(self, request):
         try:
             driver = Driver.objects.get(phone=request.user.phone)
-            serializer = DeiverSerializer(driver)
+            serializer = DeiverProfileSerializer(driver)
             return Response(serializer.data)
         except Driver.DoesNotExist:
             return Response({'error': 'Driver not found'}, status=status.HTTP_404_NOT_FOUND)
+        
     def delete(self, request):
         try:
             driver = Driver.objects.get(phone=request.user.phone)
