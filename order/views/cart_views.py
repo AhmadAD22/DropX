@@ -153,13 +153,15 @@ class CheckoutView(APIView):
             coupon=None
             if coupon_code:
                 coupon = Coupon.objects.filter(code=coupon_code, isActive=True).first()
-                if coupon:
-                    coupon_percent = decimal.Decimal(coupon.percent) / 100
-                    total_price = total_price - (total_price * coupon_percent)
-                    coupon.times -= 1
-                    coupon.save()
+                if coupon.type==CouponType.DRIVER:
+                    return Response({'error': 'Coupon not intended for orders.'}, status=status.HTTP_400_BAD_REQUEST)
+                if coupon.is_expired():
+                    return Response({'error': 'Coupon is expired.'}, status=status.HTTP_400_BAD_REQUEST)
+                used_coupn_count=Order.objects.filter(client__phone=request.user.phone,coupon=coupon).count()
+                if used_coupn_count > coupon.times:
+                    return Response({'error': 'You have reached the maximum number of coupon uses allowed.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Calculate the tax
+                # Calculate the tax
             # tax = total_price * (order_config.tax / 100)
             client = Client.objects.get(phone=request.user.phone)
             restaurant=cart.items.first().product.restaurant

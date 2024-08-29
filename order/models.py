@@ -110,13 +110,15 @@ class Order(models.Model):
         tax_config=OrderConfig.objects.first().tax
         tax = self.total_price() * (decimal.Decimal(tax_config) / 100) if tax_config else decimal.Decimal(0)
         return round(tax, 2)
-        
+    def commission(self):
+        return decimal.Decimal(OrderConfig.objects.first().commission)    
+    
     def price_with_tax(self):
         tax = self.tax()
         price = self.total_price()
-        return round(tax + price,2)
-    def commission(self):
-        return decimal.Decimal(OrderConfig.objects.first().commission)
+        deliveryCost=  Decimal(self.deliveryCost)
+        return round(tax +self.commission()+deliveryCost +price,2)
+    
     
     def price_with_tax_with_coupon(self):
         tax = self.tax()
@@ -240,6 +242,7 @@ class TripCar(models.Model):
         hours = int(trip_duration)
         minutes = int((trip_duration * 60) % 60)
         return {'hours':hours, 'minutes':minutes}
+
     
 class Trip(models.Model):
     client = models.ForeignKey('accounts.Client', on_delete=models.CASCADE)
