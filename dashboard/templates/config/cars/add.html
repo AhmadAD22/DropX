@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %} إضافة سيارة للرحلة {% endblock %}
+{% block trip_cars %} 
+active
+{% endblock %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}"> Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "car_list" %}"> Car Types</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Add</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="card ">
+      <div class="card-body ">
+        <h3 class="card-title text-center text-primary"> إضافة  سيارة </h3>
+  
+        <form method="post" enctype="multipart/form-data" class="text-right">
+          {% csrf_token %}
+          <div class="form-group ">
+            <label for="id_carType">نوع السيارة</label>
+            {{ form.carType }}
+            {% if form.carType.errors %}
+              <div class="text-danger">
+                {% for error in form.carType.errors %}
+                  <span>{{ error }}</span><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+
+          <button type="submit" class="btn btn-primary text-light mt-3">إضافة</button>
+        </form>
+      </div>
+    </div>
+</div>
+
+{% endblock %}

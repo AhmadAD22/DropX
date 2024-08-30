@@ -1,6 +1,6 @@
 from django import forms
 from  order.models import TripCar
-from accounts.models import CarCategory
+from accounts.models import CarCategory,Car
 
 class TripCarForm(forms.ModelForm):
     less_than_three_km = forms.FloatField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
@@ -14,4 +14,12 @@ class TripCarForm(forms.ModelForm):
         widgets = {
             'image': forms.FileInput(attrs={'class': 'form-control-file'}),
             'car_category':forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+class CarForm(forms.ModelForm):
+    class Meta:
+        model = Car
+        fields = ['carType']
+        widgets = {
+            'carType': forms.TextInput(attrs={'class': 'form-control'}),
         }

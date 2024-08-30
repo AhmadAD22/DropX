@@ -9,6 +9,7 @@ from utils.geographic import calculate_distance
 from utils.payment.order_pyment import Orderpayment
 from datetime import date
 from utils.notifications import NotificationsHelper,TripUpdates
+
 class TripCarAPIView(APIView):
     
     def get(self, request, *args, **kwargs):
@@ -54,7 +55,50 @@ class ClientCancellTripAPIView(APIView):
         except Trip.DoesNotExist:
             return Response({'error': 'Trip not found'}, status=404)
  
-       
+class AddCouponToTrip(APIView):
+    def get(self, request,trip_id):
+         coupon_code = request.query_params.get('coupon_code')
+         if coupon_code:
+                coupon = Coupon.objects.filter(code=coupon_code, isActive=True).first()
+                print(coupon.code)
+                if coupon.type==CouponType.RESTAURANT:
+                    return Response({'error': 'Coupon not intended for trips.'}, status=status.HTTP_400_BAD_REQUEST)
+                if coupon.is_expired():
+                    return Response({'error': 'Coupon is expired.'}, status=status.HTTP_400_BAD_REQUEST)
+                used_coupn_count=Trip.objects.filter(client__phone=request.user.phone,coupon=coupon).count()
+                if used_coupn_count > coupon.times:
+                    return Response({'error': 'You have reached the maximum number of coupon uses allowed.'}, status=status.HTTP_400_BAD_REQUEST)
+                try:
+                    trip = Trip.objects.get(id=trip_id)
+                    serializer = TripCouponCheckSerializer(trip,context={'coupon':coupon})
+                    return Response(serializer.data,status=200)
+                except Trip.DoesNotExist:
+                    return Response({'erorr': 'Trip not found'}, status=404)
+         else:
+                return Response({'erorr': 'Select a coupon'}, status=404)
+                
+    
+    def post(self, request,trip_id):
+         coupon_code = request.data.get('coupon_code')
+         if coupon_code:
+                coupon = Coupon.objects.filter(code=coupon_code, isActive=True).first()
+                if coupon.type==CouponType.RESTAURANT:
+                    return Response({'error': 'Coupon not intended for trips.'}, status=status.HTTP_400_BAD_REQUEST)
+                if coupon.is_expired():
+                    return Response({'error': 'Coupon is expired.'}, status=status.HTTP_400_BAD_REQUEST)
+                used_coupn_count=Trip.objects.filter(client__phone=request.user.phone,coupon=coupon).count()
+                if used_coupn_count > coupon.times:
+                    return Response({'error': 'You have reached the maximum number of coupon uses allowed.'}, status=status.HTTP_400_BAD_REQUEST)
+                try:
+                    trip = Trip.objects.get(id=trip_id)
+                    trip.coupon=coupon
+                    trip.save()
+                    serializer = TripSerializer(trip)
+                    return Response(serializer.data,status=200)
+                except Trip.DoesNotExist:
+                    return Response({'erorr': 'Trip not found'}, status=404)
+                
+
 class TripDetailAPIView(APIView):
     def get(self, request, trip_id):
         try:

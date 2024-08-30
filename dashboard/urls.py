@@ -110,6 +110,10 @@ path('financial/driver/<int:driver_id>', driver_financial_overview, name='driver
     path('add/', add_trip_car, name='add_trip_car'),
     path('update/<int:pk>/', update_trip_car, name='update_trip_car'),
     path('delete/<int:pk>/', delete_trip_car, name='delete_trip_car'),
+    #Cars
+    path('add_car/', add_car, name='add_car'),
+    path('car_list/',car_list, name='car_list'),
+    path('car-delete/<int:pk>/', delete_car, name='delete_car'),
     
     
     

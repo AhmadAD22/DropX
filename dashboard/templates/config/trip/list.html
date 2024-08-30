@@ -10,6 +10,10 @@
 {% endblock breadcrumbt %}
 
 {% block content %}
+<nav class="nav">
+    <a class="nav-link " href="{% url "car_list"  %}">أنواع</a>
+    <a class="nav-link active" href="{% url "trip_car_list"%}">تصنيفات</a>
+  </nav>
 <div class="container text-center mt-5">
     <div class='text-center text-primary'>
         <div>
@@ -43,6 +47,28 @@
             </tr>
         {% endfor %}
     </table>
+    <!-- Pagination links -->
+{% if trip_cars.has_other_pages %}
+<ul class="pagination justify-content-center bg-transparent">
+    {% if trip_cars.has_previous %}
+    <li class="page-item ml-2">
+        <a class="page-link btn btn-primary " href="?page=1">&laquo; الأول</a>
+    </li>
+    <li class="page-item ml-2">
+        <a class="page-link btn btn-primary" href="?page={{ trip_cars.previous_page_number }}">السابق</a>
+    </li>
+    {% endif %}
+    <li class="page-item ml-2 disabled"><a class="page-link bg-transparent border-0" href="#">الصفحة {{ trip_cars.number }} من {{ trip_cars.paginator.num_pages }}</a></li>
+    {% if trip_cars.has_next %}
+    <li class="page-item ml-2">
+        <a class="page-link btn btn-primary" href="?page={{ trip_cars.next_page_number }}">التالي</a>
+    </li>
+    <li class="page-item ml-1">
+        <a class="page-link btn btn-primary" href="?page={{ trip_cars.paginator.num_pages }}">الأخير &raquo;</a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
 </div>
     
 {% endblock %}

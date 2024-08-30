@@ -41,6 +41,8 @@ urlpatterns = [
         path('driver/driver-create-account',DriverCreateAccountAPIView.as_view()),
         path('driver/info-profile', DriverProfileAPIView.as_view(), name='driver-retrieve'),
         path('driver/request-update-profile', DriverRequestUpdateAPIView.as_view(), name='driver-request-update'),
+        path('driver/renew-order-subscription/', RenewOrderSubscriptionAPIView.as_view(), name='renew-order-subscription'),
+        path('driver/renew-trip-subscription/', RenewTripSubscriptionAPIView.as_view(), name='renew-trip-subscription'),
         
         
         path('admin/driver-aproval-request-update', AdminAprovalDriverUpdateRequestAPIView.as_view(), name='driver-aproval-request-update'),

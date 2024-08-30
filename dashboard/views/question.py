@@ -5,7 +5,7 @@ from ..forms.question import CommonQuestionForm
 
 def common_question_list(request):
     common_questions = CommonQuestion.objects.all()
-    paginator = Paginator(common_questions, 6)  # Show 10 common questions per page
+    paginator = Paginator(common_questions, 7)  # Show 10 common questions per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'question/list.html', {'page_obj': page_obj})

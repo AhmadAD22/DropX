@@ -37,13 +37,40 @@ class DeiverSerializer(serializers.ModelSerializer):
             'carFront', 'carBack', 'memberSubscription', 'orderSubscription',
         ]
         
+        
+class OrderSubscriptionSerializer(serializers.ModelSerializer):
+    
+    remaining_time = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DriverOrderSubscription
+        fields = ['id', 'duration', 'price', 'start_date','end_date', 'remaining_time']
+        
+    def get_remaining_time(self, instance):
+        return instance.calculate_remaining_time()
+    
+        
+class TripSubscriptionSerializer(serializers.ModelSerializer):
+    
+    remaining_time = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DriverTripSubscription
+        fields = ['id', 'duration', 'price', 'start_date','end_date', 'remaining_time']
+
+    
+    def get_remaining_time(self, instance):
+        return instance.calculate_remaining_time()
+    
 class DeiverProfileSerializer(serializers.ModelSerializer):
     car=serializers.CharField(source='car.carType')
+    driverOrderSubscription=OrderSubscriptionSerializer()
+    driverTripSubscription=TripSubscriptionSerializer()
     class Meta:
         model=Driver
         fields = [
             'id', 'avatar', 'gender', 'idNumber', 'birth', 'fullName', 'nationality', 'email',
             'phone', 'latitude', 'longitude', 'address', 'bankName', 'iban', 'companyName',
             'car', 'carName', 'carCategory', 'carColor', 'carLicense', 'drivingLicense',
-            'carFront', 'carBack',
+            'carFront', 'carBack','driverOrderSubscription','driverTripSubscription'
         ]

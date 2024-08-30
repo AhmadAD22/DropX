@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+{% block config_collapse %}show{% endblock config_collapse %}
+{% block config %}active{% endblock config %}
+{% block trip_config %}active{% endblock trip_config %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-primary" href="{% url "car_list" %}">Car Types</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<nav class="nav">
+    <a class="nav-link active" href="{% url "car_list"  %}">أنواع</a>
+    <a class="nav-link " href="{% url "trip_car_list"%}">تصنيفات</a>
+  </nav>
+
+<div class="container text-center mt-5">
+    <div class='text-center text-primary'>
+        <div>
+         <h3>أنواع السيارات </h3>
+         <a class="btn btn-primary m-2" href="{% url "add_car" %}"> <i class="bi bi-plus-circle white-icon"></i></a>
+         <hr>
+        </div> 
+    </div>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-center text-white">
+        
+        <tr class="text-primary">
+            <th>#</th>
+            <th>النوع</th>
+            <th>حذف</th>
+        </tr>
+        {% for car in cars %}
+        <tr class="clickable-row"  onclick="window.location.href='#'">
+            <td>{{ car.id }}</td>
+            <td>{{ car.carType }}</td>
+            <td><button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deletecarModal{{ car.id }}">
+                <i class="bi bi-x-octagon white-icon"></i>
+              </button></td>
+        </tr>
+            <!-- Delete car Modal -->
+ <div class="modal fade" id="deletecarModal{{ car.id }}" tabindex="-1" role="dialog" aria-labelledby="deletecarModalLabel{{ car.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deletecarModalLabel{{ car.id }}">حذف التصنيف</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-dark">
+          <p>هل أنت متأكد من حذف:{{car.carType}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form action="{% url 'delete_car' car.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Delete car Modal -->
+        {% empty %}
+            <tr>
+                <td colspan="5">No subscriptions available.</td>
+            </tr>
+        {% endfor %}
+    </table>
+<!-- Pagination links -->
+{% if cars.has_other_pages %}
+    <ul class="pagination justify-content-center bg-transparent">
+        {% if cars.has_previous %}
+        <li class="page-item ml-2">
+            <a class="page-link btn btn-primary " href="?page=1">&laquo; الأول</a>
+        </li>
+        <li class="page-item ml-2">
+            <a class="page-link btn btn-primary" href="?page={{ cars.previous_page_number }}">السابق</a>
+        </li>
+        {% endif %}
+        <li class="page-item ml-2 disabled"><a class="page-link bg-transparent border-0" href="#">الصفحة {{ cars.number }} من {{ cars.paginator.num_pages }}</a></li>
+        {% if cars.has_next %}
+        <li class="page-item ml-2">
+            <a class="page-link btn btn-primary" href="?page={{ cars.next_page_number }}">التالي</a>
+        </li>
+        <li class="page-item ml-1">
+            <a class="page-link btn btn-primary" href="?page={{ cars.paginator.num_pages }}">الأخير &raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+    {% endif %}
+</div>
+    
+{% endblock %}

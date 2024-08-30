@@ -85,6 +85,39 @@ class TripSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('price_with_tax', 'price_with_tax_with_coupon')
         
+
+class TripCouponCheckSerializer(serializers.ModelSerializer):
+    price_after_coupon=serializers.SerializerMethodField()
+    coupon_percent=serializers.SerializerMethodField() 
+    def get_price_after_coupon(self,obj):
+        
+       if self.context['coupon']:
+            coupon=self.context['coupon']
+            commission=Decimal(obj.commission())
+            tax = obj.tax()
+            if obj.price is not None:
+                price = Decimal(obj.price)
+            else:
+                price = Decimal(0)
+            coupon_percent = Decimal(coupon.percent) / 100
+            price = price - (price * coupon_percent)
+            return (tax +commission+ price).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+
+    def get_coupon_percent(self,obj):
+       if self.context['coupon']:
+           return self.context['coupon'].percent
+       else:
+           return None  
+    class Meta:
+        model = Trip
+        fields = (
+            'id', 'note', 'tripDate',
+            'sourceLat', 'sourceLng', 'sourceAddress',
+            'destinationLat', 'destinationLng', 'destinationAddress',
+            'car','distance', 'status','commission','price', 'coupon_percent','tax','price_with_tax','price_after_coupon',
+        )
+        read_only_fields = ('price_with_tax', 'price_with_tax_with_coupon')
+        
 class TripListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trip

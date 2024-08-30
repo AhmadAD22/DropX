@@ -54,6 +54,23 @@ class OrderConfig(models.Model):
     tax = models.DecimalField(max_digits=10, decimal_places=2)
     commission = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     maxRejectedNumber=models.PositiveSmallIntegerField()
+    price_per_km=models.FloatField(null=True,blank=True)   
+    less_than_three_km=models.FloatField(null=True,blank=True)
+    between_three_and_six_km=models.FloatField(null=True,blank=True)
+    more_than_six_km=models.FloatField(null=True,blank=True)
+    average_speed=models.PositiveSmallIntegerField()
+    
+    def delivery_price(self,distance):
+       
+            if distance <3:
+                km_price=self.less_than_three_km
+                return round(distance * km_price,2)
+            elif distance>=3 and distance<=6:
+                km_price=self.between_three_and_six_km
+                return round(distance * km_price,2)
+            else:
+                km_price=self.between_three_and_six_km 
+                return round(distance * km_price,2)
     
 
 class Order(models.Model):
@@ -279,11 +296,12 @@ class Trip(models.Model):
         
     def price_with_tax(self):
         tax = self.tax()
+        commission=Decimal(self.commission())
         if self.price is not None:
             price = self.price
         else:
             price = 0
-        return round(tax + decimal.Decimal(price) , 2)
+        return round(tax+commission + decimal.Decimal(price) , 2)
 
     def price_with_tax_with_coupon(self):
         commission=Decimal(self.commission())

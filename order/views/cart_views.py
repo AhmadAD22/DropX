@@ -166,25 +166,9 @@ class CheckoutView(APIView):
             client = Client.objects.get(phone=request.user.phone)
             restaurant=cart.items.first().product.restaurant
             #Delivery Cost
-            deliveryCost=0.0
+            
             distance=calculate_distance(restaurant.latitude,restaurant.longitude,client_latitude,client_longitude)
-            carCategory=CarCategory.objects.filter(car_category='نقل طلبات')
-            if carCategory:
-                
-                carCategory=carCategory.first()
-                if distance <3:
-                    km_price=carCategory.less_than_three_km
-                    deliveryCost= round(distance * km_price,2)
-                elif distance>=3 and distance<=6:
-                    km_price=carCategory.between_three_and_six_km
-                    deliveryCost= round(distance * km_price,2)
-                else:
-                    km_price=carCategory.between_three_and_six_km 
-                    deliveryCost= round(distance * km_price,2)
-            else:   
-                deliveryCost= round(distance * 2,2)
-                
-            # Create the order
+            deliveryCost=order_config.delivery_price(distance=distance)
             order = Order.objects.create(
                 client=client,
                 restaurantLat=restaurant.latitude,

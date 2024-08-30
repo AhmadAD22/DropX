@@ -26,11 +26,64 @@
                     <label for="{{ form.commission.id_for_label }}">العمولة</label>
                     {{ form.commission }}
                 </div>
+                
                 <div class="form-group">
                     {{ form.maxRejectedNumber.errors }}
                     <label for="{{ form.maxRejectedNumber.id_for_label }}">الحد المسموح من الرفض</label>
                     {{ form.maxRejectedNumber }}
                 </div>
+                <hr>
+                <h6 class=" text-center text-primary">أسعار التوصيل</h6>
+                <hr>
+                <div class="form-group ">
+                    <label for="id_less_than_three_km">أقل من ثلاثة كيلومترات </label>
+                    {{ form.less_than_three_km }}
+                    {% if form.less_than_three_km.errors %}
+                      <div class="text-danger">
+                        {% for error in form.less_than_three_km.errors %}
+                          <span>{{ error }}</span><br>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="form-group ">
+                    <label for="id_between_three_and_six_km">بين ثلاثة وستة كيلومترات</label>
+                    {{ form.between_three_and_six_km }}
+                    {% if form.between_three_and_six_km.errors %}
+                      <div class="text-danger">
+                        {% for error in form.between_three_and_six_km.errors %}
+                          <span>{{ error }}</span><br>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="form-group ">
+                    <label for="id_more_than_six_km">أكثر من ستة كيلومترات</label>
+                    {{ form.more_than_six_km }}
+                    {% if form.more_than_six_km.errors %}
+                      <div class="text-danger">
+                        {% for error in form.more_than_six_km.errors %}
+                          <span>{{ error }}</span><br>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+          
+                  
+          
+                  <div class="form-group ">
+                    <label for="id_average_speed">السرعة المتوسطة</label>
+                    {{ form.average_speed }}
+                    {% if form.average_speed.errors %}
+                      <div class="text-danger">
+                        {% for error in form.average_speed.errors %}
+                          <span>{{ error }}</span><br>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
                 <button type="submit" class="btn btn-primary ">حفظ</button>
             </form>
         </div>

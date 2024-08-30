@@ -50,6 +50,7 @@ path('checkout/', CheckoutView.as_view(), name='checkout'),
 
 path('tripcars/', TripCarAPIView.as_view(), name='tripcar-detail'),
 path('trip-order/', ClientCreateTripAPIView.as_view(), name='create-trip'),
+path('add-coupon-to-trip/<int:trip_id>/', AddCouponToTrip.as_view(), name='add-coupon-to-trip'),
 path('client/cancell-trip/<int:trip_id>/', ClientCancellTripAPIView.as_view(), name='cancell-trip'),
 path('current-trip/', ClientCurrentTripsListAPIView.as_view(), name='current-trip'),
 path('previous-trip/', ClientPreviousTripsListAPIView.as_view(), name='previous-trip'),

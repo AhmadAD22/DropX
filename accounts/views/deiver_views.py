@@ -14,6 +14,7 @@ from utils.error_handle import error_handler
 from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
 from wallet.models import DriverOrderSubscriptionPayment,DriverTripSubscriptionPayment,UserWallet
+from django.db import IntegrityError
 
 class DriverSubscriptionConfigList(APIView):
     authentication_classes=[]
@@ -244,3 +245,62 @@ class DriverCreateAccountAPIView(APIView):
         return Response({'error': 'The phone is not verified'})
       
 
+class RenewOrderSubscriptionAPIView(APIView):
+    def post(self, request):
+        new_duration = request.data.get('new_duration')
+        try:
+           order_subscription = DriverOrderSubscription.objects.get(driver__phone=request.user.phone)
+        except DriverOrderSubscription.DoesNotExist:
+            return Response({'error': 'Driver order subscription not found'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+                subscription_config=SubscriptionConfig.objects.get(type="ORDERS",duration=new_duration)
+        except SubscriptionConfig.DoesNotExist:
+                return Response({'error': 'The selectd duration is not defined'},status=status.HTTP_404_NOT_FOUND)
+            
+        try:
+            orderSubscriptionPayment = DriverOrderSubscriptionPayment.objects.create(
+                subscription=order_subscription,
+                duration=subscription_config.duration,
+                price=subscription_config.price
+            )
+            orderSubscriptionPayment.save()
+            # Additional logic after successfully creating and saving the object
+        except IntegrityError as e:
+            # Handle integrity error, such as unique constraint violation
+            return Response({'error': f"IntegrityError occurred: {e}"},status=status.HTTP_404_NOT_FOUND)
+            print()
+        except Exception as e:
+            # Handle other exceptions
+            return Response({'error': f"{e}"},status=status.HTTP_404_NOT_FOUND)
+        return Response({'result': 'Success, Please Pay to active the renew'})
+        
+        
+class RenewTripSubscriptionAPIView(APIView):
+    def post(self, request):
+        new_duration = request.data.get('new_duration')
+        try:
+           trip_subscription = DriverTripSubscription.objects.get(driver__phone=request.user.phone)
+        except DriverTripSubscription.DoesNotExist:
+            return Response({'error': 'Driver trip subscription not found'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+                subscription_config=SubscriptionConfig.objects.get(type="MEMBERS",duration=new_duration)
+        except SubscriptionConfig.DoesNotExist:
+                return Response({'error': 'The selectd duration is not defined'},status=status.HTTP_404_NOT_FOUND)
+            
+        try:
+            tripSubscriptionPayment = DriverTripSubscriptionPayment.objects.create(
+                subscription=trip_subscription,
+                duration=subscription_config.duration,
+                price=subscription_config.price
+            )
+            tripSubscriptionPayment.save()
+            # Additional logic after successfully creating and saving the object
+        except IntegrityError as e:
+            # Handle integrity error, such as unique constraint violation
+            return Response({'error': f"IntegrityError occurred: {e}"},status=status.HTTP_404_NOT_FOUND)
+            print()
+        except Exception as e:
+            # Handle other exceptions
+            return Response({'error': f"{e}"},status=status.HTTP_404_NOT_FOUND)
+        return Response({'result': 'Success, Please Pay to active the renew'})
+        

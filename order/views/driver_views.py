@@ -19,7 +19,7 @@ from utils.notifications import NotificationsHelper,OrdersUpdates,TripUpdates
 class DriverNewOrderListAPIView(APIView):
     permission_classes = [DriverOrderSubscripted]
     def get(self, request):
-        orders = Order.objects.filter(driver__isnull=True,status='PENDING')
+        orders = Order.objects.filter(driver__isnull=True,status=Status.PENDING)
         serializer = DriverOrderListSerializer(orders, many=True)
         return Response(serializer.data)
     
@@ -28,7 +28,7 @@ class DriverCurrentOrdersListAPIView(APIView):
     def get(self, request):
         orders = Order.objects.filter(
             Q(driver=request.user) &
-            (Q(status='IN_PROGRESS') | Q(status=Status.ACCEPTED)) 
+            (Q(status=Status.IN_PROGRESS) | Q(status=Status.ACCEPTED)|Q(status=Status.PENDING)) 
                   )
         serializer = DriverOrderListSerializer(orders, many=True)
         return Response(serializer.data)
@@ -37,15 +37,15 @@ class DriverPreviousOrdersListAPIView(APIView):
     permission_classes = [DriverOrderSubscripted]
     def get(self, request):
         complatedOrders = Order.objects.filter(driver=request.user,
-                                               status='COMPLETED',
+                                               status=Status.COMPLETED,
                                                )
         complatedOrdersSerializer = DriverOrderListSerializer(complatedOrders, many=True)
         cancelledOrders = Order.objects.filter(driver=request.user,
-                                               status='CANCELLED',
+                                               status=Status.CANCELLED,
                                               )
         cancelledOrdersSerializer = DriverOrderListSerializer( cancelledOrders, many=True)
         rejectedOrders = Order.objects.filter(driver=request.user,
-                                              status='REJECTED',
+                                              status=Status.REJECTED,
                                               )
         rejectedOrdersSerializer = DriverOrderListSerializer( rejectedOrders, many=True)
         data={
@@ -68,21 +68,21 @@ class DriverStatisticsOrdersListAPIView(APIView):
         # Retrieve orders for today
         today_orders = Order.objects.filter(
             driver=request.user,
-            status='COMPLETED',
+            status=Status.COMPLETED,
             orderDate__date=current_date
         )
 
         # Retrieve orders for this month
         month_orders = Order.objects.filter(
             driver=request.user,
-            status='COMPLETED',
+            status=Status.COMPLETED,
             orderDate__month=current_month
         )
 
         # Retrieve orders for this year
         year_orders = Order.objects.filter(
             driver=request.user,
-            status='COMPLETED',
+            status=Status.COMPLETED,
             orderDate__year=current_year
         )
 
@@ -115,7 +115,7 @@ class RestaurantTodayOrdersListAPIView(APIView):
         # Retrieve orders for the current date
         orders = Order.objects.filter(
             driver__isnull=False,
-            status='COMPLETED',
+            status=Status.COMPLETED,
             items__product__restaurant_id=request.user.id,
             orderDate__date=current_date
         )
@@ -236,7 +236,7 @@ class DriverCurrentTripsListAPIView(APIView):
     def get(self, request):
         trips = Trip.objects.filter(
             Q(driver=request.user) &
-            (Q(status='IN_PROGRESS') | Q(status='PENDING'))
+            (Q(status=Status.IN_PROGRESS) | Q(status=Status.ACCEPTED))
         )
         serializer = DriverTripListSerializer(trips, many=True)
         return Response(serializer.data)
@@ -246,13 +246,13 @@ class DriverPreviousTripsListAPIView(APIView):
     permission_classes = [DriverTripSubscripted]
 
     def get(self, request):
-        completed_trips = Trip.objects.filter(driver=request.user, status='COMPLETED')
+        completed_trips = Trip.objects.filter(driver=request.user, status=Status.COMPLETED)
         completed_trips_serializer = DriverTripListSerializer(completed_trips, many=True)
 
-        cancelled_trips = Trip.objects.filter(driver=request.user, status='CANCELLED')
+        cancelled_trips = Trip.objects.filter(driver=request.user, status=Status.CANCELLED)
         cancelled_trips_serializer = DriverTripListSerializer(cancelled_trips, many=True)
 
-        rejected_trips = Trip.objects.filter(driver=request.user, status='REJECTED')
+        rejected_trips = Trip.objects.filter(driver=request.user, status=Status.REJECTED)
         rejected_trips_serializer = DriverTripListSerializer(rejected_trips, many=True)
 
         data = {
@@ -273,19 +273,19 @@ class DriverStatisticsTripsListAPIView(APIView):
 
         today_trips = Trip.objects.filter(
             driver=request.user,
-            status='COMPLETED',
+            status=Status.COMPLETED,
             createdAt__date=current_date
         )
 
         month_trips = Trip.objects.filter(
             driver=request.user,
-            status='COMPLETED',
+            status=Status.COMPLETED,
             createdAt__month=current_month
         )
 
         year_trips = Trip.objects.filter(
             driver=request.user,
-            status='COMPLETED',
+            status=Status.COMPLETED,
             createdAt__year=current_year
         )
 
@@ -328,9 +328,9 @@ class DriverAcceptTrip(APIView):
             tripId=trip,
             target=trip.client,
             )
-            return Response({'result':'Order accepted'},status=status.HTTP_200_OK)
+            return Response({'result':'Trip accepted'},status=status.HTTP_200_OK)
         else:
-            return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'The trip was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
         
 class DriverRejectTrip(APIView):
     permission_classes = [DriverTripSubscripted]
@@ -352,9 +352,9 @@ class DriverRejectTrip(APIView):
             tripId=trip,
             target=trip.client,
             )
-            return Response({'result':'Order Rejected'},status=status.HTTP_200_OK)
+            return Response({'result':'trip Rejected'},status=status.HTTP_200_OK)
         else:
-            return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'The trip was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -385,7 +385,7 @@ class DriverComlateTrip(APIView):
                 target=trip.client,
                 )
             else:
-                return Response({'error':'The order status must be in progress or the order already complated'},status=status.HTTP_400_BAD_REQUEST)
-            return Response({'result':'Order Complated'},status=status.HTTP_200_OK)
+                return Response({'error':'The trip status must be in progress or the order already complated'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'result':'trip Complated'},status=status.HTTP_200_OK)
         else:
-            return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'The trip was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)

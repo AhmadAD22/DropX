@@ -32,7 +32,7 @@ class DriverOrderListSerializer(serializers.ModelSerializer):
         model = Order
         fields = (
             'id','client', 'orderDate','restaurantLat', 'restaurantLng', 'restaurantAddress',
-            'destinationLat', 'destinationLng', 'destinationAddress','totalAmount',
+            'destinationLat', 'destinationLng','status', 'destinationAddress','totalAmount',
         )        
 
 
@@ -42,6 +42,6 @@ class DriverTripListSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'tripDate',
             'sourceLat', 'sourceLng', 'sourceAddress',
-            'destinationLat', 'destinationLng', 'destinationAddress',
+            'destinationLat', 'destinationLng','status', 'destinationAddress',
             'distance', 'price', 'price_with_tax','price_with_tax_with_coupon',
         )
