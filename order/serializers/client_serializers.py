@@ -83,7 +83,7 @@ class TripSerializer(serializers.ModelSerializer):
             'destinationLat', 'destinationLng', 'destinationAddress',
             'car','distance', 'status','commission','price', 'coupon','tax','price_with_tax','price_with_tax_with_coupon',
         )
-        read_only_fields = ('price_with_tax', 'price_with_tax_with_coupon')
+        read_only_fields = ('price_with_tax', 'status','price_with_tax_with_coupon')
         
 
 class TripCouponCheckSerializer(serializers.ModelSerializer):
@@ -128,6 +128,6 @@ class TripListSerializer(serializers.ModelSerializer):
             'distance','price_with_tax_with_coupon','status'
         )
         read_only_fields = ('id', 'tripDate',
-            'sourceLat', 'sourceLng', 'sourceAddress',
+            'sourceLat', 'sourceLng', 'status','sourceAddress',
             'destinationLat', 'destinationLng', 'destinationAddress',
             'distance','price_with_tax_with_coupon',)
