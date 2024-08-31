@@ -89,6 +89,8 @@ class RestaurantAuthToken(ObtainAuthToken):
     
 
 class RestaurantRegisterRequestView(APIView):
+    authentication_classes = []  # Disable authentication
+    permission_classes = []  # Disable permission checks
     def post(self,request,*args,**kwargs):
         serialized=PendingRestaurantSerializer(data=request.data)
           # check if user exists
