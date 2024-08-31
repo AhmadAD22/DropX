@@ -44,12 +44,13 @@ class ClientCancellTripAPIView(APIView):
             if trip.status == Status.PENDING:
                 trip.status=Status.CANCELLED
                 trip.save()
-                NotificationsHelper.sendTripUpdate(
-                    update=TripUpdates.CLIENT_CANCEL_TRIP,
-                    tripId=trip,
-                    target=trip.driver,
-                    )
-                return Response({'result':'Trip cancelled'},status=status.HTTP_200_OK)
+                if trip.driver:
+                    NotificationsHelper.sendTripUpdate(
+                        update=TripUpdates.CLIENT_CANCEL_TRIP,
+                        tripId=trip,
+                        target=trip.driver,
+                        )
+                    return Response({'result':'Trip cancelled'},status=status.HTTP_200_OK)
             else:
                 return Response({'error': 'You cannot cancel a trip with this status.'}, status=404)
         except Trip.DoesNotExist:

@@ -7,13 +7,13 @@ load_dotenv()
 class SmsSender:
     def send_otp(self,phone, otp):
         # don't send sms in debug mode
-        if settings.DEBUG:
-            return True
-        print(phone)
+        # if settings.DEBUG:
+        #     return True
+        # print(phone)
         url = 'https://api.oursms.com/api-a/msgs'
         username =str(os.getenv('SMS_USERNAME'))
         token =str(os.getenv('SMS_TOKEN'))
-        src = 'oursms'
+        src = 'DropX'
         dests = str(phone)  
         body = otp
         priority = '0'
