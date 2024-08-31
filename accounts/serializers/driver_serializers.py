@@ -3,6 +3,13 @@ from ..models import *
 from rest_framework import fields
 from utils.validators import phoneValidator
 
+from rest_framework import serializers
+
+class CarCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarCategory
+        fields = ['id','car_category']
+
 class PendingDriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = PendingDriver

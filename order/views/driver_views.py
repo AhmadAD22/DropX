@@ -15,6 +15,16 @@ from django.db import transaction
 from utils.permissions import DriverOrderSubscripted,DriverTripSubscripted
 from utils.notifications import NotificationsHelper,OrdersUpdates,TripUpdates
 
+class DriverOrderDetailsListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request,order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'erorr':'The order does not found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = DriverOrderSerializer(order)
+        return Response(serializer.data)
+    
 
 class DriverNewOrderListAPIView(APIView):
     permission_classes = [DriverOrderSubscripted]
@@ -149,7 +159,7 @@ class DriverAcceptOrder(APIView):
         if order.driver is None:
             order.driver=driver
             order.save()
-            return Response({'result':'Order accepted'},status=status.HTTP_404_NOT_FOUND)
+            return Response({'result':'Order accepted'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)
         

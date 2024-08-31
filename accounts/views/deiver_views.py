@@ -15,6 +15,16 @@ from utils.sms import SmsSender
 from django.contrib.auth.hashers import make_password
 from wallet.models import DriverOrderSubscriptionPayment,DriverTripSubscriptionPayment,UserWallet
 from django.db import IntegrityError
+from decimal import Decimal
+
+
+class CarCategoryList(APIView):
+    authentication_classes=[]
+    permission_classes=[]
+    def get(self, request):
+        car_categories = CarCategory.objects.all()
+        serializer = CarCategorySerializer(car_categories, many=True)
+        return Response(serializer.data)
 
 class DriverSubscriptionConfigList(APIView):
     authentication_classes=[]
@@ -52,6 +62,7 @@ class DriverAuthToken(ObtainAuthToken):
         phone = serializer.validated_data['phone']
         password = serializer.validated_data['password']
         
+        
         User = get_user_model()
         try:
             user = User.objects.get(phone=phone)
@@ -63,6 +74,9 @@ class DriverAuthToken(ObtainAuthToken):
         if check_password(password, user.password):
             if driver.phone == user.phone:
                 token, _ = Token.objects.get_or_create(user=user)
+                fcm_token=request.data['fcm_token']
+                driver.fcm_token=fcm_token
+                driver.save()
                 order_subscription_paid=None
                 trip_subscription_paid=None
                 if driver.driverOrderSubscription.paid==True:
@@ -74,6 +88,7 @@ class DriverAuthToken(ObtainAuthToken):
                 else:
                     trip_subscription_paid=False
                 if driver.enabled==True:
+                    
                     return Response({
                         'token': token.key,
                         'user': {
@@ -214,34 +229,63 @@ class DriverCreateAccountAPIView(APIView):
             new_driver.password = make_password(request.data['password'])
             new_driver.save()
             user_wallet=UserWallet.objects.create(user=new_driver,balance=0.0)
-            if pending_driver.memberSubscription:
-                try:
-                    subscription_config=SubscriptionConfig.objects.get(type="MEMBERS",duration=pending_driver.memberSubscription)
-                except SubscriptionConfig.DoesNotExist:
-                    new_driver.delete()
-                    return Response({'error': 'The selectd duration is not defined'})
-                member_subscription=DriverTripSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
-                member_subscription.end_date=member_subscription.calculate_end_date()
-                member_subscription.save()
-                memberSubscriptionPayment=DriverTripSubscriptionPayment.objects.create(subscription=member_subscription,duration=subscription_config.duration,price=subscription_config.price)
-                memberSubscriptionPayment.save()
+            if pending_driver.carName is None:
+                if pending_driver.memberSubscription:
+                    try:
+                        subscription_config=SubscriptionConfig.objects.get(type="MEMBERS",duration=pending_driver.memberSubscription)
+                    except SubscriptionConfig.DoesNotExist:
+                        new_driver.delete()
+                        return Response({'error': 'The selectd duration is not defined'})
+                    member_subscription=DriverTripSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
+                    member_subscription.end_date=member_subscription.calculate_end_date()
+                    member_subscription.save()
+                    memberSubscriptionPayment=DriverTripSubscriptionPayment.objects.create(subscription=member_subscription,duration=subscription_config.duration,price=subscription_config.price)
+                    memberSubscriptionPayment.save()
+                    
+                if pending_driver.orderSubscription:
+                    try:
+                        subscription_config=SubscriptionConfig.objects.get(type="ORDERS",duration=pending_driver.orderSubscription)
+                    except SubscriptionConfig.DoesNotExist:
+                        new_driver.delete()
+                        return Response({'error': 'The selectd duration is not defined'})
+                    order_subscription=DriverOrderSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
+                    order_subscription.end_date=order_subscription.calculate_end_date()
+                    order_subscription.save()
+                    orderSubscriptionPayment=DriverOrderSubscriptionPayment.objects.create(subscription=order_subscription,duration=subscription_config.duration,price=subscription_config.price)
+                    orderSubscriptionPayment.save()
                 
-            if pending_driver.orderSubscription:
-                try:
-                    subscription_config=SubscriptionConfig.objects.get(type="ORDERS",duration=pending_driver.orderSubscription)
-                except SubscriptionConfig.DoesNotExist:
-                    new_driver.delete()
-                    return Response({'error': 'The selectd duration is not defined'})
-                order_subscription=DriverOrderSubscription.objects.create(driver=new_driver,price=subscription_config.price,duration=subscription_config.duration)
-                order_subscription.end_date=order_subscription.calculate_end_date()
-                order_subscription.save()
-                orderSubscriptionPayment=DriverOrderSubscriptionPayment.objects.create(subscription=order_subscription,duration=subscription_config.duration,price=subscription_config.price)
-                orderSubscriptionPayment.save()
-            
-            pending_driver.delete()
-            otp.delete()
+                pending_driver.delete()
+                otp.delete()
 
-            return Response({"result": "Driver created successfully"}, status=status.HTTP_201_CREATED)
+                return Response({"result": "Driver created successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                subscription_costs=Decimal(0.0)
+                if pending_driver.memberSubscription:
+                    try:
+                        member_subscription_config=SubscriptionConfig.objects.get(type="MEMBERS",duration=pending_driver.memberSubscription)
+                    except SubscriptionConfig.DoesNotExist:
+                        new_driver.delete()
+                        return Response({'error': 'The selectd duration is not defined'})
+                    subscription_costs-=member_subscription_config.price
+                    member_subscription=DriverTripSubscription.objects.create(driver=new_driver,price=member_subscription_config.price,duration=member_subscription_config.duration,paid=True)
+                    member_subscription.end_date=member_subscription.calculate_end_date()
+                    member_subscription.save()
+                if pending_driver.orderSubscription:
+                    try:
+                        order_subscription_config=SubscriptionConfig.objects.get(type="ORDERS",duration=pending_driver.orderSubscription)
+                    except SubscriptionConfig.DoesNotExist:
+                        new_driver.delete()
+                        return Response({'error': 'The selectd duration is not defined'})
+                    subscription_costs-=order_subscription_config.price
+                    order_subscription=DriverOrderSubscription.objects.create(driver=new_driver,price=order_subscription_config.price,duration=order_subscription_config.duration,paid=True)
+                    order_subscription.end_date=order_subscription.calculate_end_date()
+                    order_subscription.save()
+                
+                user_wallet.balance=float(subscription_costs)
+                user_wallet.save()
+                return Response({"result": "Driver created successfully"}, status=status.HTTP_201_CREATED)
+                
+                
         return Response({'error': 'The phone is not verified'})
       
 
@@ -268,7 +312,6 @@ class RenewOrderSubscriptionAPIView(APIView):
         except IntegrityError as e:
             # Handle integrity error, such as unique constraint violation
             return Response({'error': f"IntegrityError occurred: {e}"},status=status.HTTP_404_NOT_FOUND)
-            print()
         except Exception as e:
             # Handle other exceptions
             return Response({'error': f"{e}"},status=status.HTTP_404_NOT_FOUND)

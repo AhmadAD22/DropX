@@ -18,7 +18,6 @@ class PhoneVitrifactionSerializer(serializers.Serializer):
 class PhoneAuthTokenSerializer(serializers.Serializer):
     phone = serializers.CharField(validators=[phoneValidator])
     password = serializers.CharField()
-
     def validate(self, attrs):
         phone = attrs.get('phone')
         password = attrs.get('password')

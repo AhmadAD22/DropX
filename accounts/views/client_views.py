@@ -179,6 +179,9 @@ class ClientAuthToken(ObtainAuthToken):
         if check_password(password, user.password):
             if client.phone == user.phone:
                 token, _ = Token.objects.get_or_create(user=user)
+                fcm_token=request.data['fcm_token']
+                client.fcm_token=fcm_token
+                client.save()
                 return Response({
                     'token': token.key,
                     'user': {

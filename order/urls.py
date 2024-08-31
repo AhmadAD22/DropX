@@ -24,6 +24,7 @@ path('driver/statistics-orders', DriverStatisticsOrdersListAPIView.as_view(), na
 path('driver/accept-order', DriverAcceptOrder.as_view(), name='driver-accept-order'),
 path('driver/on-way-notify', OnWayNotification.as_view(), name='driver-on-way-notify'),
 path('driver/delivery-confirm', DeliveryConfirm.as_view(), name='driver-'),
+path('driver/order/<int:order_id>/', DriverOrderDetailsListAPIView.as_view(), name='driver-order-details'),
 
 #Client
 path('client/current-orders', ClientCurrentOrdersListAPIView.as_view(), name='client-current-order'),

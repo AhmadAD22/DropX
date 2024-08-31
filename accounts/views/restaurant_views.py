@@ -17,6 +17,9 @@ from django.db import IntegrityError
 
 
 class RestaurantSubscriptionConfigList(APIView):
+    authentication_classes = []  # Disable authentication
+    permission_classes = []  # Disable permission checks
+
     def get(self, request):
         subscription_configs = SubscriptionConfig.objects.filter(type="RESTAURANT")
         serializer = SubscriptionConfigSerializer(subscription_configs, many=True)
@@ -65,6 +68,9 @@ class RestaurantAuthToken(ObtainAuthToken):
         if check_password(password, user.password):
             if restaurant.phone == user.phone:
                 token, _ = Token.objects.get_or_create(user=user)
+                fcm_token=request.data['fcm_token']
+                restaurant.fcm_token=fcm_token
+                restaurant.save()
                 if restaurant.enabled==True:
                     return Response({
                         'token': token.key,

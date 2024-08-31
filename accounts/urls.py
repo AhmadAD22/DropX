@@ -36,6 +36,7 @@ urlpatterns = [
         #Driver
         path('driver/cars',CarTypelist.as_view()),
         path('driver/subscription-config',DriverSubscriptionConfigList.as_view()),
+        path('driver/car_categories/', CarCategoryList.as_view(), name='car_category_list'),
         path('driver/login', DriverAuthToken.as_view()),
         path('driver/driver-request_register',DreiverRegisterRequestView.as_view()),
         path('driver/driver-create-account',DriverCreateAccountAPIView.as_view()),
@@ -43,6 +44,7 @@ urlpatterns = [
         path('driver/request-update-profile', DriverRequestUpdateAPIView.as_view(), name='driver-request-update'),
         path('driver/renew-order-subscription/', RenewOrderSubscriptionAPIView.as_view(), name='renew-order-subscription'),
         path('driver/renew-trip-subscription/', RenewTripSubscriptionAPIView.as_view(), name='renew-trip-subscription'),
+        
         
         
         path('admin/driver-aproval-request-update', AdminAprovalDriverUpdateRequestAPIView.as_view(), name='driver-aproval-request-update'),

@@ -15,11 +15,35 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ('product', 'quantity', 'unitPrice', 'discount', 'note','get_total_price', 'accessories')
 
+class DriverOrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+    client_name=serializers.CharField(source='client.fullName')
+    client_phone=serializers.CharField(source='client.phone')
+    restaurant_name=serializers.SerializerMethodField()
+    restaurant_phone=serializers.SerializerMethodField()
+    def get_restaurant_name(self,obj):
+        return obj.items.first().product.restaurant.restaurantName
+    
+    def get_restaurant_phone(self,obj):
+        return obj.items.first().product.restaurant.phone
+    class Meta:
+        model = Order
+        fields = (
+            'id','client_name','client_phone','restaurant_name','restaurant_phone','destinationName','destinationPhone','destinationAddress',
+            'destinationLng','destinationLat',
+            'deliveryDate', 'status','tax',
+            'commission', 'orderDate',
+            'total_price','deliveryCost',
+            'total_products','price_with_tax',
+            'price_with_tax_with_coupon','items',
+            
+        )    
+
 
          
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
-    client=serializers.CharField(source='client.fullName')
+    
     class Meta:
         model = Order
         fields = (
