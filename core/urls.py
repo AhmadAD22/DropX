@@ -24,6 +24,7 @@ urlpatterns = [
     path('account/', include('accounts.urls')),
     path('restaurant/', include('restaurant.urls')),
     path('client/', include('client.urls')),
+    path('driver/', include('driver.urls')),
     path('order/', include('order.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('wallet/', include('wallet.urls')),

@@ -313,3 +313,6 @@ hr{
     border-radius: 5px;
 }
 
+.clickable-row{
+    cursor: pointer;
+}

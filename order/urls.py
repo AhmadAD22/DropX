@@ -13,6 +13,7 @@ path('restaurant/today-orders', RestaurantTodayOrdersListAPIView.as_view(), name
 path('restaurant/month-orders', RestaurantMonthOrdersListAPIView.as_view(), name='order-list'),
 path('restaurant/year-orders', RestaurantYearOrdersListAPIView.as_view(), name='order-list'),
 path('restaurant/statistics-orders', RestaurantStatisticsOrdersListAPIView.as_view(), name='order-list'),
+path('restaurant/order-ready/<int:pk>', RestaurantOrderٌReadyToShippingAPIView.as_view(), name='restaurant-order-ready'),
 path('restaurant/accept-order/<int:pk>', RestaurantAcceptOrderAPIView.as_view(), name='restaurant-accept-order'),
 path('restaurant/reject-order/<int:pk>', RestaurantRejectOrderAPIView.as_view(), name='restaurant-accept-order'),
 

@@ -139,9 +139,6 @@ class SubscriptionConfig(models.Model):
     
 class Car(models.Model):
     carType=models.CharField(max_length=50)
-   
-
-
     def __str__(self):
         return self.carType
 
@@ -187,7 +184,7 @@ class Driver(User):
     iban=models.CharField(max_length=21)
     companyName=models.CharField(max_length=50,null=True,blank=True)
     car=models.ForeignKey(Car,on_delete=models.CASCADE)
-    carName=models.CharField(max_length=50)
+    carName=models.CharField(max_length=50,)
     carCategory=models.ForeignKey(CarCategory, on_delete=models.CASCADE)
     carColor=models.CharField(max_length=50)
     carModel=models.CharField(max_length=50)
@@ -594,7 +591,7 @@ class PendingDriver(models.Model):
         address = models.CharField(max_length=255)
         bankName=models.CharField(max_length=50)
         iban=models.CharField(max_length=21)
-        companyName=models.CharField(max_length=50)
+        companyName=models.CharField(max_length=50,null=True,blank=True)
         car=models.ForeignKey(Car,on_delete=models.CASCADE)
         carName=models.CharField(max_length=50)
         carCategory=models.ForeignKey(CarCategory, on_delete=models.CASCADE)

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from .views.login_view import *
 from .views.main import main_dashboard
 from .views.category_views import * 
@@ -17,10 +17,27 @@ from .views.accounts.products import *
 from .views.accounts.restaurant_financial import *
 from .views.accounts.driver_financial import *
 from .views.question import *
+from .views.financial.driver import  *
+from .views.generate_exel import *
+financialPatterns=[
+    path('driver-wallet-list',drivers_wallet_list,name="drivers_wallet_list"),
+    path('driver-wallet/<int:driver_id>',drivers_wallet_details,name="drivers_wallet_details"),
+    path('driver-complated-orders/<int:driver_id>',driver_complated_orders,name="driver_complated_orders"),
+    path('driver-rejected-orders/<int:driver_id>',driver_rejected_orders,name="driver_rejected_orders"),
+    path('driver-cancelled-orders/<int:driver_id>',driver_cancelled_orders,name="driver_cancelled_orders"),
+
+    path('order/<int:order_id>/', order_details, name='order_details'),
+    
+]
+
+
+
 urlpatterns = [
+path('financial/',include(financialPatterns)),
 path('login',login_view,name="dashboard-login"),
 path('logout',logout_view,name="dashboard-logout"),
 path('',main_dashboard,name="main_dashboard"),
+path('excel',generate_excel,name="excel"),
 
 #Categories
 path('categories', category_list,name='category_list'),

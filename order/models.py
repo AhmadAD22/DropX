@@ -10,8 +10,11 @@ from utils.geographic import calculate_distance
 
 class Status(models.TextChoices):
     PENDING = 'PENDING','Pending'
+    DRIVER_ACCEPTED = 'DRIVER_ACCEPTED','Driver Accepted'
     ACCEPTED = 'ACCEPTED','Accepted'
     IN_PROGRESS = 'IN_PROGRESS','In Progress'
+    RESTAURANT_COMPLETED = 'RESTAURANT_COMPLETED','Restaurant Completed'
+    ON_WAY='ON_WAY','On Way'
     COMPLETED = 'COMPLETED','Completed'
     CANCELLED = 'CANCELLED','Cancelled'
     REJECTED='REJECTED','Rejected'
@@ -155,9 +158,18 @@ class OrderItem(models.Model):
     unitPrice = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0)
     note=models.TextField(null=True,blank=True)
+    
     def get_total_price(self):
         """Returns the total price of the order item."""
         return self.quantity * self.unitPrice
+    
+    def get_total_price_with_accessory(self):
+        accessories_price=0
+        for accessory in self.accessories.all():
+                accessories_price += accessory.get_total_price()
+        product_total=self.get_total_price()
+        return product_total + accessories_price
+    
     def __str__(self) -> str:
         return self.product.name + ' '+str(self.order)
     

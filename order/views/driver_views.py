@@ -38,7 +38,12 @@ class DriverCurrentOrdersListAPIView(APIView):
     def get(self, request):
         orders = Order.objects.filter(
             Q(driver=request.user) &
-            (Q(status=Status.IN_PROGRESS) | Q(status=Status.ACCEPTED)|Q(status=Status.PENDING)) 
+            (Q(status=Status.IN_PROGRESS) |
+             Q(status=Status.ACCEPTED)|
+             Q(status=Status.DRIVER_ACCEPTED)|
+             Q(status=Status.ON_WAY)|
+             Q(status=Status.RESTAURANT_COMPLETED)
+             ) 
                   )
         serializer = DriverOrderListSerializer(orders, many=True)
         return Response(serializer.data)
@@ -158,6 +163,7 @@ class DriverAcceptOrder(APIView):
             return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
         if order.driver is None:
             order.driver=driver
+            order.status=Status.DRIVER_ACCEPTED
             order.save()
             return Response({'result':'Order accepted'},status=status.HTTP_200_OK)
         else:
@@ -176,7 +182,8 @@ class OnWayNotification(APIView):
             driver=Driver.objects.get(pk=request.user.pk)
         except Driver.DoesNotExist:
             return Response({'error':'It is not a driver account'},status=status.HTTP_404_NOT_FOUND)
-        
+        order.status=Status.ON_WAY
+        order.save()
         NotificationsHelper.sendOrderUpdate(
             update=OrdersUpdates.Driver_ON_WAY,
             orderId=order,

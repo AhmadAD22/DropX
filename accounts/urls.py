@@ -44,6 +44,7 @@ urlpatterns = [
         path('driver/request-update-profile', DriverRequestUpdateAPIView.as_view(), name='driver-request-update'),
         path('driver/renew-order-subscription/', RenewOrderSubscriptionAPIView.as_view(), name='renew-order-subscription'),
         path('driver/renew-trip-subscription/', RenewTripSubscriptionAPIView.as_view(), name='renew-trip-subscription'),
+        path('driver/reviews/', DriverReviewsAPIView.as_view(), name='driver-reviews'),
         
         
         
@@ -58,8 +59,5 @@ urlpatterns = [
         path('restaurant/request-update-profile', PendingRestaurantRequestUpdateAPIView.as_view(), name='restaurant-request-update'),
         path('restaurant/change-status', ChangeRestaurantStatus.as_view(), name='restaurant-change-status'),
         path('restaurant/renew-subscription/', RenewSubscriptionAPIView.as_view(), name='renew_subscription'),
-        
-             
-    
 
 ]

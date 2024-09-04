@@ -12,7 +12,7 @@ from utils.notifications import NotificationsHelper,OrdersUpdates
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-
+from django.db.models import Q
 class CustomTokenAuthentication(TokenAuthentication):
     def authenticate(self, request):
         try:
@@ -32,24 +32,25 @@ class RestaurantNewOrderListAPIView(APIView):
     # authentication_classes = [CustomTokenAuthentication]
     def get(self, request):
         
-        orders = Order.objects.filter(driver__isnull=False,status=Status.PENDING,items__product__restaurant_id=request.user.id)
+        orders = Order.objects.filter(driver__isnull=False,status=Status.DRIVER_ACCEPTED,items__product__restaurant_id=request.user.id)
         serializer = OrderListSerializer(orders, many=True)
         return Response(serializer.data)
 
 class RestaurantCurrentOrdersListAPIView(APIView):
     permission_classes = [ResturantSubscripted]
     def get(self, request):
-        in_progress_orders = Order.objects.filter(driver__isnull=False,status='IN_PROGRESS',items__product__restaurant_id=request.user.id)
-        accepted_orders = Order.objects.filter(driver__isnull=False,status=Status.ACCEPTED,items__product__restaurant_id=request.user.id)
-        accepted_serializer = OrderListSerializer(accepted_orders, many=True)
-        in_progress_serializer = OrderListSerializer(in_progress_orders, many=True)
-        data={
-            'accepted_orders':accepted_serializer.data,
-            'in_progress_orders': in_progress_serializer.data
-        }
-        
-        
-        return Response(data)
+        orders = Order.objects.filter( Q(driver__isnull=False) & Q(items__product__restaurant_id=request.user.id)&
+        (Q(status=Status.IN_PROGRESS) |
+             Q(status=Status.ACCEPTED)|
+             Q(status=Status.DRIVER_ACCEPTED)|
+             Q(status=Status.ON_WAY)|
+             Q(status=Status.RESTAURANT_COMPLETED)
+             )
+        ) 
+        serializer = OrderListSerializer(orders, many=True)
+
+      
+        return Response(serializer.data)
     
     
 
@@ -236,7 +237,23 @@ class RestaurantAcceptOrderAPIView(APIView):
             )
         return Response({"result":"Order accepted"})
         
-    
+class RestaurantOrderٌReadyToShippingAPIView(APIView):
+
+    def post(self, request, pk):
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({"error":"Order does not found"})
+        order.status=Status.RESTAURANT_COMPLETED
+        order.save()
+        NotificationsHelper.sendOrderUpdate(
+            update=OrdersUpdates.ORDER_READR_TO_SHIPPING,
+            orderId=order,
+            target=order.driver,
+            )
+        return Response({"result":"Driver notifyed"})
+        
+       
 class RestaurantRejectOrderAPIView(APIView):
 
     def post(self, request, pk):

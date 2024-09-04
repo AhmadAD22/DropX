@@ -7,8 +7,8 @@ load_dotenv()
 class SmsSender:
     def send_otp(self,phone, otp):
         # don't send sms in debug mode
-        # if settings.DEBUG:
-        #     return True
+        if settings.DEBUG:
+            return True
         # print(phone)
         url = 'https://api.oursms.com/api-a/msgs'
         username =str(os.getenv('SMS_USERNAME'))

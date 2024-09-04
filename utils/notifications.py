@@ -210,6 +210,7 @@ class TripUpdates:
     CLIENT_CANCEL_TRIP='CLIENT_CANCEL_TRIP'
     
 class OrdersUpdates:
+    ORDER_READR_TO_SHIPPING='ORDER_READR_TO_SHIPPING'
     Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way
     RESTAURANT_ACCEPTED=  'RESTAURANT_ACCEPTED'#send to Client when his order is accepted
     RESTAURANT_REJECTED=  'RESTAURANT_REJECTED'#send to Client and driver when the client order is rejected

@@ -1,0 +1,212 @@
+{% extends '../../base.html' %}
+{% load static %}
+{% block title %}
+  Driver Financial
+{% endblock %}
+{% block driver_financial %}
+  active
+{% endblock %}
+{% block financial_collapse %}
+  show
+{% endblock %}
+{% block financial %}
+  active
+{% endblock %}
+{% block breadcrumbt %}
+  <li class="breadcrumb-item">
+    <a a class="text-light" href="{% url 'main_dashboard' %}">Dashboard</a>
+  </li>
+  <li class="breadcrumb-item">
+    <a class="text-light" href="{% url 'drivers_wallet_list' %}">Driver Financial</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    <a class="text-primary" href="{% url 'drivers_wallet_details' wallet.user.driver.id %}">{{ wallet.user.driver.fullName }}</a>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <style>
+    .zoom-in-card {
+      transition: transform 0.3s; /* Add a smooth transition effect */
+      background: #555;
+    }
+    
+    .zoom-in-card:hover {
+      transform: scale(1.1); /* Zoom in the card on hover */
+    }
+  </style>
+  <div class="container mt-5">
+    <nav class="nav">
+      <a class="nav-link active" href="">الحساب</a>
+      <a class="nav-link" href="">الإشتراك</a>
+      <a class="nav-link" href="#">قوائم مالية</a>
+      <a class="nav-link disabled" href="#">Disabled</a>
+    </nav>
+    <div class="card">
+      <hr />
+      <div class="card-header text-center text-white">
+        <h4 class="text-primary">{{ wallet.user.fullName }}</h4>
+      </div>
+
+      <hr />
+      <div class="card-body text-center">
+        <div class="row">
+          <div class="col-md-6" dir="rtl">
+            <p>
+              <strong>الهاتف:</strong> {{ wallet.user.phone }}
+            </p>
+            <p>
+              <strong>البريد الإلكتروني:</strong> {{ wallet.user.email }}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p>
+              <strong>اسم البنك:</strong> {{ wallet.user.driver.bankName }}
+            </p>
+            <p dir="rtl">
+              <strong>أيبان:</strong> {{ wallet.user.driver.iban }}
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="text-primary">توصيل الطلبات</h4>
+            <hr />
+            <div class="col-md-12">الطلبات</div>
+            <hr class="w-25" />
+            <div class="row">
+              <div class="col-md-4" dir="rtl">
+                <div class="card zoom-in-card clickable-row" onclick="window.location.href='{% url 'driver_complated_orders' wallet.user.driver.id %}'">
+                  <div class="card-body">
+                    <h4 class="card-title">المكتملة</h4>
+                    <p class="card-text">{{ completed_order_number }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card zoom-in-card clickable-row" onclick="window.location.href='{% url 'driver_rejected_orders' wallet.user.driver.id %}'">
+                  <div class="card-body ">
+                    <h4 class="card-title">المرفوض</h4>
+                    <p class="card-text">{{ rejected_order_number }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card zoom-in-card clickable-row" onclick="window.location.href='{% url 'driver_cancelled_orders' wallet.user.driver.id %}'">
+                  <div class="card-body">
+                    <h4 class="card-title">الملغية</h4>
+                    <p class="card-text">{{ canceled_order_number }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 mt-4">أرباح</div>
+            <hr class="w-25" />
+            <div class="row">
+              <div class="col-md-4" dir="rtl">
+                <div class="card zoom-in-card">
+                  <div class="card-body">
+                    <h4 class="card-title">اليوم</h4>
+                    <p class="card-text">
+                      {% if today_total_amount_sum %}
+                        {{ today_total_amount_sum }}
+                      {% else %}
+                        0
+                      {% endif %}ر.س
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card zoom-in-card">
+                  <div class="card-body">
+                    <h4 class="card-title">الشهر</h4>
+                    <p class="card-text">{{ month_total_amount_sum }} ر.س</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card zoom-in-card">
+                  <div class="card-body">
+                    <h4 class="card-title">السنة</h4>
+                    <p class="card-text">{{ year_total_amount_sum|floatformat:2 }} ر.س</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="text-primary">توصيل الأفراد</h4>
+            <hr />
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="text-primary">السيارة</h4>
+            <hr />
+            <div class="row">
+              <div class="col-md-6" dir="rtl">
+                <p>
+                  <strong>اسم الشركة:</strong> {{ wallet.user.companyName }}
+                </p>
+                <p>
+                  <strong>اسم السيارة:</strong> {{ wallet.user.carName }}
+                </p>
+                <p>
+                  <strong>فئة السيارة:</strong> {{ wallet.user.get_carCategory_display }}
+                </p>
+              </div>
+              <div class="col-md-6" dir="rtl">
+                <p>
+                  <strong>لون السيارة:</strong> {{ wallet.user.carColor }}
+                </p>
+                <p>
+                  <strong>نوع السيارة:</strong> {{ wallet.user.car.carType }}
+                </p>
+                <p>
+                  <strong>موديل السيارة:</strong> {{ wallet.user.carModel }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="text-primary">المستندات المثبتة</h4>
+            <hr />
+            <div class="row">
+              <div class="col-md-3 image-zoom-container">
+                {% if wallet.user.carLicense %}
+                  <a href="{{ wallet.user.carLicense.url }}"> <img src="{{ wallet.user.carLicense.url }}" class="img-small img-thumbnail mb-3" alt="رخصة السيارة" /> </a>
+                {% else %}
+                 <img src="{% static 'dashboard/images/defult.jpg' %}" class="img-small img-thumbnail mb-3" alt="رخصة السيارة" />
+                {% endif %}
+              </div>
+              <div class="col-md-3 image-zoom-container">
+                <a href="{{ wallet.user.drivingLicense.url }}"><img src="{{ wallet.user.drivingLicense.url }}" class="img-small img-thumbnail mb-3" alt="رخصة القيادة" /></a>
+              </div>
+              <div class="col-md-3 image-zoom-container">
+                <a href="{{ wallet.user.carFront.url }}"><img src="{{ wallet.user.carFront.url }}" class="img-small img-thumbnail mb-3" alt="صورة أمامية للسيارة" /></a>
+              </div>
+              <div class="col-md-3 image-zoom-container">
+                <a href="{{ wallet.user.carBack.url }}"><img src="{{ wallet.user.carBack.url }}" class="img img-small img-thumbnail mb-3" alt="صورة خلفية للسيارة" /></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-md-12"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

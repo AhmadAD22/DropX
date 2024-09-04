@@ -2,6 +2,7 @@ from rest_framework import serializers
 from ..models import *
 from rest_framework import fields
 from utils.validators import phoneValidator
+from driver.models import DriverReview
 
 from rest_framework import serializers
 
@@ -81,3 +82,15 @@ class DeiverProfileSerializer(serializers.ModelSerializer):
             'car', 'carName', 'carCategory', 'carColor', 'carLicense', 'drivingLicense',
             'carFront', 'carBack','driverOrderSubscription','driverTripSubscription'
         ]
+        
+        
+
+class DriverReviewSerializer(serializers.ModelSerializer):
+    client_id=serializers.CharField(source='client.id',read_only=True)
+    client_avatar=serializers.FileField(source='client.avatar',read_only=True)
+    client_name=serializers.CharField(source='client.fullName',read_only=True)
+    
+    class Meta:
+        model = DriverReview
+        exclude = ['driver']
+    

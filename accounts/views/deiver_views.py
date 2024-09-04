@@ -16,6 +16,7 @@ from django.contrib.auth.hashers import make_password
 from wallet.models import DriverOrderSubscriptionPayment,DriverTripSubscriptionPayment,UserWallet
 from django.db import IntegrityError
 from decimal import Decimal
+from driver.models import DriverReview
 
 
 class CarCategoryList(APIView):
@@ -88,7 +89,6 @@ class DriverAuthToken(ObtainAuthToken):
                 else:
                     trip_subscription_paid=False
                 if driver.enabled==True:
-                    
                     return Response({
                         'token': token.key,
                         'user': {
@@ -347,3 +347,20 @@ class RenewTripSubscriptionAPIView(APIView):
             return Response({'error': f"{e}"},status=status.HTTP_404_NOT_FOUND)
         return Response({'result': 'Success, Please Pay to active the renew'})
         
+        
+class DriverReviewsAPIView(APIView):
+    def get(self, request):
+        try:
+            driver = Driver.objects.get(phone=request.user.phone)
+        except Driver.DoesNotExist:
+            return Response({"error": "Driver does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        
+        reviews = DriverReview.objects.filter(driver=driver)
+        ratings = [review.rating for review in reviews]
+        average_rating = sum(ratings) / len(ratings) if ratings else 0
+        rating={
+            "average": average_rating,
+            "count":reviews.count()
+        }
+        serializer = DriverReviewSerializer(reviews, many=True)
+        return Response({"reviews":serializer.data,"rating":rating}, status=status.HTTP_200_OK)
