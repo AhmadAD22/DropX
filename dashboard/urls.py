@@ -18,15 +18,25 @@ from .views.accounts.restaurant_financial import *
 from .views.accounts.driver_financial import *
 from .views.question import *
 from .views.financial.driver import  *
+from .views.financial.restaurant import  *
 from .views.generate_exel import *
 financialPatterns=[
+    #Driver
     path('driver-wallet-list',drivers_wallet_list,name="drivers_wallet_list"),
     path('driver-wallet/<int:driver_id>',drivers_wallet_details,name="drivers_wallet_details"),
     path('driver-complated-orders/<int:driver_id>',driver_complated_orders,name="driver_complated_orders"),
     path('driver-rejected-orders/<int:driver_id>',driver_rejected_orders,name="driver_rejected_orders"),
     path('driver-cancelled-orders/<int:driver_id>',driver_cancelled_orders,name="driver_cancelled_orders"),
-
+    path('driver-complated-trips/<int:driver_id>',driver_complated_trips,name="driver_complated_trips"), 
+    path('driver-rejected-trips/<int:driver_id>',driver_rejected_trips,name="driver_rejected_trips"), 
+    path('driver-cancelled-trips/<int:driver_id>',driver_cancelled_trips,name="driver_cancelled_trips"),
     path('order/<int:order_id>/', order_details, name='order_details'),
+    path('trip/<int:trip_id>/', trip_details, name='trip_details'),
+    
+    #Restaurant
+    path('restaurant-wallet-list',restaurants_wallet_list,name="restaurants_wallet_list"),
+    path('restaurant-wallet/<int:restaurant_id>',restaurants_wallet_details,name="restaurant_wallet_details"),
+    
     
 ]
 

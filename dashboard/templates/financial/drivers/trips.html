@@ -55,14 +55,14 @@
         </tr>
       </thead>
       <tbody>
-        {% for order in orders %}
-          <tr class="clickable-row" onclick="window.location.href='{% url "order_details" order.id %}'">
-            <td>{{ order.id }}</td>
-            <td>{{ order.client.fullName }}</td>
-            <td>{{ order.items.first.product.restaurant.restaurantName }}</td>
-            <td>{{ order.orderDate|date:'Y-m-d' }}</td>
-            <td>{{ order.deliveryCost }}ر.س</td>
-            <td>{{ order.price_with_tax_with_coupon }} ر.س</td>
+        {% for trip in trips %}
+          <tr class="clickable-row" onclick="window.location.href='{% url "trip_details" trip.id %}'">
+            <td>{{ trip.id }}</td>
+            <td>{{ trip.client.fullName }}</td>
+            <td>{{ trip.items.first.product.restaurant.restaurantName }}</td>
+            <td>{{ trip.tripDate|date:'Y-m-d' }}</td>
+            <td>{{ trip.deliveryCost }}ر.س</td>
+            <td>{{ trip.price_with_tax_with_coupon }} ر.س</td>
           </tr>
         {% empty %}
           <tr>
@@ -72,25 +72,25 @@
       </tbody>
     </table>
     <!-- Pagination links -->
-    {% if orders.has_other_pages %}
+    {% if trips.has_other_pages %}
       <ul class="pagination justify-content-center bg-transparent">
-        {% if orders.has_previous %}
+        {% if trips.has_previous %}
           <li class="page-item ml-2">
             <a class="page-link btn btn-primary" href="?page=1">&laquo; الأول</a>
           </li>
           <li class="page-item ml-2">
-            <a class="page-link btn btn-primary" href="?page={{ orders.previous_page_number }}">السابق</a>
+            <a class="page-link btn btn-primary" href="?page={{ trips.previous_page_number }}">السابق</a>
           </li>
         {% endif %}
         <li class="page-item ml-2 disabled">
-          <a class="page-link bg-transparent border-0" href="#">الصفحة {{ orders.number }} من {{ orders.paginator.num_pages }}</a>
+          <a class="page-link bg-transparent btrip-0" href="#">الصفحة {{ trips.number }} من {{ trips.paginator.num_pages }}</a>
         </li>
-        {% if orders.has_next %}
+        {% if trips.has_next %}
           <li class="page-item ml-2">
-            <a class="page-link btn btn-primary" href="?page={{ orders.next_page_number }}">التالي</a>
+            <a class="page-link btn btn-primary" href="?page={{ trips.next_page_number }}">التالي</a>
           </li>
           <li class="page-item ml-1">
-            <a class="page-link btn btn-primary" href="?page={{ orders.paginator.num_pages }}">الأخير &raquo;</a>
+            <a class="page-link btn btn-primary" href="?page={{ trips.paginator.num_pages }}">الأخير &raquo;</a>
           </li>
         {% endif %}
       </ul>

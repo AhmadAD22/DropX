@@ -1,0 +1,73 @@
+{% extends '../../base.html' %}
+{% load static %}
+{% block title %}
+  Driver Financial
+{% endblock %}
+{% block driver_financial %}
+  active
+{% endblock %}
+{% block financial_collapse %}
+  show
+{% endblock %}
+{% block financial %}
+  active
+{% endblock %}
+{% block breadcrumbt %}
+  <li class="breadcrumb-item">
+    <a a class="text-light" href="{% url 'main_dashboard' %}">Dashboard</a>
+  </li>
+  <li class="breadcrumb-item ">
+    <a class="text-light" href="{% url 'drivers_wallet_list' %}">Driver Financial</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    <a class="text-light" href="{% url 'drivers_wallet_details' trip.driver.id %}">{{ trip.driver.fullName }}</a>
+  </li>
+  
+  <li class="breadcrumb-item active" aria-current="page">
+    {% if trip.status == 'COMPLETED' %}
+        <a class="text-light" href="{% url 'driver_complated_trips' trip.driver.id %}">Completed trips</a>
+    {% elif trip.status == 'REJECTED' %}
+        <a class="text-light" href="{% url 'driver_rejected_trips' trip.driver.id %}">Rejected trips</a>
+    {% else %}
+        <a class="text-light" href="{% url 'driver_cancelled_trips' trip.driver.id %}">Cancelled trips</a>
+    {% endif %}
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    <a class="text-primary" href="">{{ trip.id }}</a>
+  </li>
+  
+{% endblock %}
+{% block content %}
+<div class="container mt-5 ">
+    <div class="card order-details-card text-right ">
+      <div class="card-header  text-white">
+        <h3 class="font-weight-bold text-primary">تفاصيل الرحلة</h3>
+      </div>
+      <div class="card-body mr-5">
+        <div class="row mr-5">
+          <div class="col-md-6">
+            <h5 class="card-title">العميل: {{ trip.client }}</h5>
+            <p class="card-text">ملاحظة: {{ trip.note }}</p>
+            <p class="card-text">تاريخ الرحلة: {{ trip.tripDate }}</p>
+            <p class="card-text">عنوان المصدر: {{ trip.sourceAddress }}</p>
+            <p class="card-text">عنوان الوجهة: {{ trip.destinationAddress }}</p>
+
+          </div>
+          <div class="col-md-6">
+            <p class="card-text">المسافة: {{ trip.distance }} كم</p>
+            <p class="card-text">السعر: {{ trip.price }}ر.س</p>
+            <p class="card-text">الضريبة: {{ trip.tax }}ر.س</p>
+            <p class="card-text">العمولة: {{ trip.commission }}ر.س</p>
+            <p class="card-text">الكوبون: {% if trip.coupon %}{{ trip.coupon.percent }} {% else %}0{% endif %}%</p>
+          </div>
+        </div>
+
+      </div>
+      <div class="card-footer text-center border-0 px-4 py-5"
+      style="background-color: #FF8300; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+      <h5 class="d-flex align-items-center justify-content-center text-white text-uppercase mb-1">
+        إجمالي الفاتورة :<span class="h2 mb-1 ms-2">{{trip.price_with_tax_with_coupon}} ر.س</span></h5>
+    </div>
+    </div>
+  </div>
+{% endblock %}
