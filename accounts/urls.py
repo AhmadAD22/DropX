@@ -22,6 +22,8 @@ urlpatterns = [
         
         
      #Common Account URLS
+        #App Common Question
+        path('app/common-questions/', CommonQuestionAPIView.as_view(), name='common-questions'),
         #User forget password
         path('user/forget-password-request',ForgetPasswordAPIView.as_view()), 
         path('user/forget-pssword-verify-phone',ForgetPsswordVerifyPhoneAPIView.as_view()),

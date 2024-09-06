@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from ..models import *
 from datetime import datetime, timedelta
-from driver.models import DriverReview
 
 class RestaurantSubscriptionSerializer(serializers.ModelSerializer):
     
@@ -43,12 +42,3 @@ class UpdateRestaurantSerializer(serializers.ModelSerializer):
             'commercialRecordNumber', 'commercialRecordImage',  'oldPhone'
         ]
         
-class DriverReviewSerializer(serializers.ModelSerializer):
-    client_id=serializers.CharField(source='client.id',read_only=True)
-    client_avatar=serializers.FileField(source='client.avatar',read_only=True)
-    client_name=serializers.CharField(source='client.fullName',read_only=True)
-    
-    class Meta:
-        model = DriverReview
-        exclude = ['driver']
-    

@@ -1,0 +1,143 @@
+{% extends '../../base.html' %}
+{% load static %}
+{% block title %}
+  restaurant Financial
+{% endblock %}
+{% block restaurant_financial %}
+  active
+{% endblock %}
+{% block financial_collapse %}
+  show
+{% endblock %}
+{% block financial %}
+  active
+{% endblock %}
+{% block breadcrumbt %}
+  <li class="breadcrumb-item">
+    <a a class="text-light" href="{% url 'main_dashboard' %}">Dashboard</a>
+  </li>
+  <li class="breadcrumb-item ">
+    <a class="text-light" href="{% url 'restaurants_wallet_list' %}">restaurant Financial</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    <a class="text-light" href="{% url 'restaurant_wallet_details' order.items.first.product.restaurant.id %}">{{order.items.first.product.restaurant.restaurantName }}</a>
+  </li>
+  
+  <li class="breadcrumb-item active" aria-current="page">
+    {% if order.status == 'COMPLETED' %}
+        <a class="text-light" href="{% url 'restaurant_complated_orders' order.items.first.product.restaurant.id %}">Completed Orders</a>
+    {% elif order.status == 'REJECTED' %}
+        <a class="text-light" href="{% url 'restaurant_rejected_orders' order.items.first.product.restaurant.id %}">Rejected Orders</a>
+    {% else %}
+        <a class="text-light" href="{% url 'restaurant_cancelled_orders' order.items.first.product.restaurant.id %}">Cancelled Orders</a>
+    {% endif %}
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    <a class="text-primary" href="">{{order.id }}</a>
+  </li>
+  
+{% endblock %}
+{% block content %}
+<section class="h-100">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-10 col-xl-8">
+          <div class="card" style="border-radius: 10px; ">
+            <div class="card-header text-center  px-4 py-5">
+              <h3 class="mb-1"><span style="color: #FF8300;">Order #{{order.id}}</span></h3>
+            </div>
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-center pt-2">
+                <h5 class="fw-bold text-primary mb-1">تفاصيل</h5>
+              </div>
+              <div class="d-flex justify-content-between pt-2">
+                <p class="mb-1"><strong class="fw-bold me-4">الزبون: </strong>{{order.client.fullName}}</p>
+                <p class="mb-1"><strong class="fw-bold me-4">المطعم: </strong>{{order.items.first.product.restaurant.restaurantName}}</p>
+              </div>
+  
+              <div class="d-flex justify-content-between ">
+                <p class=" mb-1"><strong class="fw-bold me-4">التاريخ: </strong>{{order.orderDate|date:"Y-m-d H:i:s"}}</p>
+                <p class="mb-1"><strong class="fw-bold me-4">الضريبة : </strong>{{order.tax}}</p>
+              </div>
+  
+              <div class="d-flex justify-content-between mb-5">
+                <p class="mb-1"><strong class="fw-bold me-4">أجور التوصيل: </strong>{{order.deliveryCost}} ر.س</p>
+                <p class="mb-1"><strong class="fw-bold me-4">الخصم:</strong> {% if order.coupon.percent %}{{order.coupon.percent}} {% else %}0{% endif %}%</p>
+              </div>
+              {% for item in order.items.all %}
+              <div class="card shadow-0 border mb-4" style="border-color: #FF8300 !important;">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-12 text-center d-flex justify-content-center align-items-center">
+                        <p class="text-muted mb-3">{{item.product.name}}</p>
+                      </div>
+                    <div class="col-md-3">
+                    {% if item.product.image %}
+                      <img src="{{item.product.image.url}}"
+                        class="img-fluid" alt="product">
+                        {% else %}
+                        <img src="{% static 'dashboard/images/defult.jpg' %}"
+                        class="img-fluid" alt="product">
+                    {% endif %}
+                    </div>
+                    
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-1 small">سعر الوحدة:{{item.unitPrice}}</p>
+                    </div>
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-1 small">الكمية:{{item.quantity}}</p>
+                    </div>
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-1 small">{{item.get_total_price}} ر.س</p>
+                    </div>
+                  </div>
+                  <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
+                  {% if item.accessories.all %}
+                  <div class="col-md-12 text-center d-flex justify-content-center align-items-center">
+                    <p class="text-muted mb-3">الملحقات</p>
+                  </div>
+                  {% endif %}
+                  {% for accessory in item.accessories.all %}
+                  <div class="row">
+                
+                      <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                        <p class="text-muted mb-1 small">{{accessory.accessory_product.name}}</p>
+                      </div>
+                    
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-1 small">سعر الوحدة:{{accessory.unitPrice}}</p>
+                    </div>
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-1 small">الكمية:{{accessory.quantity}}</p>
+                    </div>
+                    <div class="col-md-3 text-center d-flex justify-content-center align-items-center">
+                      <p class="text-muted mb-1 small">{{accessory.get_total_price}} ر.س</p>
+                    </div>
+                    
+                  </div>
+                  <hr class="w-50">
+                  {% endfor %}
+                  <div class="row">
+                    <div class="col-md-12 text-center d-flex justify-content-end align-items-center">
+                       <h3><span class="badge" style="background-color: #FF8300;">{{item.get_total_price_with_accessory}}</span></h3> 
+                      </div>
+                  </div>
+
+                
+                  
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="card-footer text-center border-0 px-4 py-5"
+              style="background-color: #FF8300; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <h5 class="d-flex align-items-center justify-content-center text-white text-uppercase mb-1">
+                إجمالي الفاتورة <span class="h2 mb-1 ms-2">{{order.price_with_tax_with_coupon}}</span></h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

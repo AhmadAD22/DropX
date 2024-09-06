@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %} Order Statistics {% endblock %}
+{% block statistics_collapse %}show{% endblock statistics_collapse %}
+{% block statistics %}active{% endblock statistics %}
+{% block order_statistics %}active{% endblock order_statistics %}
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+<li class="breadcrumb-item ">
+    <a class="text-primary" href="{% url "main_dashboard" %}">Order Statistics</a>
+</li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="text-center mb-4">فلترة الإحصائيات</h4>
+                    <form id="filter-form" class="d-flex flex-wrap justify-content-between">
+                        <div class="form-group col-md-3">
+                            <label for="filter-type">اختر نوع الفلتر:</label>
+                            <select id="filter-type" name="filter_type" class="form-control">
+                                <option value="all">كل الفلاتر</option>
+                                <option value="year">سنة</option>
+                                <option value="month">شهر</option>
+                                <option value="day">يوم</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3 d-none" id="year-filter">
+                            <label for="year">اختر السنة:</label>
+                            <select id="year" name="year" class="form-control">
+                                {% for yr in years %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3 d-none" id="month-filter">
+                            <label for="month">اختر الشهر:</label>
+                            <select id="month" name="month" class="form-control">
+                                <option value="1">يناير</option>
+                                <option value="2">فبراير</option>
+                                <option value="3">مارس</option>
+                                <option value="4">أبريل</option>
+                                <option value="5">مايو</option>
+                                <option value="6">يونيو</option>
+                                <option value="7">يوليو</option>
+                                <option value="8">أغسطس</option>
+                                <option value="9">سبتمبر</option>
+                                <option value="10">أكتوبر</option>
+                                <option value="11">نوفمبر</option>
+                                <option value="12">ديسمبر</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3 d-none" id="day-filter">
+                            <label for="day">اختر اليوم:</label>
+                            <input type="number" id="day" name="day" class="form-control" min="1" max="31" placeholder="أدخل اليوم">
+                        </div>
+
+                        <div class="form-group col-md-12 text-center mt-3">
+                            <button type="submit" class="btn btn-primary">عرض الإحصائيات</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    
+        <div class="col-lg-6 col-md-8 col-sm-10">
+            <div class="card bg-dark shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="mb-3 text-primary">طلبات  المطاعم</h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <p>المكتمل</p>
+                            <h3 id="order-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>المرفوض</p>
+                            <h3 id="rejected-order-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>الملغي</p>
+                            <h3 id="cancelled-order-count" class="text-primary">0</h3>
+                        </div>
+                      
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <p>إجمالي العمولة</p>
+                            <h3 id="order-commission" class="text-primary">0.00</h3>
+                            <span>ر.س</span>
+                        </div>
+                        <div class="col-4">
+                            <p>إجمالي الضرائب</p>
+                            <h3 id="order-total-tax" class="text-primary">0.00</h3>
+                            <span>ر.س</span>
+                        </div>
+                        <div class="col-4">
+                            <p>إجمالي المبلغ</p>
+                            <h3 id="total-amount" class="text-primary">0.00</h3>
+                            <span>ر.س</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+        <div class="col-lg-6 col-md-8 col-sm-10">
+            <div class="card bg-dark shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="mb-3 text-primary"> الرحلات</h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <p> المكتمل:</p>
+                            <h3 id="trip-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>المرفوض</p>
+                            <h3 id="rejected-trip-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>الملغي</p>
+                            <h3 id="cancelled-trip-count" class="text-primary">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <p>إجمالي العمولة</p>
+                            <h3 id="trip-commission" class="text-primary">0.00</h3>
+                            <span>ر.س</span>
+                        </div>
+                        <div class="col-4">
+                            <p>إجمالي الضرائب</p>
+                            <h3 id="trip-total-tax" class="text-primary">0.00</h3>
+                            <span>ر.س</span>
+                        </div>
+                        <div class="col-4">
+                            <p>إجمالي المبلغ:</p>
+                            <h3 id="trip-total-amount" class="text-primary">0.00</h3>
+                            <span>ر.س</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterTypeSelect = document.getElementById('filter-type');
+        const yearFilter = document.getElementById('year-filter');
+        const monthFilter = document.getElementById('month-filter');
+        const dayFilter = document.getElementById('day-filter');
+        const filterForm = document.getElementById('filter-form');
+
+        // Initially hide filters
+        yearFilter.classList.add('d-none');
+        monthFilter.classList.add('d-none');
+        dayFilter.classList.add('d-none');
+
+        // Show relevant filters on change
+        filterTypeSelect.addEventListener('change', function () {
+            const selectedFilter = this.value;
+            yearFilter.classList.add('d-none');
+            monthFilter.classList.add('d-none');
+            dayFilter.classList.add('d-none');
+
+            if (selectedFilter === 'year') {
+                yearFilter.classList.remove('d-none');
+            } else if (selectedFilter === 'month') {
+                yearFilter.classList.remove('d-none');
+                monthFilter.classList.remove('d-none');
+            } else if (selectedFilter === 'day') {
+                yearFilter.classList.remove('d-none');
+                monthFilter.classList.remove('d-none');
+                dayFilter.classList.remove('d-none');
+            } else if (selectedFilter === 'all') {
+                yearFilter.classList.remove('d-none');
+                monthFilter.classList.remove('d-none');
+                dayFilter.classList.remove('d-none');
+            }
+        });
+
+        // Function to fetch all orders stats when page loads
+        function fetchOrderStats(query = '') {
+            fetch(`{% url "get_order_stats" %}${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('order-count').textContent = data.order_count;
+                    document.getElementById('total-amount').textContent = data.order_total_amount;
+                    document.getElementById('rejected-order-count').textContent = data.rejected_order_count;
+                    document.getElementById('cancelled-order-count').textContent = data.cenceled_order_count;
+                    document.getElementById('order-total-tax').textContent = data.order_total_tax;
+                    document.getElementById('order-commission').textContent = data.order_commission;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Fetch all stats on page load
+        fetchOrderStats();
+        // Function to fetch trip stats from the server
+        function fetchTripStats(query = '') {
+            fetch(`{% url "get_trip_stats" %}${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('trip-count').textContent = data.trip_count;
+                    document.getElementById('trip-total-amount').textContent = data.trip_total_amount;
+                    document.getElementById('rejected-trip-count').textContent = data.rejected_trip_count;
+                    document.getElementById('cancelled-trip-count').textContent = data.cancelled_trips_count;
+                    document.getElementById('trip-total-tax').textContent = data.trip_total_tax;
+                    document.getElementById('trip-commission').textContent = data.trip_commission;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Fetch all trip stats on page load
+        fetchTripStats();
+
+
+        // Submit the form via AJAX
+        filterForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const filterType = document.getElementById('filter-type').value;
+            const year = document.getElementById('year').value;
+            const month = document.getElementById('month').value;
+            const day = document.getElementById('day').value;
+
+            let query = '';
+            if (filterType === 'year') {
+                query = `?filter_type=year&year=${year}`;
+            } else if (filterType === 'month') {
+                query = `?filter_type=month&year=${year}&month=${month}`;
+            } else if (filterType === 'day') {
+                query = `?filter_type=day&year=${year}&month=${month}&day=${day}`;
+            } else if (filterType === 'all') {
+                query = `?filter_type=all&year=${year}&month=${month}&day=${day}`;
+            }
+
+            // Fetch filtered stats
+            fetchOrderStats(query);
+             // Fetch filtered trip stats
+            fetchTripStats(query);
+        });
+    });
+</script>
+
+{% endblock content %}

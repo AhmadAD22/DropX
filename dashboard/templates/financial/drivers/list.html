@@ -45,23 +45,6 @@
             
         </tbody>
     </table>
-     <!-- Pagination links -->
-     <div class="pagination">
-        <span class="step-links">
-            {% if orders.has_previous %}
-                <a class="btn btn-primary" href="?page=1">&laquo; first</a>
-                <a class="btn btn-primary" href="?page={{ orders.previous_page_number }}">previous</a>
-            {% endif %}
     
-            <div class="current m-2">
-                صفحة {{ orders.number }} من {{ num_pages }}.
-            </div>
-    
-            {% if orders.has_next %}
-                <a class="btn btn-primary" href="?page={{ orders.next_page_number }}">next</a>
-                <a class="btn btn-primary"  href="?page={{ num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
-    </div>
 </div>
 {% endblock content %}

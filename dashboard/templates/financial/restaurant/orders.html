@@ -1,0 +1,108 @@
+{% extends '../../base.html' %}
+{% load static %}
+{% block title %}
+  {{ en_title }}
+{% endblock %}
+{% block restaurant_financial %}
+  active
+{% endblock %}
+{% block financial_collapse %}
+  show
+{% endblock %}
+{% block financial %}
+  active
+{% endblock %}
+{% block breadcrumbt %}
+  <li class="breadcrumb-item">
+    <a a class="text-light" href="{% url 'main_dashboard' %}">Dashboard</a>
+  </li>
+  <li class="breadcrumb-item" aria-current="page">
+    <a class="text-light" href="{% url 'restaurants_wallet_list' %}">Restaurant Financial</a>
+  </li>
+  <li class="breadcrumb-item" aria-current="page">
+    <a class="text-light" href="{% url 'restaurant_wallet_details' restaurant.id %}">{{ restaurant.fullName }}</a>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    <a class="text-primary" href="{% url url restaurant.id %}">{{en_title}}</a>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <div class="container text-center">
+    <h3 class="text-primary">{{ title }}</h3>
+    <form class="form-inline mt-3 d-flex justify-content-center" method="GET" action="{% url url restaurant.id %}">
+      <div class="form-group m-2">
+        <label for="start_date">تاريخ البداية:</label>
+        <input type="date" class="form-control m-2" id="start_date" name="start_date" value="{{ request.GET.start_date }}" />
+      </div>
+
+      <div class="form-group m-2">
+        <label for="end_date">تاريخ النهاية:</label>
+
+        <input type="date" class="form-control m-2" id="end_date" name="end_date" value="{{ request.GET.end_date }}" />
+      </div>
+      <button type="submit" class="btn btn-primary">بحث</button>
+    </form>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-white">
+      <thead>
+        <tr class="text-primary">
+          <th>#</th>
+          <th class="text-center">الزبون</th>
+          <th class="text-center">المطعم</th>
+          <th class="text-center">التاريخ</th>
+          <th class="text-center">تكاليف النقل</th>
+          <th class="text-center">تكلفة الطلب</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr class="clickable-row" onclick="window.location.href='{% url "rsetaurant_order_details" order.id %}'">
+            <td>{{ order.id }}</td>
+            <td>{{ order.client.fullName }}</td>
+            <td>{{ order.items.first.product.restaurant.restaurantName }}</td>
+            <td>{{ order.orderDate|date:'Y-m-d' }}</td>
+            <td>{{ order.deliveryCost }}ر.س</td>
+            <td>{{ order.price_with_tax_with_coupon }} ر.س</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6">لا يوجد</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <!-- Pagination links -->
+    {% if orders.has_other_pages %}
+      <ul class="pagination justify-content-center bg-transparent">
+        {% if orders.has_previous %}
+          <li class="page-item ml-2">
+            <a class="page-link btn btn-primary" href="?page=1">&laquo; الأول</a>
+          </li>
+          <li class="page-item ml-2">
+            <a class="page-link btn btn-primary" href="?page={{ orders.previous_page_number }}">السابق</a>
+          </li>
+        {% endif %}
+        <li class="page-item ml-2 disabled">
+          <a class="page-link bg-transparent border-0" href="#">الصفحة {{ orders.number }} من {{ orders.paginator.num_pages }}</a>
+        </li>
+        {% if orders.has_next %}
+          <li class="page-item ml-2">
+            <a class="page-link btn btn-primary" href="?page={{ orders.next_page_number }}">التالي</a>
+          </li>
+          <li class="page-item ml-1">
+            <a class="page-link btn btn-primary" href="?page={{ orders.paginator.num_pages }}">الأخير &raquo;</a>
+          </li>
+        {% endif %}
+      </ul>
+    {% endif %}
+    <div class="text-primary  d-flex justify-content-center align-items-center">
+    <div class="text-light">
+      <div class="text-primary">
+        إجمالي التكاليف:
+      </div>
+      {{total_price}} ر.س
+    </div>
+    
+  </div> 
+  </div>
+{% endblock %}

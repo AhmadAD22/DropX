@@ -20,6 +20,9 @@ from .views.question import *
 from .views.financial.driver import  *
 from .views.financial.restaurant import  *
 from .views.generate_exel import *
+from .views.statistic.general import *
+from .views.statistic.order import *
+from .views.statistic.trip import *
 financialPatterns=[
     #Driver
     path('driver-wallet-list',drivers_wallet_list,name="drivers_wallet_list"),
@@ -36,14 +39,27 @@ financialPatterns=[
     #Restaurant
     path('restaurant-wallet-list',restaurants_wallet_list,name="restaurants_wallet_list"),
     path('restaurant-wallet/<int:restaurant_id>',restaurants_wallet_details,name="restaurant_wallet_details"),
+    path('restaurant-complated-orders/<int:restaurant_id>',restaurant_complated_orders,name="restaurant_complated_orders"),
+    path('restaurant-rejected-orders/<int:restaurant_id>',restaurant_rejected_orders,name="restaurant_rejected_orders"),
+    path('restaurant-cancelled-orders/<int:restaurant_id>',restaurant_cancelled_orders,name="restaurant_cancelled_orders"),
+    path('rsetaurant/order/<int:order_id>/', rsetaurant_order_details, name='rsetaurant_order_details'),
     
     
 ]
+statisticpatterns=[ 
+           path('users-per-month/', users_per_month, name='users_per_month'),
+           path('orders-per-month/', orders_per_month, name='orders_per_month'),
+           path('trips-per-month/', trips_per_month, name='trips_per_month'),
+           path('', order_statistics, name='order_statistics'),
+           path('api/order-stats/', get_order_stats, name='get_order_stats'),
+           path('api/trip-stats/', get_trip_stats, name='get_trip_stats'),
 
+]
 
 
 urlpatterns = [
 path('financial/',include(financialPatterns)),
+path('statistic/',include(statisticpatterns)),
 path('login',login_view,name="dashboard-login"),
 path('logout',logout_view,name="dashboard-logout"),
 path('',main_dashboard,name="main_dashboard"),

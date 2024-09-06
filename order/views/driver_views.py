@@ -208,7 +208,7 @@ class DeliveryConfirm(APIView):
         except UserWallet.DoesNotExist:
             return Response({'error':'Driver or Restuaurant does not have wallet'},status=status.HTTP_404_NOT_FOUND)
         
-        if order.status==Status.IN_PROGRESS:
+        if order.status==Status.ON_WAY or order.status==Status.RESTAURANT_COMPLETED :
             order.status=Status.COMPLETED
             order.save()
             total_price_for_restaurant=order.total_price()
@@ -230,7 +230,7 @@ class DeliveryConfirm(APIView):
                 )
             return Response({'result':'The order delivered'},status=status.HTTP_200_OK)
         else:
-            return Response({'error':'The order status must be in progress or the order already complated'},status=status.HTTP_409_CONFLICT)
+            return Response({'error':'The order status must be complated by restaurant'},status=status.HTTP_409_CONFLICT)
     
     
 
@@ -391,7 +391,7 @@ class DriverComlateTrip(APIView):
         except UserWallet.DoesNotExist:
             return Response({'error':'Driver does not have a wallet. '},status=status.HTTP_404_NOT_FOUND)
         if trip.driver.phone == driver.phone:
-            if trip.status==Status.IN_PROGRESS:
+            if trip.status==Status.IN_PROGRESS or trip.status==Status.ON_WAY:
                 trip.status=Status.COMPLETED
                 trip.save()
                 driver_wallet.balance+=Decimal(trip.price)
@@ -402,7 +402,7 @@ class DriverComlateTrip(APIView):
                 target=trip.client,
                 )
             else:
-                return Response({'error':'The trip status must be in progress or the order already complated'},status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error':'The trip status must be in progress'},status=status.HTTP_400_BAD_REQUEST)
             return Response({'result':'trip Complated'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The trip was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)

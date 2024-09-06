@@ -147,7 +147,7 @@ class CheckoutView(APIView):
             order_config = OrderConfig.objects.first()
 
             # Calculate the total price of the cart
-            total_price = cart.total_price_with_tax()
+            total_price = cart.price_with_tax_with_coupon()
 
             # Apply the coupon if provided
             coupon=None
@@ -166,7 +166,6 @@ class CheckoutView(APIView):
             client = Client.objects.get(phone=request.user.phone)
             restaurant=cart.items.first().product.restaurant
             #Delivery Cost
-            
             distance=calculate_distance(restaurant.latitude,restaurant.longitude,client_latitude,client_longitude)
             deliveryCost=order_config.delivery_price(distance=distance)
             order = Order.objects.create(

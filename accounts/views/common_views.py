@@ -12,6 +12,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
+class CommonQuestionAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Get all common questions
+        common_questions = CommonQuestion.objects.all()
+        serializer = CommonQuestionSerializer(common_questions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class PhoneVerifyView(APIView):
     authentication_classes = []  # Disable authentication
     permission_classes = []  # Disable permission checks

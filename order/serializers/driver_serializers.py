@@ -29,7 +29,7 @@ class DriverOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
-            'id','client_name','client_phone','restaurant_name','restaurant_phone','destinationName','destinationPhone','destinationAddress',
+            'id','client_name','client_phone','restaurant_name','restaurant_phone','restaurantLat','restaurantLng','restaurantAddress','destinationName','destinationPhone','destinationAddress',
             'destinationLng','destinationLat',
             'deliveryDate', 'status','tax',
             'commission', 'orderDate',

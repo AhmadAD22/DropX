@@ -10,28 +10,23 @@
 <div class="row text-center m-0">
     <div class="col-md-4 mb-4 ">
         <div class="content animate__animated animate__fadeInUp">
-            <h5>جميع المندوبين</h5>
+            <h5>مناديب</h5>
             <p>{{driver_count}}</p>
         </div>
     </div>
     <div class="col-md-4 mb-4">
         <div class="content animate__animated animate__fadeInUp">
-            <h5>جميع المطاعم</h5>
+            <h5>المطاعم</h5>
             <p>{{restaurant_count}}</p>
         </div>
     </div>
     <div class="col-md-4 mb-4">
         <div class="content animate__animated animate__fadeInUp">
-            <h5>جميع المستخدمين</h5>
+            <h5>العملاء</h5>
             <p>{{client_count}}</p>
         </div>
     </div>
-    <div class="col-md-4 mb-4">
-        <div class="content animate__animated animate__fadeInUp">
-            <h5>جميع التصنيفات</h5>
-            <p>{{category_count}}</p>
-        </div>
-    </div>
+   
     <div class="col-md-4 mb-4">
         <div class="content animate__animated animate__fadeInUp">
             <h5>طلبات الإشتراك</h5>
@@ -40,29 +35,150 @@
     </div>
     <div class="col-md-4 mb-4">
         <div class="content animate__animated animate__fadeInUp">
-            <h5>الأرباح</h5>
-            <p>{{regesteration_request_count}}</p>
+            <h5>أرباح الإشتراك</h5>
+            <p>{{subscription_profits}}ر.س</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="content animate__animated animate__fadeInUp">
+            <h5>أرباح العمولة</h5>
+            <p>{{commission_profits}}ر.س</p>
         </div>
     </div>
 </div>
-
-
 <div class="row">
     <div class="col-md-6 mb-4">
         <div class="chart animate__animated animate__fadeInUp">
-            <canvas id="usersChart"></canvas>
-            <h5 class="text-center mt-3">المستخدمون</h5>
+            <canvas id="tripsChart"></canvas>
+            <h5 class="text-center mt-3">الرحلات الشهرية والسعر الإجمالي</h5>
         </div>
     </div>
+    
     <div class="col-md-6 mb-4">
         <div class="chart animate__animated animate__fadeInUp">
             <canvas id="ordersChart"></canvas>
-            <h5 class="text-center mt-3">الطلبات</h5>
+            <h5 class="text-center mt-3">الطلبات الشهرية والسعر الإجمالي</h5>
         </div>
     </div>
-</div>
 </main>
 </div>
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Fetch trip data from the server
+        fetch("{% url 'trips_per_month' %}")
+            .then(response => response.json())
+            .then(data => {
+                var ctx = document.getElementById('tripsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar', // Use bar chart for comparison
+                    data: {
+                        labels: data.months, // x-axis labels
+                        datasets: [
+                            {
+                                label: 'عدد الرحلات',
+                                data: data.trip_counts, // y-axis data for trip count
+                                backgroundColor: 'rgba(255,131,0, 0.2)',
+                                borderColor: 'rgba(255,131,0,1)',
+                                borderWidth: 1,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'إجمالي السعر  ',
+                                data: data.total_prices, // y-axis data for total price with coupon
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235,1)',
+                                borderWidth: 1,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                position: 'left', // First y-axis for trip counts
+                                title: {
+                                    display: true,
+                                    text: 'عدد الرحلات'
+                                }
+                            },
+                            y1: {
+                                beginAtZero: true,
+                                position: 'right', // Second y-axis for total prices with coupon
+                                title: {
+                                    display: true,
+                                    text: 'إجمالي السعر (ر.س)'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+    });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Fetch order data from the server
+        fetch("{% url 'orders_per_month' %}")
+            .then(response => response.json())
+            .then(data => {
+                var ctx = document.getElementById('ordersChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar', // Bar chart for better comparison between count and price
+                    data: {
+                        labels: data.months, // x-axis labels
+                        datasets: [
+                            {
+                                label: 'عدد الطلبات',
+                                data: data.order_counts, // y-axis data for orders count
+                                backgroundColor: 'rgba(255,131,0, 0.2)',
+                                borderColor: 'rgba(255,131,0, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'إجمالي السعر',
+                                data: data.total_prices, // y-axis data for total price
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                position: 'left', // First y-axis for order counts
+                                title: {
+                                    display: true,
+                                    text: 'عدد الطلبات'
+                                }
+                            },
+                            y1: {
+                                beginAtZero: true,
+                                position: 'right', // Second y-axis for total prices
+                                title: {
+                                    display: true,
+                                    text: 'إجمالي السعر (ر.س)'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+    });
+</script>
 
 {% endblock content %}

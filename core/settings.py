@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()  # loads the configs from .env
+import django_heroku
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -131,7 +133,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -146,7 +148,7 @@ STATICFILES_DIRS = [
 ]
 MEDIA_ROOT=BASE_DIR / 'media'
 MEDIA_URL='/media/'
-
+django_heroku.settings(locals())
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -175,3 +177,6 @@ FIREBASE_SERVICE_ACCOUNT_KEY = BASE_DIR /'dropx_auth.json'
 firebase_admin.initialize_app(
     credentials.Certificate(FIREBASE_SERVICE_ACCOUNT_KEY)
 )
+
+
+

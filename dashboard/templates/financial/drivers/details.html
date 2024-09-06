@@ -36,16 +36,16 @@
     }
   </style>
   <div class="container mt-5">
-    <nav class="nav">
-      <a class="nav-link active" href="">الحساب</a>
-      <a class="nav-link" href="">الإشتراك</a>
-      <a class="nav-link" href="#">قوائم مالية</a>
-      <a class="nav-link disabled" href="#">Disabled</a>
-    </nav>
+    {% include "financial/drivers/nav.html" with overview="active" %}
+
     <div class="card">
       <hr />
       <div class="card-header text-center text-white">
         <h4 class="text-primary">{{ wallet.user.fullName }}</h4>
+
+        <h6 class="">الرصيد:  {{ wallet.balance }} ر.س</h6>
+        
+
       </div>
 
       <hr />

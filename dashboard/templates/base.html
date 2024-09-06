@@ -129,17 +129,19 @@
                             <a class="nav-link {% block coupon %}{% endblock coupon %}" href="{% url "coupon_list" %}">كوبونات الخصم</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">العروض</a>
+                            <a class="nav-link collapsed  {% block statistics %} {% endblock statistics %}" data-toggle="collapse" href="#collapse-statistics" aria-expanded="false" aria-controls="collapse-statistics">إحصائيات</a>
+                            <div class="collapse {% block statistics_collapse %}{% endblock statistics_collapse %}" id="collapse-statistics">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link {% block order_statistics %}{% endblock order_statistics %} " href="{% url "order_statistics" %}">الطلبات</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {% block user_statistics %}{% endblock user_statistics %}" href="{% url "drivers_wallet_list" %}">المستخدمين</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
-                        <li class="nav-item">
                             <a class="nav-link {% block common_question %}{% endblock common_question %}" href="{% url "common_question_list" %}">الأسئلة والأجوبة</a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">عمولة التطبيق</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">الأرباح</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">الدعم</a>
@@ -167,7 +169,10 @@
                 </div>
                 {% block content %}
                 {% endblock content %}
+                <div class="text-center mt-5 p-3">
+                  </div>
             </main>
+            
         </div>
     </div>
     <script>

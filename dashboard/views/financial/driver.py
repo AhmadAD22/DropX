@@ -74,9 +74,9 @@ def drivers_wallet_details(request,driver_id):
     month_total_amount_sum = month_orders.aggregate(Sum('deliveryCost'))['deliveryCost__sum']
     year_total_amount_sum = year_orders.aggregate(Sum('deliveryCost'))['deliveryCost__sum']
     
-    completed_order_number = Order.objects.filter(driver=driver, status='COMPLETED',).count()
-    rejected_order_number = Order.objects.filter(driver=driver, status='REJECTED', ).count()
-    canceled_order_number = Order.objects.filter(driver=driver, status='CANCELED',).count()
+    completed_order_number = Order.objects.filter(driver=driver, status=Status.COMPLETED,).count()
+    rejected_order_number = Order.objects.filter(driver=driver, status=Status.REJECTED, ).count()
+    canceled_order_number = Order.objects.filter(driver=driver, status=Status.CANCELLED,).count()
     
     completed_trips = Trip.objects.filter(driver=driver, status=Status.COMPLETED).count()
 

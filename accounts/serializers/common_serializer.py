@@ -4,6 +4,13 @@ from rest_framework import serializers
 from rest_framework import fields
 from utils.validators import phoneValidator
 
+from rest_framework import serializers
+from dashboard.models import CommonQuestion
+
+class CommonQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommonQuestion
+        fields = ['id', 'question', 'answer']
 
 class SubscriptionConfigSerializer(serializers.ModelSerializer):
     class Meta:
