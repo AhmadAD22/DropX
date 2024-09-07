@@ -120,7 +120,6 @@ class NotificationsHelper:
                                 )
         if target.notificationEnabled==True:
             if target.fcm_token:
-                print(target.fcm_token)
                 msg.token=target.fcm_token
                 cls.__sendMessage(msg)
                 Notification.objects.create(

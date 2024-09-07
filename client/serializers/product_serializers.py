@@ -3,6 +3,7 @@ from ..models import *
 from restaurant.serializers.products_serializers import ProductListSerializer,ProductReviewsSerializer
 from django.db.models import Avg, Count
 
+
 class ClientProductListSerializer(serializers.ModelSerializer):
     price_after_offer = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     reviews_average = serializers.SerializerMethodField()
@@ -24,7 +25,7 @@ class ClientProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'image', 'name', 'description', 'minimumOrder','price', 'offers', 'created_at', 'quantity','updated_on', 'price_after_offer', 'reviews_average', 'reviews_count','favorate')
+        fields = ('id', 'image', 'name', 'description','price', 'offers', 'created_at', 'quantity','updated_on', 'price_after_offer', 'reviews_average', 'reviews_count','favorate')
         read_only_fields = ('id', 'created_at', 'updated_on')
 
 
