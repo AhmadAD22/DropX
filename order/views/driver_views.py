@@ -165,6 +165,17 @@ class DriverAcceptOrder(APIView):
             order.driver=driver
             order.status=Status.DRIVER_ACCEPTED
             order.save()
+            restaurant=order.items.first().product.restaurant
+            NotificationsHelper.sendOrderUpdate(
+                update=OrdersUpdates.DRIVER_ACCEPTED,
+                orderId=order,
+                target=restaurant,
+                )
+            NotificationsHelper.sendOrderUpdate(
+                update=OrdersUpdates.DRIVER_ACCEPTED,
+                orderId=order,
+                target=order.client,
+                )
             return Response({'result':'Order accepted'},status=status.HTTP_200_OK)
         else:
             return Response({'error':'The order was accepted by another driver'},status=status.HTTP_400_BAD_REQUEST)

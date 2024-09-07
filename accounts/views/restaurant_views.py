@@ -24,7 +24,20 @@ class RestaurantSubscriptionConfigList(APIView):
         subscription_configs = SubscriptionConfig.objects.filter(type="RESTAURANT")
         serializer = SubscriptionConfigSerializer(subscription_configs, many=True)
         return Response(serializer.data)
+    
+class RestaurantMinimumOrderUpdateAPIView(APIView):
+    permission_classes=[IsAuthenticated]
 
+    def put(self, request):
+        try:
+            restaurant = Restaurant.objects.get(phone=request.user.phone)
+            restaurant.minimumOrder=request.data['minimumOrder']
+            restaurant.save()
+            serializer = RestaurantSerializer(restaurant)
+            return Response(serializer.data)
+        except Restaurant.DoesNotExist:
+            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        
 class RestaurantProfileAPIView(APIView):
     permission_classes=[IsAuthenticated]
 

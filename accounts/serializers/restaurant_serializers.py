@@ -20,7 +20,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
         model=Restaurant
         fields = [
             'id', 'gender','restaurantStatus' ,'idNumber', 'birth', 'fullName', 'nationality', 'email', 'phone', 'latitude',
-            'longitude', 'address', 'bankName', 'iban', 'restaurantName', 'restaurantLogo',
+            'longitude', 'address', 'bankName', 'iban', 'restaurantName', 'minimumOrder','restaurantLogo',
             'commercialRecordNumber', 'commercialRecordImage', 'restaurantSubscription'
         ]
         
@@ -38,7 +38,7 @@ class UpdateRestaurantSerializer(serializers.ModelSerializer):
         model = PendingRestaurant
         fields = [
             'id', 'gender', 'idNumber', 'birth', 'fullName', 'nationality', 'email', 'phone', 'latitude',
-            'longitude', 'address', 'bankName', 'iban', 'restaurantName', 'restaurantLogo',
+            'longitude', 'address', 'bankName', 'iban', 'restaurantName','restaurantLogo',
             'commercialRecordNumber', 'commercialRecordImage',  'oldPhone'
         ]
         

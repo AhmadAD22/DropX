@@ -13,8 +13,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()  # loads the configs from .env
-import django_heroku
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -148,7 +146,6 @@ STATICFILES_DIRS = [
 ]
 MEDIA_ROOT=BASE_DIR / 'media'
 MEDIA_URL='/media/'
-django_heroku.settings(locals())
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -156,15 +153,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-FIREBASE_CONFIG = {
-    'apiKey': str(os.getenv('API_KEY')),
-    'authDomain': str(os.getenv('AUTH_DOMAIN')),
-    'projectId': str(os.getenv('PROJECT_ID')),
-    'storageBucket': str(os.getenv('STOREAGEBUCKET')),
-    'messagingSenderId': str(os.getenv('MESSAGING_SENDER_ID')),
-    'appId': str(os.getenv('APP_ID')),
-    # Add more Firebase configuration properties as needed
-}
+# FIREBASE_CONFIG = {
+#     'apiKey': str(os.getenv('API_KEY')),
+#     'authDomain': str(os.getenv('AUTH_DOMAIN')),
+#     'projectId': str(os.getenv('PROJECT_ID')),
+#     'storageBucket': str(os.getenv('STOREAGEBUCKET')),
+#     'messagingSenderId': str(os.getenv('MESSAGING_SENDER_ID')),
+#     'appId': str(os.getenv('APP_ID')),
+#     # Add more Firebase configuration properties as needed
+# }
 
 
 import firebase_admin

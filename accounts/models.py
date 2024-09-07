@@ -378,6 +378,7 @@ class Restaurant(User):
     restaurantLogo=models.ImageField(upload_to='proven/')
     commercialRecordImage=models.ImageField(upload_to='proven/')
     restaurantStatus=models.BooleanField(default=True)
+    minimumOrder=models.PositiveSmallIntegerField(default=1)
     
     
     def save(self, *args, **kwargs):

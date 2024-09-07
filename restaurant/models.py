@@ -36,7 +36,6 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     offers = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0,blank=False, verbose_name='الخصم')
     quantity = models.PositiveIntegerField()
-    minimumOrder=models.PositiveSmallIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاريخ الإنشاء',blank=True,null=True)
     updated_on = models.DateTimeField(auto_now=True, verbose_name='تاريخ التحديث',blank=True,null=True)
 

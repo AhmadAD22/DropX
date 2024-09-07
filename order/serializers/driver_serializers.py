@@ -3,6 +3,7 @@ from ..models import Order, OrderItem, OrderAccessory,Trip
 
 
 class OrderAccessorySerializer(serializers.ModelSerializer):
+    accessory_product=serializers.CharField(source='accessory_product.name')
     class Meta:
         model = OrderAccessory
         fields = ('accessory_product', 'quantity', 'unitPrice', 'get_total_price')
@@ -10,7 +11,7 @@ class OrderAccessorySerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     accessories = OrderAccessorySerializer(many=True)
-
+    product=serializers.CharField(source='product.name')
     class Meta:
         model = OrderItem
         fields = ('product', 'quantity', 'unitPrice', 'discount', 'note','get_total_price', 'accessories')

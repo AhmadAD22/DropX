@@ -8,6 +8,7 @@ from restaurant.models import Product,AccessoryProduct
 from functools import wraps
 from django.db import transaction
 from rest_framework.permissions import IsAuthenticated
+from utils.notifications import NotificationsHelper,Broadcast_Update
 
 
 class CartAPIView(APIView):
@@ -147,7 +148,8 @@ class CheckoutView(APIView):
             order_config = OrderConfig.objects.first()
 
             # Calculate the total price of the cart
-            total_price = cart.price_with_tax_with_coupon()
+            
+            
 
             # Apply the coupon if provided
             coupon=None
@@ -163,6 +165,7 @@ class CheckoutView(APIView):
 
                 # Calculate the tax
             # tax = total_price * (order_config.tax / 100)
+            total_price = cart.price_with_tax_with_coupon(coupon=coupon)
             client = Client.objects.get(phone=request.user.phone)
             restaurant=cart.items.first().product.restaurant
             #Delivery Cost
@@ -210,6 +213,7 @@ class CheckoutView(APIView):
                 cart_item.accessories.all().delete()
 
             # Serialize the order and return the response
+            NotificationsHelper.sendBroadcast(title=Broadcast_Update.NEW_ORDER,body=Broadcast_Update.NEW_ORDER,topic="TEST")
             serializer = OrderSerializer(order)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 

@@ -4,27 +4,32 @@ import json
 from accounts.models import User
 from django.conf import settings
 from order.models import *
+
 class NotificationsHelper:
-    # send message to fcm api
+    
+    # Method to send messages to FCM
     @classmethod
-    def __sendMessage(cls,msg:messaging.Message):
+    def __sendMessage(cls, msg: messaging.Message):
         try:
-            messaging.send(message = msg ,dry_run=False)
+            
+            response = messaging.send(message=msg, dry_run=False)
+          
         except Exception as exc:
-            print(exc)
+          
+            print(traceback.format_exc())
 
-
-    # create Message object with localization data
+    # Method to create a message with localized data
     @classmethod
-    def __localizedMsg(cls,title:str,body:str,titleArgs:list[str]=[],bodyArgs:list[str]=[],data:dict={}):
-        msg=messaging.Message(
+    def __localizedMsg(cls, title: str, body: str, titleArgs: list[str] = [], bodyArgs: list[str] = [], data: dict = {}):
+        # Create message payload with both data and notification
+        msg = messaging.Message(
             data={
                 **data,
-                'title':title,
-                'titleArgs':json.dumps(titleArgs),
-                'body':body,
-                'bodyArgs':json.dumps(bodyArgs),
-                'localized':str(True)
+                'title': title,
+                'titleArgs': json.dumps(titleArgs),
+                'body': body,
+                'bodyArgs': json.dumps(bodyArgs),
+                'localized': str(True)
             },
             android=messaging.AndroidConfig(
                 notification=messaging.AndroidNotification(
@@ -37,7 +42,7 @@ class NotificationsHelper:
             apns=messaging.APNSConfig(
                 payload=messaging.APNSPayload(
                     aps=messaging.Aps(
-                        messaging.ApsAlert(
+                        alert=messaging.ApsAlert(
                             title_loc_key=title,
                             title_loc_args=titleArgs,
                             loc_key=body,
@@ -45,6 +50,10 @@ class NotificationsHelper:
                         )
                     )
                 )
+            ),
+            notification=messaging.Notification(
+                title=title,
+                body=body
             )
         )
         return msg
@@ -111,6 +120,7 @@ class NotificationsHelper:
                                 )
         if target.notificationEnabled==True:
             if target.fcm_token:
+                print(target.fcm_token)
                 msg.token=target.fcm_token
                 cls.__sendMessage(msg)
                 Notification.objects.create(
@@ -211,6 +221,7 @@ class TripUpdates:
     
 class OrdersUpdates:
     ORDER_READR_TO_SHIPPING='ORDER_READR_TO_SHIPPING'
+    DRIVER_ACCEPTED=  'DRIVER_ACCEPTED'
     Driver_ON_WAY='Driver_ON_WAY' #send to client when the driver on way
     RESTAURANT_ACCEPTED=  'RESTAURANT_ACCEPTED'#send to Client when his order is accepted
     RESTAURANT_REJECTED=  'RESTAURANT_REJECTED'#send to Client and driver when the client order is rejected
@@ -225,3 +236,5 @@ class OrdersUpdates:
     CLIENT_PAID_ORDER='CLIENT_PAID_ORDER'#Send to reastaurant and driver to notify them the order is paid
     CLIENT_PAID_TRIP='CLIENT_PAID_TRIP'#Send to reastaurant and driver to notify them the order is paid
     
+class Broadcast_Update:
+    NEW_ORDER='NEW_ORDER'

@@ -13,7 +13,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id','image','category', 'name', 'description', 'price', 'offers', 'quantity', 'minimumOrder', 'created_at', 'updated_on', 'price_after_offer')
+        fields = ('id','image','category', 'name', 'description', 'price', 'offers', 'quantity', 'created_at', 'updated_on', 'price_after_offer')
         read_only_fields = ('id', 'created_at', 'updated_on')
         
 from django.db.models import Avg, Count
@@ -33,7 +33,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'image', 'name', 'description', 'minimumOrder','price', 'offers', 'created_at', 'quantity','updated_on', 'price_after_offer', 'reviews_average', 'reviews_count')
+        fields = ('id', 'image', 'name', 'description','category','price', 'offers', 'created_at', 'quantity','updated_on', 'price_after_offer', 'reviews_average', 'reviews_count')
         read_only_fields = ('id', 'created_at', 'updated_on')
 
 class AccessoryProductSerializer(serializers.ModelSerializer):
@@ -49,13 +49,13 @@ class CreateAccessoryProductSerializer(serializers.ModelSerializer):
 
 class CreateListProductSerializer(serializers.ModelSerializer):
     category_name=serializers.CharField(source='category.name',read_only=True)
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), write_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     
     
 
     class Meta:
         model = Product
-        fields = ('id', 'image','category', 'category_name','name', 'description', 'price', 'offers', 'quantity', 'minimumOrder', 'created_at', 'updated_on', 'price_after_offer')
+        fields = ('id', 'image','category', 'category_name','name', 'description', 'price', 'offers', 'quantity','created_at', 'updated_on', 'price_after_offer')
         
     
     

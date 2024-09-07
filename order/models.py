@@ -130,6 +130,7 @@ class Order(models.Model):
         tax_config=OrderConfig.objects.first().tax
         tax = self.total_price() * (decimal.Decimal(tax_config) / 100) if tax_config else decimal.Decimal(0)
         return round(tax, 2)
+    
     def commission(self):
         return decimal.Decimal(OrderConfig.objects.first().commission)    
     
