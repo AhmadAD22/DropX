@@ -5,6 +5,39 @@ from datetime import datetime
 from django.utils import timezone
 from order.models import Order,Status,OrderConfig
 
+def order_statistics(request):
+    # الحصول على السنوات المتاحة للفلترة
+    filter_type = request.GET.get('filter_type')  # 'year', 'month', 'day'
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    day = request.GET.get('day')
+
+    # تصفية الطلبات بناءً على الفلاتر المقدمة
+    orders = Order.objects.all()
+
+    if filter_type == 'year' and year:
+        orders = orders.filter(orderDate__year=year)
+    if filter_type == 'month' and year and month:
+        orders = orders.filter(orderDate__year=year, orderDate__month=month)
+    elif filter_type == 'day' and year and month and day:
+        orders = orders.filter(orderDate__year=year, orderDate__month=month, orderDate__day=day)
+
+    # حساب عدد الطلبات وإجمالي المبلغ
+    order_count = orders.count()
+    order_total_amount = orders.aggregate(total=Sum('totalAmount'))['total'] or 0
+
+    years = Order.objects.dates('orderDate', 'year').distinct()
+    
+    context = {
+        'request':request,
+        'years': [year.year for year in years],
+        'order_count':order_count,
+        'order_total_amount':order_total_amount,
+        
+    }
+    return render(request, 'statistic.html', context)
+
+
 def orders_per_month(request):
     current_year = timezone.now().year
     

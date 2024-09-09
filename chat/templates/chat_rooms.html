@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block support %}active{% endblock support %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a a class="text-primary" href="{% url "chat-page" %}">Support Chat</a></li>
+   
+{% endblock breadcrumbt %}
+{% block content %}
+    <style>
+        
+        .chat-room-list {
+            padding: 10px 0;
+        }
+        .chat-room-item {
+            background-color: #333;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-room-item:hover {
+            background-color: #555;
+        }
+        .chat-room-item h6 {
+            margin: 0;
+            font-weight: 600;
+        }
+        .chat-room-message {
+            font-size: 0.9em;
+            color: #fafafa;
+            background-color: #555;  /* Dark background for contrast */
+            border: 1px solid #fafafa;
+            border-radius: 10px;
+            border-top-right-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        
+        
+    </style>
+    <div class="container  ">
+        <div class="row justify-content-md-center">
+            <!-- Sidebar -->
+
+            <!-- Chat Room List -->
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center">
+                        <h4>الدردشات</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for room in chat_rooms %}
+                        <div class="chat-room-item text-right">
+                            <div>
+                                <h6>{{ room.user.fullName }}</h6>
+                                <p class="chat-room-timestamp">{{ room.latest_message_time|date:"M-d H:i" }}</p>
+                                <p class="">
+                                    {% if room.messages.last %}
+
+                                    <div class="chat-room-message">
+                                        "{{ room.messages.last.content|truncatewords:10 }}"
+                                    </div>
+                                       
+                                    {% else %}
+                                        No messages yet.
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <a href="{% url 'chat_room' room.id %}" class="btn btn-primary">Join Chat</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock  %}

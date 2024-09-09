@@ -57,6 +57,8 @@ path('client/cancell-trip/<int:trip_id>/', ClientCancellTripAPIView.as_view(), n
 path('current-trip/', ClientCurrentTripsListAPIView.as_view(), name='current-trip'),
 path('previous-trip/', ClientPreviousTripsListAPIView.as_view(), name='previous-trip'),
 
+path('client/track-trip/<int:trip_id>/', ClientTrackTripAPIView.as_view(), name='client-track-trip'),
+
 path('trips-driver/new/', DriverNewTripListAPIView.as_view(), name='driver-new-trips-list'),
 path('trips-driver/current/', DriverCurrentTripsListAPIView.as_view(), name='driver-current-trips-list'),
 path('trips-driver/previous/', DriverPreviousTripsListAPIView.as_view(), name='driver-previous-trips-list'),

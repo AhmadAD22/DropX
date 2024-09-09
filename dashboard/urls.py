@@ -20,7 +20,7 @@ from .views.question import *
 from .views.financial.driver import  *
 from .views.financial.restaurant import  *
 from .views.generate_exel import *
-from .views.statistic.general import *
+from .views.statistic.users import *
 from .views.statistic.order import *
 from .views.statistic.trip import *
 financialPatterns=[
@@ -50,7 +50,8 @@ statisticpatterns=[
            path('users-per-month/', users_per_month, name='users_per_month'),
            path('orders-per-month/', orders_per_month, name='orders_per_month'),
            path('trips-per-month/', trips_per_month, name='trips_per_month'),
-           path('', order_statistics, name='order_statistics'),
+           path('order/', order_statistics, name='order_statistics'),
+           path('user/', user_statistics, name='user_statistics'),
            path('api/order-stats/', get_order_stats, name='get_order_stats'),
            path('api/trip-stats/', get_trip_stats, name='get_trip_stats'),
 

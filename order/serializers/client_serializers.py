@@ -75,8 +75,8 @@ class TripCarSerializer(serializers.ModelSerializer):
     
     
 class TripSerializer(serializers.ModelSerializer):
-    client_name=serializers.CharField(source='client.fullName')
-    client_phone=serializers.CharField(source='client.phone')
+    client_name=serializers.CharField(source='client.fullName',read_only=True)
+    client_phone=serializers.CharField(source='client.phone',read_only=True)
     class Meta:
         model = Trip
         fields = (

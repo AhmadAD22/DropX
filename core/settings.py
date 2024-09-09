@@ -29,10 +29,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+ASGI_APPLICATION = 'core.asgi.application'
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'driver',
     'dashboard',
     'wallet',
+    'chat',
     #Rest framework
     'rest_framework',
     'rest_framework.authtoken',
@@ -59,6 +61,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
        
     ],
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }
 
 MIDDLEWARE = [
@@ -89,7 +97,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+# WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database

@@ -24,7 +24,20 @@ class TripCarAPIView(APIView):
         return Response(serializer.data)
     
     
-
+class ClientTrackTripAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request,trip_id):
+        try:
+            trip = Trip.objects.get(id=trip_id)
+        except Trip.DoesNotExist:
+            return Response({'erorr':'The trip does not found!'},status=status.HTTP_404_NOT_FOUND)
+        data={
+            'id':trip.id,
+            'status':trip.status,
+            'date':trip.tripDate
+        }
+        return Response(data,status=status.HTTP_200_OK)
+    
 class ClientCreateTripAPIView(APIView):
     def post(self, request):
         try:

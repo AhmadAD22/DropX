@@ -40,10 +40,10 @@ class OrderSerializer(serializers.ModelSerializer):
         )       
         
 class ProductSerializer(serializers.ModelSerializer):
-        
+        restaurant_name=serializers.CharField(source='restaurant.restaurantName',read_only=True)
         class Meta:
             model = Product
-            fields = ('id','image','category', 'name', 'price', 'offers', 'price_after_offer')
+            fields = ('id','image','restaurant_name','category', 'name', 'price', 'offers', 'price_after_offer')
             read_only_fields = ('id', )
             
 class AccessoryProductSerializer(serializers.ModelSerializer):
@@ -71,8 +71,11 @@ class CartSerializer(serializers.ModelSerializer):
     checkout=serializers.SerializerMethodField(read_only=True)
     
     def get_checkout(self,obj):
-        restaurant=obj.items.first().product.restaurant
-        return {'enabled':restaurant.minimumOrder < obj.total_price(),'minimumOrder':restaurant.minimumOrder}
+        if obj.items.first():
+            restaurant=obj.items.first().product.restaurant
+            return {'enabled':restaurant.minimumOrder < obj.total_price(),'minimumOrder':restaurant.minimumOrder}
+        else:
+            return None
     class Meta:
         model = Cart
         fields = ['id', 'items', 'total_price','checkout']

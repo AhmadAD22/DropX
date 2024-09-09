@@ -18,8 +18,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class DriverOrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
-    client_name=serializers.CharField(source='client.fullName')
-    client_phone=serializers.CharField(source='client.phone')
+    client_name=serializers.CharField(source='client.fullName',read_only=True)
+    client_phone=serializers.CharField(source='client.phone',read_only=True)
     restaurant_name=serializers.SerializerMethodField()
     restaurant_phone=serializers.SerializerMethodField()
     def get_restaurant_name(self,obj):

@@ -1,0 +1,10 @@
+
+{% extends "../base.html" %}
+{% block content %}
+<p>Total Clients (filtered): {{ client_count }}</p>
+<p>Total Drivers (filtered): {{ driver_count }}</p>
+<p>Total Restaurants (filtered): {{ restaurant_count }}</p>
+{{restaurant_subscription_counts}}
+{{trip_subscription_counts}}
+{{order_subscription_counts}}
+{% endblock content %}
