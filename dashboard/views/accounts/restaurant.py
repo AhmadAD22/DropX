@@ -2,8 +2,13 @@ from django.shortcuts import render, redirect,get_object_or_404
 from ...forms.accounts.restaurant import RestaurantForm
 from accounts.models import Restaurant,RestaurantSubscription
 from django.db.models import Q
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
 
+
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def create_restaurant(request):
     if request.method == 'POST':
         form = RestaurantForm(request.POST, request.FILES)
@@ -14,6 +19,8 @@ def create_restaurant(request):
         form = RestaurantForm()
     return render(request, 'create_restaurant.html', {'form': form})
 
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def restaurant_list(request):
     search_query = request.GET.get('search','')
     restaurants = Restaurant.objects.filter(Q(enabled=True)&
@@ -23,6 +30,8 @@ def restaurant_list(request):
     )
     return render(request, 'accounts/restaurant/list.html', {'restaurants': restaurants, 'search_query': search_query})
 
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def update_restaurant(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     if request.method == 'POST':
@@ -34,18 +43,24 @@ def update_restaurant(request, pk):
         form = RestaurantForm(instance=restaurant)
     return render(request, 'accounts/restaurant/update.html', {'form': form,'restaurant':restaurant})
 
+
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def restaurant_delete(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     if request.method == 'POST':
         restaurant.delete()
         return redirect('restaurant_list')
     
-    
+@permission_required("accounts.Restaurants", raise_exception=True)   
+@staff_member_required
 def restaurant_subscription(request, pk):
     restaurant = get_object_or_404(Restaurant,pk=pk)
     restaurant_subscriptions=RestaurantSubscription.objects.filter(restaurant=restaurant)
     return render(request, 'accounts/restaurant/subscription.html', {'restaurant':restaurant,'restaurant_subscriptions':restaurant_subscriptions})
-    
+
+@permission_required("accounts.Restaurants", raise_exception=True)   
+@staff_member_required
 def restaurant_order_subscription_disable(request, pk):
     restaurant = get_object_or_404(Restaurant,pk=pk)
     restaurant_subscriptions=RestaurantSubscription.objects.filter(restaurant=restaurant)
@@ -56,6 +71,9 @@ def restaurant_order_subscription_disable(request, pk):
             print(subscription.enabled)
     return redirect('restaurant_subscription',pk)
 
+
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def restaurant_order_subscription_enable(request, pk):
     restaurant = get_object_or_404(Restaurant,pk=pk)
     restaurant_subscriptions=RestaurantSubscription.objects.filter(restaurant=restaurant)

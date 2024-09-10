@@ -23,6 +23,8 @@ class Advertisement(models.Model):
         super().delete(*args, **kwargs)
         
 class AppConfig(models.Model):
+    order_app_enabled=models.BooleanField(default=True)
+    trip_app_enabled=models.BooleanField(default=True)
     about=models.TextField()
     privacy_policy=models.TextField()
     Terms=models.TextField()

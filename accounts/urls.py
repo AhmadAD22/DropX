@@ -8,6 +8,8 @@ from django.urls import path
 
 
 urlpatterns = [
+    
+     path('config',AppConfigAPIView.as_view()),
     #Client Account URLS
         #Client registration
         path('client/request_register',RegisterView.as_view()),

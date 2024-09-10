@@ -3,7 +3,13 @@ from order.models import TripCar
 from accounts.models import CarCategory,Car
 from ...forms.config.trip import TripCarForm,CarForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+
+
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def trip_car_list(request):
     trip_cars = CarCategory.objects.all().order_by('id')  # Order the queryset by a field (e.g., 'id')
     paginator = Paginator(trip_cars, 5)  # Show 5 trip cars per page
@@ -17,6 +23,9 @@ def trip_car_list(request):
         trip_cars = paginator.page(paginator.num_pages)
     return render(request, 'config/trip/list.html', {'trip_cars': trip_cars})
 
+
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def add_trip_car(request):
     if request.method == 'POST':
         form = TripCarForm(request.POST, request.FILES)
@@ -27,6 +36,9 @@ def add_trip_car(request):
         form = TripCarForm()
     return render(request, 'config/trip/add.html', {'form': form})
 
+
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def update_trip_car(request, pk):
     trip_car = get_object_or_404(CarCategory, pk=pk)
     if request.method == 'POST':
@@ -38,6 +50,9 @@ def update_trip_car(request, pk):
         form = TripCarForm(instance=trip_car)
     return render(request, 'config/trip/update.html', {'form': form,'trip_car':trip_car})
 
+
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def delete_trip_car(request, pk):
     trip_car = get_object_or_404(CarCategory, pk=pk)
     trip_car.delete()
@@ -46,7 +61,8 @@ def delete_trip_car(request, pk):
 
 #Car Type Config
 
-
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def add_car(request):
     if request.method == 'POST':
         form = CarForm(request.POST)
@@ -60,7 +76,8 @@ def add_car(request):
 
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def car_list(request):
     car_list = Car.objects.order_by('id')  # Explicitly order the queryset by a field (e.g., 'id')
     paginator = Paginator(car_list, 7)  # Show 5 cars per page
@@ -75,6 +92,8 @@ def car_list(request):
     num_pages = paginator.num_pages
     return render(request, 'config/cars/list.html', {'cars': cars,'num_pages':num_pages})
 
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def delete_car(request, pk):
     car = get_object_or_404(Car, pk=pk)
     car.delete()

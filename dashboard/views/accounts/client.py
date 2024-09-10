@@ -2,7 +2,13 @@ from django.shortcuts import render, redirect
 from ...forms.accounts.client_forms import ClientForm
 from accounts.models import Client
 from django.db.models import Q
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+
+
+@permission_required("accounts.Clients", raise_exception=True)
+@staff_member_required
 def client_list(request):
     search_query = request.GET.get('search', '')
     clients = Client.objects.filter(
@@ -12,6 +18,8 @@ def client_list(request):
     )
     return render(request, 'accounts/client/client_list.html', {'clients': clients, 'search_query': search_query})
 
+@permission_required("accounts.Clients", raise_exception=True)
+@staff_member_required
 def client_create(request):
     if request.method == 'POST':
         form = ClientForm(request.POST, request.FILES)
@@ -22,6 +30,9 @@ def client_create(request):
         form = ClientForm()
     return render(request, 'client_create.html', {'form': form})
 
+
+@permission_required("accounts.Clients", raise_exception=True)
+@staff_member_required
 def client_update(request, pk):
     client = Client.objects.get(pk=pk)
     if request.method == 'POST':
@@ -33,6 +44,9 @@ def client_update(request, pk):
         form = ClientForm(instance=client)
     return render(request, 'accounts/client/client_update.html', {'form': form,'client_id':client.id})
 
+
+@permission_required("accounts.Clients", raise_exception=True)
+@staff_member_required
 def client_delete(request, pk):
     client = Client.objects.get(pk=pk)
     if request.method == 'POST':

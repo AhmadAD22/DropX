@@ -1,10 +1,184 @@
+{% extends "base.html" %}
 
-{% extends "../base.html" %}
+{% block title %} User Statistics {% endblock %}
+{% block statistics_collapse %}show{% endblock statistics_collapse %}
+{% block statistics %}active{% endblock statistics %}
+{% block user_statistics %}active{% endblock user_statistics %}
+{% block breadcrumbt %}
+<li class="breadcrumb-item "><a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+<li class="breadcrumb-item ">
+    <a class="text-primary" href="{% url "user_statistics" %}">User Statistics</a>
+</li>
+{% endblock breadcrumbt %}
+
 {% block content %}
-<p>Total Clients (filtered): {{ client_count }}</p>
-<p>Total Drivers (filtered): {{ driver_count }}</p>
-<p>Total Restaurants (filtered): {{ restaurant_count }}</p>
-{{restaurant_subscription_counts}}
-{{trip_subscription_counts}}
-{{order_subscription_counts}}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="text-center mb-4">فلترة الإحصائيات</h4>
+                    <form id="filter-form" class="d-flex flex-wrap justify-content-between">
+                        <div class="form-group col-md-3">
+                            <label for="filter-type">اختر نوع الفلتر:</label>
+                            <select id="filter-type" name="filter_type" class="form-control">
+                                <option value="all">كل الفلاتر</option>
+                                <option value="year">سنة</option>
+                                <option value="month">شهر</option>
+                                <option value="day">يوم</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3 d-none" id="year-filter">
+                            <label for="year">اختر السنة:</label>
+                            <select id="year" name="year" class="form-control">
+                                {% for yr in years %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3 d-none" id="month-filter">
+                            <label for="month">اختر الشهر:</label>
+                            <select id="month" name="month" class="form-control">
+                                <option value="1">يناير</option>
+                                <option value="2">فبراير</option>
+                                <option value="3">مارس</option>
+                                <option value="4">أبريل</option>
+                                <option value="5">مايو</option>
+                                <option value="6">يونيو</option>
+                                <option value="7">يوليو</option>
+                                <option value="8">أغسطس</option>
+                                <option value="9">سبتمبر</option>
+                                <option value="10">أكتوبر</option>
+                                <option value="11">نوفمبر</option>
+                                <option value="12">ديسمبر</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3 d-none" id="day-filter">
+                            <label for="day">اختر اليوم:</label>
+                            <input type="number" id="day" name="day" class="form-control" min="1" max="31" placeholder="أدخل اليوم">
+                        </div>
+
+                        <div class="form-group col-md-12 text-center mt-3">
+                            <button type="submit" class="btn btn-primary">عرض الإحصائيات</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-10 col-md-12 col-sm-12 mt-4">
+            <div class="card bg-dark shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="mb-3 text-primary">إحصائيات المستخدمين</h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <p>عدد العملاء</p>
+                            <h3 id="client-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>عدد المناديب</p>
+                            <h3 id="driver-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>عدد المطاعم</p>
+                            <h3 id="restaurant-count" class="text-primary">0</h3>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-4">
+                            <p> عدد إشتراك المطعم</p>
+                            <h3 id="restaurant-subscription-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>عدد إشتراك توصيل الطلبات</p>
+                            <h3 id="order-subscription-count" class="text-primary">0</h3>
+                        </div>
+                        <div class="col-4">
+                            <p>عدد اشتراك توصيل الأفراد</p>
+                            <h3 id="trip-subscription-count" class="text-primary">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterTypeSelect = document.getElementById('filter-type');
+        const yearFilter = document.getElementById('year-filter');
+        const monthFilter = document.getElementById('month-filter');
+        const dayFilter = document.getElementById('day-filter');
+        const filterForm = document.getElementById('filter-form');
+
+        // Initially hide filters
+        yearFilter.classList.add('d-none');
+        monthFilter.classList.add('d-none');
+        dayFilter.classList.add('d-none');
+
+        // Show relevant filters on change
+        filterTypeSelect.addEventListener('change', function () {
+            const selectedFilter = this.value;
+            yearFilter.classList.add('d-none');
+            monthFilter.classList.add('d-none');
+            dayFilter.classList.add('d-none');
+
+            if (selectedFilter === 'year') {
+                yearFilter.classList.remove('d-none');
+            } else if (selectedFilter === 'month') {
+                yearFilter.classList.remove('d-none');
+                monthFilter.classList.remove('d-none');
+            } else if (selectedFilter === 'day') {
+                yearFilter.classList.remove('d-none');
+                monthFilter.classList.remove('d-none');
+                dayFilter.classList.remove('d-none');
+            }
+        });
+
+        // Fetch and update statistics when the form is submitted
+        filterForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const filterType = document.getElementById('filter-type').value;
+            const year = document.getElementById('year').value;
+            const month = document.getElementById('month').value;
+            const day = document.getElementById('day').value;
+
+            let query = '';
+            if (filterType === 'year') {
+                query = `?filter_type=year&year=${year}`;
+            } else if (filterType === 'month') {
+                query = `?filter_type=month&year=${year}&month=${month}`;
+            } else if (filterType === 'day') {
+                query = `?filter_type=day&year=${year}&month=${month}&day=${day}`;
+            }
+
+            // Fetch and update statistics via AJAX
+            fetchUserStats(query);
+        });
+
+        // Function to fetch and display user stats
+        function fetchUserStats(query = '') {
+            fetch(`{% url "get_user_stats" %}${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('client-count').textContent = data.client_count;
+                    document.getElementById('driver-count').textContent = data.driver_count;
+                    document.getElementById('restaurant-count').textContent = data.restaurant_count;
+                    document.getElementById('restaurant-subscription-count').textContent = data.restaurant_subscription_count;
+                    document.getElementById('order-subscription-count').textContent = data.order_subscriptions_count;
+                    document.getElementById('trip-subscription-count').textContent = data.trip_subscriptions_count;
+                })
+                .catch(error => console.error('Error fetching user stats:', error));
+        }
+
+        // Fetch all statistics on page load
+        fetchUserStats();
+    });
+</script>
+
 {% endblock content %}

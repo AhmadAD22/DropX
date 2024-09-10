@@ -40,9 +40,6 @@
                                 <ul class="nav flex-column">
                                     {% if request.user.is_authenticated %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">حسابي</a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a class="nav-link" href="{% url "dashboard-logout" %}">تسجيل خروج</a>
                                     </li>
                                     {% else %}
@@ -54,6 +51,7 @@
                         <li class="nav-item">
                             <a class="nav-link {% block main_dashboard %}{% endblock main_dashboard %}" href="{% url "main_dashboard" %}">لوحة التحكم</a>
                         </li>
+                        {% if perms.subscription %}
                         <li class="nav-item">
                             <a id="collapse-subscription-toggle" class="nav-link {% block requests %}{% endblock requests %}" data-toggle="collapse" href="#collapse-subscription" aria-expanded="true" aria-controls="collapse-subscription">طلبات الإشتراك</a>
                             <div class="collapse {% block request_collapse %}{% endblock request_collapse %}" id="collapse-subscription">
@@ -62,33 +60,46 @@
                                         <a class="nav-link {% block restaurant_requests %}{% endblock restaurant_requests %}" href="{% url "restaurant_requests_list" %}">مطاعم</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link {% block driver_requests %}{% endblock driver_requests %}" href="{% url "driver_requests_list" %}">مندوبين</a>
+                                        <a class="nav-link {% block driver_requests %}{% endblock driver_requests %}" href="{% url "driver_requests_list" %}">مناديب</a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
-                        
+                        {% endif %}
+
+                      
+                      
+                       
+                       
                         <li class="nav-item">
                             <a class="nav-link collapsed {% block users %}{% endblock users %}" data-toggle="collapse" href="#collapse-users" aria-expanded="false" aria-controls="collapse-users"> المستخدمين</a>
                             <div class="collapse {% block users_collapse %}{% endblock users_collapse %}" id="collapse-users">
                                 <ul class="nav flex-column">
-                                    {% if request.user.is_superuser %}
+                                    {% if perms.accounts.view_user %}
                                     <li class="nav-item">
-                                        <a class="nav-link {% block admins %}{% endblock admins %}" href="{% url "admin_list" %}">مدير</a>
+                                        <a class="nav-link {% block admins %}{% endblock admins %}" href="{% url "admin_list" %}">موظفين</a>
                                     </li>
                                     {% endif %}
+                                    {% if perms.accounts.Restaurants %}
                                     <li class="nav-item">
                                         <a class="nav-link {% block restaurant %}{% endblock restaurant %}" href="{% url "restaurant_list" %}">مطاعم</a>
                                     </li>
+                                    {% endif %}
+                                    {% if perms.accounts.Driver %}
                                     <li class="nav-item">
-                                        <a class="nav-link {% block driver %}{% endblock driver %}" href="{% url "driver_list" %}">مندوبين</a>
+                                        <a class="nav-link {% block driver %}{% endblock driver %}" href="{% url "driver_list" %}">مناديب</a>
                                     </li>
+                                    {% endif %}
+                                    {% if perms.accounts.Clients %}
                                     <li class="nav-item">
-                                        <a class="nav-link {% block clients %}{% endblock clients %}" href="{% url "client_list" %}">الزبائن</a>
+                                        <a class="nav-link {% block clients %}{% endblock clients %}" href="{% url "client_list" %}">العملاء</a>
                                     </li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         </li>
+                       
+                        {% if perms.accounts.config %}
                         <li class="nav-item">
                             <a class="nav-link collapsed  {% block config %} {% endblock config %}" data-toggle="collapse" href="#collapse-config" aria-expanded="false" aria-controls="collapse-config">الإعدادات</a>
                             <div class="collapse {% block config_collapse %}{% endblock config_collapse %}" id="collapse-config">
@@ -108,6 +119,8 @@
                                 </ul>
                             </div>
                         </li>
+                        {% endif %}
+                        {% if perms.accounts.Financial %}
                         <li class="nav-item">
                             <a class="nav-link collapsed  {% block financial %} {% endblock financial %}" data-toggle="collapse" href="#collapse-financial" aria-expanded="false" aria-controls="collapse-financial">القوائم المالية</a>
                             <div class="collapse {% block financial_collapse %}{% endblock financial_collapse %}" id="collapse-financial">
@@ -121,13 +134,26 @@
                                 </ul>
                             </div>
                         </li>
+                        {% endif %}
                         
+                        {% if perms.accounts.Categories %}
                         <li class="nav-item">
                             <a class="nav-link {% block categories %}{% endblock categories %}" href="{% url "category_list" %}">التصنيفات</a>
                         </li>
+                        {% endif %}
+                         {% comment %} 
+                       
+                        
+                       
+                        ("CommonQuestions", "التحكم بالأسئلة الشائعة"),
+                        ("Ads", "التحكم بالإعلانات"),
+                        ("Support", "التحكم بالدعم"), {% endcomment %}
+                        {% if perms.accounts.Coupon %}
                         <li class="nav-item">
                             <a class="nav-link {% block coupon %}{% endblock coupon %}" href="{% url "coupon_list" %}">كوبونات الخصم</a>
                         </li>
+                        {% endif %}
+                        {% if perms.accounts.Statistics %}
                         <li class="nav-item">
                             <a class="nav-link collapsed  {% block statistics %} {% endblock statistics %}" data-toggle="collapse" href="#collapse-statistics" aria-expanded="false" aria-controls="collapse-statistics">إحصائيات</a>
                             <div class="collapse {% block statistics_collapse %}{% endblock statistics_collapse %}" id="collapse-statistics">
@@ -136,18 +162,29 @@
                                         <a class="nav-link {% block order_statistics %}{% endblock order_statistics %} " href="{% url "order_statistics" %}">الطلبات</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link {% block user_statistics %}{% endblock user_statistics %}" href="{% url "drivers_wallet_list" %}">المستخدمين</a>
+                                        <a class="nav-link {% block user_statistics %}{% endblock user_statistics %}" href="{% url "user_statistics" %}">المستخدمين</a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
+                        {% endif %}
+                        {% if perms.accounts.CommonQuestions %}
+                        <li class="nav-item">
                             <a class="nav-link {% block common_question %}{% endblock common_question %}" href="{% url "common_question_list" %}">الأسئلة والأجوبة</a>
                         </li>
+                        {% endif %}
+                        {% if perms.accounts.Ads %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "chat-page" %}">الدعم</a>
+                            <a class="nav-link {% block advertisements %}{% endblock %}" href="{% url "advertisement_list" %}">الإعلانات</a>
                         </li>
-                       
-                       
+                        {% endif %}
+                        {% if perms.accounts.Support %}
+                        <li class="nav-item">
+                            <a class="nav-link {% block support %}{% endblock support %} " href="{% url "chat-page" %}">الدعم</a>
+                        </li>
+                       {% endif %}
+                        
+                        
                     </ul>
                 </div>
                 

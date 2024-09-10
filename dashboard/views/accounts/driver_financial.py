@@ -2,8 +2,13 @@ from django.shortcuts import render, redirect,get_object_or_404
 from accounts.models import Driver,DriverTripSubscription
 from wallet.models import UserWallet
 from order.models import Order
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
 
+
+@permission_required("accounts.Driver", raise_exception=True)
+@staff_member_required
 def driver_financial_overview(request, driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     wallet = get_object_or_404(UserWallet, user__id=driver_id)

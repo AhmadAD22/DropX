@@ -1,0 +1,39 @@
+{% extends "../base.html" %}
+{% block title %} Advertisements {% endblock %}
+{% block advertisements %}active{% endblock advertisements %}
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="{% url "advertisement_list" %}">Advertisements</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<div class="container text-center">
+    <h3 class="text-primary">الإعلانات</h3>
+    <a class="btn btn-primary m-2" href="{% url "advertisement_create" %}"> <i class="bi bi-plus-circle white-icon"></i></a>
+    <table class="table table-responsive-sm table-striped table-dark table-hover text-white">
+        <thead>
+            <tr class="text-primary">
+                <th>#</th>
+                <th>الصورة</th>
+                <th>مفعل</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for advertisement in advertisements %}
+            <tr class="clickable-row" onclick="window.location.href='{% url "advertisement_update" advertisement.pk  %}'">
+                <td>{{ advertisement.id }}</td>
+                <td><img src="{{ advertisement.image.url }}" alt="Advertisement Image" class="img-fluid img-thumbnail rounded mx-auto d-block" style="max-width: 100px; height: auto;"></td>
+                <td>{{ advertisement.active|yesno:"نعم,لا" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
+{% comment %} <td class="text-center">
+    <a href="{% url 'advertisement_update' advertisement.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i> Edit</a>
+    <a href="{% url 'advertisement_delete' advertisement.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Delete</a>
+</td> {% endcomment %}

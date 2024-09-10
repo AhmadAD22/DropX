@@ -1,7 +1,13 @@
 from django.shortcuts import render, redirect
 from order.models import OrderConfig
 from ...forms.config.order import OrderConfigForm
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+
+
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def order_config_view(request):
     order_config = OrderConfig.objects.first()
     

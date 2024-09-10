@@ -5,7 +5,10 @@ from decimal import Decimal
 from datetime import datetime
 from django.utils import timezone
 from order.models import Trip,Status,OrderConfig
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+@staff_member_required
 def trips_per_month(request):
     current_year = timezone.now().year
 
@@ -32,7 +35,8 @@ def trips_per_month(request):
 
     return JsonResponse({'months': months, 'trip_counts': trip_counts, 'total_prices': total_prices})
 
-
+@permission_required("accounts.Statistics", raise_exception=True)
+@staff_member_required
 def get_trip_stats(request):
     # الحصول على معايير الفلترة من طلب GET
     filter_type = request.GET.get('filter_type')  # 'year', 'month', 'day'

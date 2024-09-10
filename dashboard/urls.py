@@ -23,6 +23,7 @@ from .views.generate_exel import *
 from .views.statistic.users import *
 from .views.statistic.order import *
 from .views.statistic.trip import *
+from .views.advertisement import *
 financialPatterns=[
     #Driver
     path('driver-wallet-list',drivers_wallet_list,name="drivers_wallet_list"),
@@ -54,6 +55,7 @@ statisticpatterns=[
            path('user/', user_statistics, name='user_statistics'),
            path('api/order-stats/', get_order_stats, name='get_order_stats'),
            path('api/trip-stats/', get_trip_stats, name='get_trip_stats'),
+            path('api/user-stats/', get_user_stats, name='get_user_stats'),
 
 ]
 
@@ -64,7 +66,8 @@ path('statistic/',include(statisticpatterns)),
 path('login',login_view,name="dashboard-login"),
 path('logout',logout_view,name="dashboard-logout"),
 path('',main_dashboard,name="main_dashboard"),
-path('excel',generate_excel,name="excel"),
+path('restaurants/excel',restaurant_generate_excel,name="restaurants-excel"),
+path('drivers/excel',driver_generate_excel,name="drivers-excel"),
 
 #Categories
 path('categories', category_list,name='category_list'),
@@ -158,6 +161,11 @@ path('financial/driver/<int:driver_id>', driver_financial_overview, name='driver
     path('add_car/', add_car, name='add_car'),
     path('car_list/',car_list, name='car_list'),
     path('car-delete/<int:pk>/', delete_car, name='delete_car'),
+    #Advertisement
+    path('advertisements/', advertisement_list, name='advertisement_list'),
+    path('advertisements/new/', advertisement_create, name='advertisement_create'),
+    path('advertisements/<int:pk>/edit/', advertisement_update, name='advertisement_update'),
+    path('advertisements/<int:pk>/delete/',advertisement_delete, name='advertisement_delete'),
     
     
     

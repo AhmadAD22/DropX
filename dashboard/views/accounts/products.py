@@ -4,7 +4,13 @@ from ...forms.products import ProductForm, AccessoryProductForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from accounts.models import Restaurant
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+
+
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def product_list(request,restaurant_id):
     search_query = request.GET.get('search','')
     products = Product.objects.filter(Q(restaurant__id=restaurant_id)&
@@ -25,7 +31,8 @@ def product_list(request,restaurant_id):
         products = paginator.page(paginator.num_pages)
 
     return render(request, 'accounts/restaurant/products/list.html', {'products': products,'restaurant':restaurant,'search_query': search_query})
-
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def add_product(request,restaurant_id):
     restaurant=get_object_or_404(Restaurant,pk=restaurant_id)
     if request.method == 'POST':
@@ -38,7 +45,8 @@ def add_product(request,restaurant_id):
     else:
         form = ProductForm()
     return render(request, 'accounts/restaurant/products/add.html', {'form': form,'restaurant':restaurant})
-
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def update_product(request, restaurant_id, product_id=None):
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
     product = None
@@ -57,12 +65,14 @@ def update_product(request, restaurant_id, product_id=None):
         form = ProductForm(instance=product)
     accessorys=AccessoryProduct.objects.filter(product=product)
     return render(request, 'accounts/restaurant/products/update.html', {'form': form, 'restaurant': restaurant, 'product': product,'accessorys':accessorys})
-
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def delete_product(request, pk):
     product = get_object_or_404(Product, id=pk)
     product.delete()
     return redirect('product_list',product.restaurant.id)
-
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def add_accessory_product(request,restaurant_id, product_id):
     product = Product.objects.get(id=product_id)
     if request.method == 'POST':
@@ -76,6 +86,8 @@ def add_accessory_product(request,restaurant_id, product_id):
         form = AccessoryProductForm()
     return render(request, 'accounts/restaurant/products/accessory/add.html', {'form': form, 'product': product,'restaurant':product.restaurant,})
 
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def update_accessory_product(request, restaurant_id, product_id, accessory_product_id):
     product = get_object_or_404(Product, id=product_id)
     accessory_product = get_object_or_404(AccessoryProduct, id=accessory_product_id)
@@ -89,6 +101,8 @@ def update_accessory_product(request, restaurant_id, product_id, accessory_produ
 
     return render(request, 'accounts/restaurant/products/accessory/update.html', {'form': form, 'product': product, 'accessory_product': accessory_product, 'restaurant': product.restaurant})
 
+@permission_required("accounts.Restaurants", raise_exception=True)
+@staff_member_required
 def delete_accessory_product(request, pk):
     accessory_product = get_object_or_404(AccessoryProduct, id=pk)
     product=accessory_product.product

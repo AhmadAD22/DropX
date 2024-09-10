@@ -4,7 +4,12 @@ from django.http import JsonResponse
 from datetime import datetime
 from django.utils import timezone
 from order.models import Order,Status,OrderConfig
+from utils.decerators import staff_member_required
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+@permission_required("accounts.Statistics", raise_exception=True)
+@staff_member_required
 def order_statistics(request):
     # الحصول على السنوات المتاحة للفلترة
     filter_type = request.GET.get('filter_type')  # 'year', 'month', 'day'
@@ -38,6 +43,7 @@ def order_statistics(request):
     return render(request, 'statistic.html', context)
 
 
+@staff_member_required
 def orders_per_month(request):
     current_year = timezone.now().year
     
@@ -70,7 +76,8 @@ from django.db.models.functions import TruncMonth, TruncDay
 from django.http import JsonResponse
 from django.utils import timezone
 
-
+@permission_required("accounts.Statistics", raise_exception=True)
+@staff_member_required
 def get_order_stats(request):
     # الحصول على معايير الفلترة من طلب GET
     filter_type = request.GET.get('filter_type')  # 'year', 'month', 'day'

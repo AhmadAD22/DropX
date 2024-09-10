@@ -11,6 +11,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from dashboard.models import AppConfig
+
+
+
+class AppConfigAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Get all common questions
+        config = AppConfig.objects.first()
+        return Response({'trip_app_enabled':config.trip_app_enabled,'order_app_enabled':config.order_app_enabled}, status=status.HTTP_200_OK)
 
 class CommonQuestionAPIView(APIView):
     def get(self, request, *args, **kwargs):

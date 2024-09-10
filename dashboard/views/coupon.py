@@ -3,9 +3,14 @@ from order.models import Coupon
 from ..forms.coupon import CouponForm
 from django.db.models import Q
 from accounts.models import Restaurant,Driver
-
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+
+
+@permission_required("accounts.Coupon", raise_exception=True)
+@staff_member_required
 def coupon_list(request):
     search_query = request.GET.get('search', '')
     print(search_query)
@@ -25,6 +30,8 @@ def coupon_list(request):
     
     return render(request, 'coupon/list.html', {'coupons': coupons, 'num_pages': num_pages})
 
+@permission_required("accounts.Coupon", raise_exception=True)
+@staff_member_required
 def add_coupon(request):
     if request.method == 'POST':
         form = CouponForm(request.POST)
@@ -38,6 +45,8 @@ def add_coupon(request):
     form.fields['driver'].queryset = Driver.objects.all()
     return render(request, 'coupon/add.html', {'form': form})
 
+@permission_required("accounts.Coupon", raise_exception=True)
+@staff_member_required
 def update_coupon(request, pk):
     coupon = get_object_or_404(Coupon, pk=pk)
     if request.method == 'POST':
@@ -49,6 +58,8 @@ def update_coupon(request, pk):
         form = CouponForm(instance=coupon)
     return render(request, 'coupon/update.html', {'form': form,'coupon':coupon})
 
+@permission_required("accounts.Coupon", raise_exception=True)
+@staff_member_required
 def delete_coupon(request, pk):
     coupon = get_object_or_404(Coupon, pk=pk)
     if request.method == 'POST':

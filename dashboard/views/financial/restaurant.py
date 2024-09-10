@@ -8,16 +8,23 @@ from django.db.models import Sum
 from django.shortcuts import render
 from order.models import Order,Trip
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
 
+
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def restaurants_wallet_list(request):
     # Get all restaurant instances
     restaurants = Restaurant.objects.filter(enabled=True)
     # Get the UserWallet instances for the restaurant users
-    restaurant_wallets = UserWallet.objects.filter(user__in=restaurants, balance__gt=0)
+    restaurant_wallets = UserWallet.objects.filter(user__in=restaurants).order_by('-balance')
     print(restaurant_wallets.count())
     return render(request,'financial/restaurant/list.html',{'restaurant_wallets':restaurant_wallets})
 
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def restaurants_wallet_details(request,restaurant_id):
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
     wallet = get_object_or_404(UserWallet, user__id=restaurant_id)
@@ -72,7 +79,8 @@ def restaurants_wallet_details(request,restaurant_id):
     })
     
     
-
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def restaurant_complated_orders(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
     completad_orders = Order.objects.filter(items__product__restaurant=restaurant, status=Status.COMPLETED).distinct().order_by('-orderDate')
@@ -100,10 +108,18 @@ def restaurant_complated_orders(request, restaurant_id):
                                                              'num_pages': num_pages,
                                                              'restaurant':restaurant
                                                              })
+    
+    
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def rsetaurant_order_details(request, order_id):
     order = Order.objects.get(pk=order_id)
     return render(request, 'financial/restaurant/order_details.html', {'order': order})
 
+
+
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def restaurant_rejected_orders(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
     rejected_orders = Order.objects.filter(items__product__restaurant=restaurant, status=Status.REJECTED).distinct().order_by('-orderDate')
@@ -132,6 +148,8 @@ def restaurant_rejected_orders(request, restaurant_id):
                                                              'restaurant':restaurant
                                                              })
     
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def restaurant_cancelled_orders(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
     cancelled_orders = Order.objects.filter(items__product__restaurant=restaurant, status=Status.CANCELLED).distinct().order_by('-orderDate')

@@ -9,11 +9,36 @@
 {% endblock breadcrumbt %}
 
 {% block content %}
+<!-- Button trigger modal -->
+  <!-- Modal -->
+  <div class="modal fade " id="transformToExcel" tabindex="-1" role="dialog" aria-labelledby="transformToExcelLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-light">
+          <h5 class="modal-title text-light" id="transformToExcelLabel">تأكيد التحويل</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-dark text-light text-right">
+          <p>هل أنت متأكد من تحويل القوائم المالية إلى ملف إكسل ؟</p>
+          <p class="text-danger">ملاحظة: سيتم إعادة تهيئة المحافظ في التطبيق!</p>
+        </div>
+        <div class="modal-footer bg-dark">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+          <a href="{% url "restaurants-excel" %}" class="btn btn-primary">تحويل</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 <div class="container text-center">
     <h3 class="text-primary">المستحقات المالية</h3>
-    <a class="btn btn-primary m-2" href="{% url "category_create" %}"> <i class="bi bi-plus-circle white-icon"></i></a>
-    <table class="table table-responsive-sm table-striped table-dark table-hover text-white">
+    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#transformToExcel">
+        تحويل إلى ملف إكسل
+      </button>
+          <table class="table table-responsive-sm table-striped table-dark table-hover text-white">
         <thead>
             <tr class="text-primary">
                 <th>#</th>

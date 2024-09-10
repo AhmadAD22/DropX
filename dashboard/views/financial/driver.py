@@ -8,16 +8,20 @@ from django.db.models import Sum
 from django.shortcuts import render
 from order.models import Order,Trip
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
-
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def drivers_wallet_list(request):
     # Get all Driver instances
     drivers = Driver.objects.filter(enabled=True)
 
     # Get the UserWallet instances for the Driver users
-    driver_wallets = UserWallet.objects.filter(user__in=drivers, balance__gt=0)
+    driver_wallets = UserWallet.objects.filter(user__in=drivers).order_by('-balance')
     return render(request,'financial/drivers/list.html',{'driver_wallets':driver_wallets})
-
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def drivers_wallet_details(request,driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     wallet = get_object_or_404(UserWallet, user__id=driver_id)
@@ -107,7 +111,8 @@ def drivers_wallet_details(request,driver_id):
 
 
 from datetime import datetime
-
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def driver_complated_orders(request, driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     completad_orders = Order.objects.filter(driver=driver, status=Status.COMPLETED).order_by('-orderDate')
@@ -135,7 +140,8 @@ def driver_complated_orders(request, driver_id):
                                                              'num_pages': num_pages,
                                                              'driver':driver
                                                              })
-
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def driver_rejected_orders(request, driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     rejected_orders = Order.objects.filter(driver=driver, status=Status.REJECTED).order_by('-orderDate')
@@ -163,7 +169,8 @@ def driver_rejected_orders(request, driver_id):
                                                              'num_pages': num_pages,
                                                              'driver':driver
                                                              })
-    
+@permission_required("accounts.Financial", raise_exception=True)   
+@staff_member_required
 def driver_cancelled_orders(request, driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     cancelled_orders = Order.objects.filter(driver=driver, status=Status.REJECTED).order_by('-orderDate')
@@ -192,7 +199,8 @@ def driver_cancelled_orders(request, driver_id):
                                                              'driver':driver
                                                              })
     
-    
+@permission_required("accounts.Financial", raise_exception=True)    
+@staff_member_required
 def order_details(request, order_id):
     order = Order.objects.get(pk=order_id)
     return render(request, 'financial/drivers/order_details.html', {'order': order})
@@ -200,6 +208,8 @@ def order_details(request, order_id):
 
 
 ######TRIPS
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def driver_complated_trips(request, driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     completad_trips = Trip.objects.filter(driver=driver, status=Status.COMPLETED).order_by('-tripDate')
@@ -227,7 +237,8 @@ def driver_complated_trips(request, driver_id):
                                                              'num_pages': num_pages,
                                                              'driver':driver
                                                              })
-    
+@permission_required("accounts.Financial", raise_exception=True)   
+@staff_member_required
 def driver_rejected_trips(request, driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     rejected_trips = Trip.objects.filter(driver=driver, status=Status.REJECTED).order_by('-tripDate')
@@ -256,7 +267,8 @@ def driver_rejected_trips(request, driver_id):
                                                              'driver':driver
                                                              })
     
-       
+@permission_required("accounts.Financial", raise_exception=True)     
+@staff_member_required
 def driver_cancelled_trips(request, driver_id):
     driver = get_object_or_404(Driver, pk=driver_id)
     cancelled_trips = Trip.objects.filter(driver=driver, status=Status.CANCELLED).order_by('-tripDate')
@@ -284,7 +296,8 @@ def driver_cancelled_trips(request, driver_id):
                                                              'num_pages': num_pages,
                                                              'driver':driver
                                                              })
-    
+@permission_required("accounts.Financial", raise_exception=True)
+@staff_member_required
 def trip_details(request, trip_id):
     trip = Trip.objects.get(pk=trip_id)
     return render(request, 'financial/drivers/trip_details.html', {'trip': trip})

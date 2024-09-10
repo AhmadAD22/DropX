@@ -110,7 +110,7 @@ DATABASES = {
     }
 }
 
-
+LOGIN_URL = 'dashboard-login'
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -148,7 +148,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATIC_ROOT = os.path.join(STATIC_DIR, 'static_root')
+STATIC_ROOT = os.path.join(STATIC_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]

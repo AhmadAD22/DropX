@@ -2,8 +2,13 @@ from django.shortcuts import render, redirect,get_object_or_404
 from ...forms.accounts.admin import UserCreationWithPermissionsForm,User,UserUpdateForm
 from django.db.models import Q
 from django.contrib import messages
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
 
+
+@permission_required("accounts.view_user", raise_exception=True)
+@staff_member_required
 def admin_list(request):
     search_query = request.GET.get('search', '')
     admins = User.objects.filter(Q(is_staff=True)&(
@@ -13,6 +18,9 @@ def admin_list(request):
     )
     return render(request, 'accounts/admin/list.html', {'admins': admins, 'search_query': search_query})
 
+
+@permission_required("accounts.add_user", raise_exception=True)
+@staff_member_required
 def add_user_with_permissions(request):
     if request.method == 'POST':
         form = UserCreationWithPermissionsForm(request.POST)
@@ -27,7 +35,8 @@ def add_user_with_permissions(request):
 
 
 from django.contrib.auth.models import Permission
-
+@permission_required("accounts.change_user", raise_exception=True)
+@staff_member_required
 def update_admin(request, user_id):
     user = get_object_or_404(User, id=user_id)
     
@@ -49,11 +58,16 @@ def update_admin(request, user_id):
     
     return render(request, 'accounts/admin/update.html', {'form': form, 'user': user})
 
+@permission_required("accounts.delete_user", raise_exception=True)
+@staff_member_required
 def delete_admin(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
     return redirect('admin_list')
-    
+
+
+@permission_required("accounts.change_user", raise_exception=True)
+@staff_member_required
 def change_password(request, user_id):
     if request.method == 'POST':
         new_password = request.POST.get('new_password')

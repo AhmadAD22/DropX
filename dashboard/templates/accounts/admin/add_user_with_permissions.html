@@ -1,5 +1,5 @@
 {% extends "../../base.html" %}
-{% block title %} إضافة مشرف {% endblock %}
+{% block title %} إضافة موظف {% endblock %}
 {% block admins %}active{% endblock admins %}
 {% block users %}active{% endblock users %}
 {% block breadcrumbt %}
@@ -11,7 +11,7 @@
 <div class="container">
     <div class="row d-flex justify-content-center">
         <div class="col-md-6 text-center">
-            <h2 class="text-primary">إضافة مشرف</h2>
+            <h2 class="text-primary">إضافة موظف</h2>
             <form method="post" class="text-right" id="addAdminForm" onsubmit="return validatePasswords()">
                 {% csrf_token %}
                 <div class="form-group">

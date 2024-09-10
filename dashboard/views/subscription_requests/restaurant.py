@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect,get_object_or_404
 from accounts.models import Restaurant
 from django.db.models import Q
 from utils.notifications import *
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+@permission_required("accounts.subscription", raise_exception=True)
+@staff_member_required
 def restaurant_requests_list(request):
     search_query = request.GET.get('search', '')
     restaurants = Restaurant.objects.filter(Q(enabled=False)&
@@ -12,18 +16,22 @@ def restaurant_requests_list(request):
     )
     return render(request, 'subscription_requests/restaurant/list.html', {'restaurants': restaurants, 'search_query': search_query})
 
-
+@permission_required("accounts.subscription", raise_exception=True)
+@staff_member_required
 def restaurant_requests_details(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     return render(request, 'subscription_requests/restaurant/details.html', {'restaurant': restaurant})
 
+@permission_required("accounts.subscription", raise_exception=True)
+@staff_member_required
 def restaurant_accept_request(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     restaurant.enabled=True
     restaurant.save()
     NotificationsHelper.sendRegistrationUpdate(RegistrationUpdate.REGISTR_ACCEPTED,target=restaurant)
     return redirect('restaurant_requests_list')
-
+@permission_required("accounts.subscription", raise_exception=True)
+@staff_member_required
 def restaurant_reject_request(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     NotificationsHelper.sendRegistrationUpdate(RegistrationUpdate.REGISTR_REJECTED,target=restaurant)

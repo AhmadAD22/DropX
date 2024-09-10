@@ -12,11 +12,13 @@
 <div class="container">
     <div class="row d-flex justify-content-center">
         <div class="col-md-6 text-center">
-            <h2 class="text-primary">تحديث المشرف</h2>
+            
+            <h2 class="text-primary">تحديث موظف</h2>
+            {% if perms.accounts.delete_user  %}
             <button type="button" rel="tooltip" class="btn btn-danger btn-simple btn-icon btn-sm delete-btn" data-toggle="modal" data-target="#deleteformModal{{user.id}}">
                 <i class="bi bi-x-octagon white-icon"></i>
             </button>
-              
+            {% endif %}
             <form method="post" class="text-right" id="addAdminForm" onsubmit="return validatePasswords()">
                 {% csrf_token %}
                 <div class="form-group">

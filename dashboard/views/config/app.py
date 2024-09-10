@@ -1,6 +1,13 @@
 from django.shortcuts import render,redirect
 from ...forms.config.app import AppConfigForm
 from ...models import AppConfig
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
+
+
+
+@permission_required("accounts.config", raise_exception=True)
+@staff_member_required
 def edit_app_config(request):
     if request.method == 'POST':
         app_config=AppConfig.objects.first()

@@ -1,0 +1,74 @@
+{% extends '../base.html' %}
+
+{% block title %} Create Advertisement {% endblock %}
+
+
+
+{% block advertisements %} 
+active
+{% endblock %}
+
+{% block breadcrumbt %}
+    <li class="breadcrumb-item "><a class="text-light" href="{% url "main_dashboard" %}">Dashboard</a></li>
+    <li class="breadcrumb-item "><a class="text-light" href="{% url "advertisement_list" %}">Advertisements</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" href="">Create Advertisement</a></li>
+{% endblock breadcrumbt %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title text-center text-primary">إنشاء إعلان جديد</h3>
+            <form method="post" enctype="multipart/form-data" class="text-right">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_image">الصورة</label>
+                    {{ form.image }}
+                    <span class="text1"></span>
+                    <img id="uploaded-image" src="#" width="100" alt="الصورة المرفقة" style="display: none;">
+                    {% if form.image.errors %}
+                        <div class="text-danger">
+                            {% for error in form.image.errors %}
+                            <span>{{ error }}</span><br>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_active">نشط</label>
+                    {{ form.active }}
+                    {% if form.active.errors %}
+                        <div class="text-danger">
+                            {% for error in form.active.errors %}
+                            <span>{{ error }}</span><br>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">حفظ</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById("id_image");
+    fileInput.addEventListener("change", function() {
+        const fileName = this.files[0].name;
+        const button = document.querySelector(".text1");
+        button.innerHTML = fileName;
+        const uploadedImage = document.getElementById("uploaded-image");
+        uploadedImage.src = URL.createObjectURL(this.files[0]);
+        uploadedImage.style.display = "block";
+    });
+</script>
+
+{% endblock %}
+
+{% block js_script %}
+    <!-- Add any specific JS for this page here -->
+{% endblock %}

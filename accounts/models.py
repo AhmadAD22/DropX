@@ -12,9 +12,7 @@ from django.db.models import Q,Avg
 import os
 from django.conf import settings
 from django.utils import timezone
-
-
-
+from django.contrib.auth.models import Permission
 
 # Create your models here.
 def upload_avatar_path(instance, filename):
@@ -71,7 +69,20 @@ class User(AbstractUser):
     notificationEnabled=models.BooleanField(default=True)
     
     class Meta:
-        permissions = (("subscriptions", "Subscriptions Control"), ("Driver", "Subscriptions Control"),)
+        permissions = (("subscription", "التحكم بطلبات الإشتراك"),
+                       ("Driver", "التحكم بالمناديب"),
+                       ("Restaurants", "التحكم بالمطاعم"),
+                       ("Clients", "التحكم بالعملاء"),
+                       ("config", "التحكم بالإعدادات"),
+                       ("Financial", "التحكم بالقوائم المالية"),
+                        ("Categories", "التحكم بالتصنيفات"),
+                        ("Coupon", "التحكم بالكوبونات"),
+                        ("Statistics", "الوصول للالإحصائيات"),
+                        ("CommonQuestions", "التحكم بالأسئلة الشائعة"),
+                        ("Ads", "التحكم بالإعلانات"),
+                        ("Support", "التحكم بالدعم"),
+                       
+                       )
 
     
     USERNAME_FIELD = 'phone'

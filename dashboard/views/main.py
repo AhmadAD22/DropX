@@ -4,6 +4,9 @@ from restaurant.models import Category
 from order.models import Trip,Order,OrderConfig,Status
 from django.db.models import Sum
 from wallet.models import DriverTripSubscriptionPayment,DriverOrderSubscriptionPayment,RestaurantSubscriptionPayment
+from utils.decerators import staff_member_required
+
+@staff_member_required
 def main_dashboard(request):
     client_count=Client.objects.all().count()
     driver_count=Driver.objects.filter(enabled=True).count()
@@ -39,3 +42,5 @@ def main_dashboard(request):
         'subscription_profits':subscription_profits
     }
     return render(request,'main_dashboard.html',context=context)
+
+

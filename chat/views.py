@@ -9,11 +9,20 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from .models import ChatRoom
 from django.db.models import Max
+from utils.decerators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 
+
+
+@permission_required("accounts.Support", raise_exception=True)
+@staff_member_required
 def chat_rooms_view(request):
     chat_rooms = ChatRoom.objects.annotate(latest_message_time=Max('messages__timestamp')).order_by('-latest_message_time')
     return render(request, 'chat_rooms.html', {'chat_rooms': chat_rooms})
 
+
+@permission_required("accounts.Support", raise_exception=True)
+@staff_member_required
 def chat_room(request, room_id):
     room=get_object_or_404(ChatRoom,id=room_id)
     return render(request, 'room.html', {'room': room})
@@ -31,10 +40,3 @@ class ChatRoomListView(APIView):
         serializer = ChatRoomSerializer(chat_room)
         return Response(serializer.data)
 
-    # def post(self, request):
-    #     # Create a new chat room for the user
-    #     serializer = ChatRoomSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save(user=request.user)  # Assign the current user as the chat room's user
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
